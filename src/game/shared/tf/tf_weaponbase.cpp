@@ -67,6 +67,9 @@
 #include "materialsystem/imaterial.h"
 #include "materialsystem/imaterialvar.h"
 
+// pf2 include
+#include "pf_cvars.h"
+
 extern CTFWeaponInfo *GetTFWeaponInfo( int iWeapon );
 #endif
 
@@ -4772,6 +4775,16 @@ BobState_t *CTFWeaponBase::GetBobState()
 
 	// get the bob state out of the view model
 	return &( viewModel->GetBobState() );
+}
+
+//pf2 grenades
+
+bool CTFWeaponBase::VisibleInWeaponSelection(void)
+
+{
+
+	return !GetTFWpnData().m_bGrenade;
+
 }
 
 #endif // defined( CLIENT_DLL )

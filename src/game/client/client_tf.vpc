@@ -543,6 +543,11 @@ $Project "Client (TF)"
 			$File	"$SRCDIR\game\shared\tf\tf_logic_player_destruction.cpp"
 			$File	"$SRCDIR\game\shared\tf\tf_logic_player_destruction.h"
 			$File	"$SRCDIR\game\shared\tf\tf_gamestats_shared.cpp"
+			
+			$File	"$SRCDIR\game\shared\pf\pf_cvars.cpp"
+			$File	"$SRCDIR\game\shared\pf\pf_cvars.h"
+			$File	"$SRCDIR\game\shared\pf\pf_convar_setup.h"
+			$File	"$SRCDIR\game\shared\pf\pf_convar_setup.cpp"
 			{
 				$Configuration
 				{
