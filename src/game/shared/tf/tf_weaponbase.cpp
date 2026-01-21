@@ -4777,16 +4777,6 @@ BobState_t *CTFWeaponBase::GetBobState()
 	return &( viewModel->GetBobState() );
 }
 
-//pf2 grenades
-
-bool CTFWeaponBase::VisibleInWeaponSelection(void)
-
-{
-
-	return !GetTFWpnData().m_bGrenade;
-
-}
-
 #endif // defined( CLIENT_DLL )
 
 //-----------------------------------------------------------------------------
