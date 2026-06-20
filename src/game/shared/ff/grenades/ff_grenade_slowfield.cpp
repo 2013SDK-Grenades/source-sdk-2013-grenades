@@ -26,7 +26,6 @@
 
 
 #ifdef GAME_DLL
-	#include "ff_entity_system.h"
 	#include "te_effect_dispatch.h"
 	#include "ai_basenpc.h"
 #else

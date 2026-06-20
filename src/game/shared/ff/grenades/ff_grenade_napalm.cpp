@@ -5,7 +5,6 @@
 #ifdef GAME_DLL
 	#include "ff_player.h"
 	#include "baseentity.h"
-	#include "ff_entity_system.h"
 	#include "te_effect_dispatch.h"
 
 	extern short g_sModelIndexFireball;
@@ -116,9 +115,7 @@ void CFFGrenadeNapalm::UpdateOnRemove( void )
 		if( pTrace->fraction != 1.0 )
 			SetLocalOrigin( pTrace->endpos + ( pTrace->plane.normal * 32 ) );
 
-		if( FFScriptRunPredicates( this, "onexplode", true ) )
-		{
-			Vector vecAbsOrigin = GetAbsOrigin();
+		Vector vecAbsOrigin = GetAbsOrigin();
 			int contents = UTIL_PointContents( vecAbsOrigin );
 
 			if( pTrace->fraction != 1.0 ) 
@@ -161,7 +158,6 @@ void CFFGrenadeNapalm::UpdateOnRemove( void )
 			Vector vecReported = pTrace->endpos;
 			CTakeDamageInfo info( this, pThrower, GetBlastForce()/4, GetAbsOrigin(), 0.0f/*m_flDamage*/, bitsDamageType, 0, &vecReported );
 			RadiusDamage( info, GetAbsOrigin(), m_DmgRadius, CLASS_NONE, NULL );
-		}
 
 		CBaseEntity *pOwner = GetOwnerEntity();
 

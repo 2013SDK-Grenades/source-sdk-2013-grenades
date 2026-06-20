@@ -22,7 +22,6 @@
 #ifdef CLIENT_DLL
 	#define CFFGrenadeMirv C_FFGrenadeMirv
 #else
-	#include "ff_entity_system.h"
 #endif
 
 #ifdef GAME_DLL

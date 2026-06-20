@@ -22,7 +22,6 @@
 	#include "ff_projectile_pipebomb.h"
 	#include "baseentity.h"
 	#include "beam_flags.h"
-	#include "ff_entity_system.h"
 	#include "te_effect_dispatch.h"
 #endif
 
@@ -72,13 +71,6 @@ PRECACHE_WEAPON_REGISTER( ff_grenade_emp );
 	//-----------------------------------------------------------------------------
 	void CFFGrenadeEmp::Explode(trace_t *pTrace, int bitsDamageType)
 	{
-		// Don't explode if in no gren area
-		if( !FFScriptRunPredicates( this, "onexplode", true ) )
-		{
-			UTIL_Remove( this );
-			return;
-		}
-
 		CEffectData data;
 		data.m_vOrigin = GetAbsOrigin();
 		data.m_flScale = 1.0f;
@@ -185,10 +177,7 @@ PRECACHE_WEAPON_REGISTER( ff_grenade_emp );
 			m_bWarned = true;
 
 			// If the grenade is in a no gren area don't do explode sound
-			if( FFScriptRunPredicates( this, "onexplode", true ) )
-			{
-				EmitSound(EMP_SOUND);
-			}
+			EmitSound(EMP_SOUND);
 		}
 	}
 #endif

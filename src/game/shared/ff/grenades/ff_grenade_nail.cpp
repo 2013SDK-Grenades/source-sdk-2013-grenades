@@ -24,7 +24,6 @@
 #include "IEffects.h"
 
 #ifdef GAME_DLL
-	#include "ff_entity_system.h"
 	#include "te_effect_dispatch.h"
 #else
 	#include "c_te_effect_dispatch.h"

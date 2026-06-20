@@ -22,7 +22,6 @@
 #ifdef CLIENT_DLL
 	#define CFFGrenadeCaltrop C_FFGrenadeCaltrop
 #else
-	#include "ff_entity_system.h"
 	#include "ff_caltrop.h"
 #endif
 

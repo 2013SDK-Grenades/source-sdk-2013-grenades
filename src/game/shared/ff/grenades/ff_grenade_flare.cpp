@@ -22,7 +22,6 @@
 #include "iefx.h"
 #else
 #include "te_effect_dispatch.h"
-#include "ff_entity_system.h"
 #include "ai_basenpc.h"
 #include "ff_player.h"
 #endif
@@ -118,12 +117,6 @@ void CFFGrenadeFlare::GrenadeThink(void)
 	{
 		if (m_vecLastPosition != GetAbsOrigin())
 		{
-			if (!FFScriptRunPredicates(this, "onexplode", true) && (gpGlobals->curtime > m_flDetonateTime))
-			{
-				UTIL_Remove(this);
-				return;
-			}
-
 			m_vecLastPosition = GetAbsOrigin();
 		}
 
