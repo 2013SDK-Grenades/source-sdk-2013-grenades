@@ -18,7 +18,6 @@
 	#include "te_effect_dispatch.h"
 	#include "ff_player.h"
 	#include "ff_utils.h"
-	#include "ff_entity_system.h"
 	#include "ff_gamerules.h"
 #else
 	#include "c_te_effect_dispatch.h"
@@ -177,15 +176,6 @@ LINK_ENTITY_TO_CLASS(grenade_ff_base, CFFGrenadeBase);
 	//-----------------------------------------------------------------------------
 	void CFFGrenadeBase::Detonate()
 	{
-#ifdef GAME_DLL
-		// Remove if not allowed by Lua 
- 		if (FFScriptRunPredicates(this, "onexplode", true) == false)
-		{
-			UTIL_Remove(this);
-			return;
-		}
-#endif
-
 		BaseClass::Detonate();
 	}
 
@@ -497,8 +487,6 @@ LINK_ENTITY_TO_CLASS(grenade_ff_base, CFFGrenadeBase);
 		if( pTrace->fraction != 1.0 )
 			SetLocalOrigin( pTrace->endpos + ( pTrace->plane.normal * 32 ) );
 
-		if( FFScriptRunPredicates( this, "onexplode", true ) )
-		{
 			Vector vecAbsOrigin = GetAbsOrigin();
 			int contents = UTIL_PointContents( vecAbsOrigin );
 
@@ -570,7 +558,6 @@ LINK_ENTITY_TO_CLASS(grenade_ff_base, CFFGrenadeBase);
 			}
 
 			EmitSound( "BaseGrenade.Explode" );
-		}
 
 		SetThink( &CBaseGrenade::SUB_Remove );
 		SetTouch( NULL );
