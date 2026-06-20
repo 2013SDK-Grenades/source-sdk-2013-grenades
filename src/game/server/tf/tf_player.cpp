@@ -20715,6 +20715,98 @@ void CTFPlayer::InputIgnitePlayer( inputdata_t &inputdata )
 	IgnitePlayer();
 }
 
+//=============================================================================
+// FF Grenade Port: implementations for the status-effect hooks declared in tf_player.h.
+// Ported from CFFPlayer's equivalents in ff_player.cpp, retargeted onto CTFPlayer.
+// HUD status-icon networking ("StatusIconUpdate" usermessage, not registered anywhere
+// in stock SDK 2013) is stripped from all of these -- deferred along with other
+// assets/scripts work. The gameplay-affecting state (timers/flags/ViewPunch) is kept.
+//=============================================================================
+
+//-----------------------------------------------------------------------------
+// Purpose: Apply the concussion effect on this player (ff_grenade_concussion.cpp)
+//-----------------------------------------------------------------------------
+void CTFPlayer::Concuss( float flDuration, float flIconDuration, const QAngle *viewjerk, float flDistance )
+{
+	if( flDuration == -1 )
+		m_flConcTime = flDuration;
+	else
+		m_flConcTime = gpGlobals->curtime + flDuration;
+
+	// don't do the effect on specs
+	if ( !IsObserver() )
+		m_bConcussed = true;
+
+	if (viewjerk)
+	{
+		const float JERKMULTI = 0.0004f;	// FF Grenade Port: was a #define in ff_player.cpp
+		ViewPunch((*viewjerk) * JERKMULTI * flDistance);
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Un-apply the concussion effect on this player
+//-----------------------------------------------------------------------------
+void CTFPlayer::UnConcuss( void )
+{
+	m_bConcussed = false;
+	m_flConcTime = gpGlobals->curtime - 1;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Gas a player (ff_grenade_gas.cpp). FF's "Hallucination" effect dispatch
+// (a clientside particle/screen effect) is also stripped -- needs a registered
+// clientside effect, same assets/scripts deferral as the status icon.
+//-----------------------------------------------------------------------------
+void CTFPlayer::Gas( float flDuration, float flIconDuration, CTFPlayer *pGasser )
+{
+	// We always want to apply gas even if they are already gassed, this way if they are
+	// killed, the last person that gassed them gets the kill.
+	m_bGassed = true;
+	m_hGasser = pGasser;
+
+	if(m_flNextGas < gpGlobals->curtime)
+		m_flNextGas = gpGlobals->curtime;
+
+	if(flDuration != -1)
+		m_flGasTime = gpGlobals->curtime + flDuration;
+	else
+		m_flGasTime = gpGlobals->curtime + 99999.0f;	// this should last a while.
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Un-Gas a player
+//-----------------------------------------------------------------------------
+void CTFPlayer::UnGas( void )
+{
+	m_bGassed = false;
+	m_hGasser = NULL;
+	m_flNextGas = 0;
+	m_flGasTime = 0;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Set a player as being "radio tagged" (ff_grenade_flare.cpp)
+//-----------------------------------------------------------------------------
+void CTFPlayer::SetRadioTagged( CTFPlayer *pWhoTaggedMe, float flStartTime, float flDuration, bool bFromLua /* = false */ )
+{
+	m_hRadioTagger = pWhoTaggedMe;
+	m_flRadioTagStartTime = flStartTime;
+	m_flRadioTagDuration = flDuration;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Grenade weapon-slot completion hook -- see the declaration comment in
+// tf_player.h for why this is needed. Modeled on hl2mp/weapon_frag.cpp's working
+// pattern: switch away once the thrown weapon empties.
+//-----------------------------------------------------------------------------
+void CTFPlayer::FinishThrowGrenade( void )
+{
+	CBaseCombatWeapon *pActiveWeapon = GetActiveWeapon();
+	if ( pActiveWeapon )
+		SwitchToNextBestWeapon( pActiveWeapon );
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------

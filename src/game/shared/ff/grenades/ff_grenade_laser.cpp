@@ -29,6 +29,11 @@
 
 #include "baseobject_shared.h"
 
+// FF Grenade Port: CFFPlayer -> CTFPlayer, since ff_player.cpp isn't being ported.
+#ifdef GAME_DLL
+	#include "tf_player.h"
+#endif
+
 #define GRENADE_BEAM_SPRITE			"sprites/plasma.spr"
 #define NAILGRENADE_MODEL			"models/grenades/nailgren/nailgren.mdl"
 
@@ -351,12 +356,12 @@ float CFFGrenadeLaser::getLengthPercent()
 				continue;
 
 			// If pTarget can take damage from nails...
-			if ( !g_pGameRules->FCanTakeDamage( pEntity, ToFFPlayer( GetOwnerEntity() ) ) )
+			if ( !g_pGameRules->FCanTakeDamage( pEntity, ToTFPlayer( GetOwnerEntity() ) ) )
 				continue;
 
 			if (pEntity->IsPlayer())
 			{
-				CFFPlayer *pPlayer = ToFFPlayer(pEntity);
+				CTFPlayer *pPlayer = ToTFPlayer(pEntity); // FF Grenade Port: CFFPlayer -> CTFPlayer
 
 				if( pPlayer && (!pPlayer->IsAlive() || pPlayer->IsObserver()) )
 					continue;
@@ -491,23 +496,23 @@ float CFFGrenadeLaser::getLengthPercent()
 		if ( pTarget->IsPlayer() || bTargetIsValidBuilding )
 		{
 			// If pTarget can take damage from nails...
-			if ( g_pGameRules->FCanTakeDamage( pTarget, ToFFPlayer( GetOwnerEntity() ) ) )
+			if ( g_pGameRules->FCanTakeDamage( pTarget, ToTFPlayer( GetOwnerEntity() ) ) )
 			{
 				if (pTarget->IsPlayer() )
 				{
-					CFFPlayer *pPlayerTarget = ToFFPlayer( pTarget );
+					CTFPlayer *pPlayerTarget = ToTFPlayer( pTarget ); // FF Grenade Port: CFFPlayer -> CTFPlayer
 					if (!pPlayerTarget)
 						return;
 					
-					pPlayerTarget->TakeDamage( CTakeDamageInfo( this, ToFFPlayer( GetOwnerEntity() ), LASERGREN_DAMAGE, DMG_ENERGYBEAM ) );
+					pPlayerTarget->TakeDamage( CTakeDamageInfo( this, ToTFPlayer( GetOwnerEntity() ), LASERGREN_DAMAGE, DMG_ENERGYBEAM ) );
 				}
 				else if( pTargetObject && pTargetObject->ObjectType() == OBJ_DISPENSER )
 				{
-					pTargetObject->TakeDamage( CTakeDamageInfo( this, ToFFPlayer( GetOwnerEntity() ), LASERGREN_DAMAGE * LASERGREN_DAMAGE_BUILDABLEMULT, DMG_ENERGYBEAM ) );
+					pTargetObject->TakeDamage( CTakeDamageInfo( this, ToTFPlayer( GetOwnerEntity() ), LASERGREN_DAMAGE * LASERGREN_DAMAGE_BUILDABLEMULT, DMG_ENERGYBEAM ) );
 				}
 				else if( pTargetObject && pTargetObject->ObjectType() == OBJ_SENTRYGUN )
 				{
-					pTargetObject->TakeDamage( CTakeDamageInfo( this, ToFFPlayer( GetOwnerEntity() ), LASERGREN_DAMAGE * LASERGREN_DAMAGE_BUILDABLEMULT, DMG_ENERGYBEAM ) );
+					pTargetObject->TakeDamage( CTakeDamageInfo( this, ToTFPlayer( GetOwnerEntity() ), LASERGREN_DAMAGE * LASERGREN_DAMAGE_BUILDABLEMULT, DMG_ENERGYBEAM ) );
 				}
 			}
 		}
@@ -562,7 +567,7 @@ float CFFGrenadeLaser::getLengthPercent()
 			trace_t tr;
 			int i;
 
-			CFFPlayer *pgrenOwner = ToFFPlayer( this->GetOwnerEntity() );
+			CTFPlayer *pgrenOwner = ToTFPlayer( this->GetOwnerEntity() ); // FF Grenade Port: CFFPlayer -> CTFPlayer
 
 			if (!pgrenOwner)
 				return;
@@ -593,14 +598,13 @@ float CFFGrenadeLaser::getLengthPercent()
 					pBeam[i]->SetBrightness( 255 );
 					if(hud_lasergren_customColor_enable.GetBool() == true)
 						pBeam[i]->SetColor( hud_lasergren_customColor_r.GetInt(), hud_lasergren_customColor_g.GetInt(), hud_lasergren_customColor_b.GetInt() );
-					else if(pgrenOwner->GetTeamNumber() == TEAM_RED)
+					// FF Grenade Port: FF's TEAM_RED/TEAM_BLUE/TEAM_GREEN/TEAM_YELLOW come from
+					// FF's own modified shareddefs.h (a 4-team system) -- undefined in our build,
+					// which uses TF2's shareddefs.h (2-team: TF_TEAM_RED/TF_TEAM_BLUE only).
+					else if(pgrenOwner->GetTeamNumber() == TF_TEAM_RED)
 						pBeam[i]->SetColor( 255, 64, 64 );
-					else if(pgrenOwner->GetTeamNumber() == TEAM_BLUE)
+					else if(pgrenOwner->GetTeamNumber() == TF_TEAM_BLUE)
 						pBeam[i]->SetColor( 64, 128, 255 );
-					else if(pgrenOwner->GetTeamNumber() == TEAM_GREEN)
-						pBeam[i]->SetColor( 153, 255, 153 );
-					else if(pgrenOwner->GetTeamNumber() == TEAM_YELLOW)
-						pBeam[i]->SetColor( 255, 178, 0 );
 					else // just in case
 						pBeam[i]->SetColor( 204, 204, 204 );
 				}

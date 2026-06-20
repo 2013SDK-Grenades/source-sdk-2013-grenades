@@ -23,6 +23,8 @@
 	#define CFFGrenadeCaltrop C_FFGrenadeCaltrop
 #else
 	#include "ff_caltrop.h"
+	// FF Grenade Port: CFFPlayer -> CTFPlayer, since ff_player.cpp isn't being ported.
+	#include "tf_player.h"
 #endif
 
 #ifdef GAME_DLL
@@ -105,7 +107,8 @@ void CFFGrenadeCaltrop::Precache()
 	//-----------------------------------------------------------------------------
 	void CFFGrenadeCaltrop::Explode(trace_t *pTrace, int bitsDamageType)
 	{
-		CFFPlayer *pOwner = ToFFPlayer( GetOwnerEntity() );
+		// FF Grenade Port: CFFPlayer -> CTFPlayer, ToFFPlayer -> ToTFPlayer.
+		CTFPlayer *pOwner = ToTFPlayer( GetOwnerEntity() );
 
 		// #0001281: Caltrops stick to crossover2 map ceiling -> Defrag
 		// the caltrops are something like 12 units big and compiled with a scale of 0.6, so they've got a clearance of ~7.2 units.  Call it 8.

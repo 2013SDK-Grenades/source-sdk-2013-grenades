@@ -15,11 +15,11 @@
 #include "ff_projectile_base.h"
 
 #ifdef GAME_DLL
-	#include "ff_player.h"
+	// FF Grenade Port: ff_player.h removed -- not actually referenced anywhere in this file.
 	#include "soundent.h"
 	#include "util.h"
 #else
-	#include "c_ff_player.h"
+	// FF Grenade Port: c_ff_player.h removed -- not actually referenced anywhere in this file.
 	#include "iinput.h"
 #endif 
 

@@ -28,6 +28,8 @@
 #ifdef GAME_DLL
 	#include "te_effect_dispatch.h"
 	#include "ai_basenpc.h"
+	// FF Grenade Port: CFFPlayer -> CTFPlayer, since ff_player.cpp isn't being ported.
+	#include "tf_player.h"
 #else
 	#include "c_te_effect_dispatch.h"
 #endif
@@ -260,7 +262,8 @@ void CFFGrenadeSlowfield::UpdateOnRemove()
 	// loop through all players
 	for(int i = 1 ; i <= gpGlobals->maxClients; i++)
 	{
-		CFFPlayer* pPlayer = ToFFPlayer(UTIL_EntityByIndex(i));
+		// FF Grenade Port: CFFPlayer -> CTFPlayer, ToFFPlayer -> ToTFPlayer.
+		CTFPlayer* pPlayer = ToTFPlayer(UTIL_EntityByIndex(i));
 
 		if( !pPlayer || pPlayer->IsObserver() )
 			continue;
@@ -269,15 +272,11 @@ void CFFGrenadeSlowfield::UpdateOnRemove()
 		{
 			pPlayer->SetLaggedMovementValue(1.0f);
 			pPlayer->SetActiveSlowfield( NULL );
-			
-			// remove status icon
-			CSingleUserRecipientFilter user( ( CBasePlayer * )pPlayer );
-			user.MakeReliable();
 
-			UserMessageBegin( user, "StatusIconUpdate" );
-				WRITE_BYTE( FF_STATUSICON_SLOWMOTION );
-				WRITE_FLOAT( 0.0f );
-			MessageEnd();
+			// FF Grenade Port: status-icon HUD networking ("StatusIconUpdate" usermessage)
+			// stripped -- isn't registered anywhere in stock SDK 2013, and HUD/UI work is
+			// being deferred along with all other assets/scripts work. The gameplay-affecting
+			// state above (lagged movement, active slowfield tracking) is unaffected.
 		}
 	}
 #endif
@@ -314,7 +313,7 @@ void CFFGrenadeSlowfield::UpdateOnRemove()
 	//-----------------------------------------------------------------------------
 	void CFFGrenadeSlowfield::Explode(trace_t *pTrace, int bitsDamageType)
 	{
-		CFFPlayer *pSlower = ToFFPlayer( GetOwnerEntity() );
+		CTFPlayer *pSlower = ToTFPlayer( GetOwnerEntity() ); // FF Grenade Port: CFFPlayer -> CTFPlayer
 		
 		if (!pSlower)
 			return;
@@ -428,8 +427,8 @@ void CFFGrenadeSlowfield::UpdateOnRemove()
 
 		for (int i=1; i<=gpGlobals->maxClients; i++)
 		{
-			CFFPlayer *pPlayer = ToFFPlayer( UTIL_PlayerByIndex(i) );
-			CFFPlayer *pSlower = ToFFPlayer( GetOwnerEntity() );
+			CTFPlayer *pPlayer = ToTFPlayer( UTIL_PlayerByIndex(i) ); // FF Grenade Port: CFFPlayer -> CTFPlayer
+			CTFPlayer *pSlower = ToTFPlayer( GetOwnerEntity() ); // FF Grenade Port: CFFPlayer -> CTFPlayer
 				
 			if( !pPlayer || pPlayer->IsObserver() || !pSlower)
 				continue;
@@ -480,14 +479,9 @@ void CFFGrenadeSlowfield::UpdateOnRemove()
 					pPlayer->SetLaggedMovementValue(flLaggedMovement);
 					pPlayer->SetActiveSlowfield( this );
 
-					// add status icon
-					CSingleUserRecipientFilter user( ( CBasePlayer * )pPlayer );
-					user.MakeReliable();
-
-					UserMessageBegin( user, "StatusIconUpdate" );
-						WRITE_BYTE( FF_STATUSICON_SLOWMOTION );
-						WRITE_FLOAT( -1.0f );
-					MessageEnd();
+					// FF Grenade Port: status-icon HUD networking stripped here (and in the
+					// matching "remove status icon" block below) -- same reasoning as
+					// UpdateOnRemove() above.
 				}
 				// else just give them an updated laggedmovement value
 				else if (pPlayer->GetActiveSlowfield() == this)
@@ -495,10 +489,13 @@ void CFFGrenadeSlowfield::UpdateOnRemove()
 					pPlayer->SetLaggedMovementValue(flLaggedMovement);
 				}
 
-				if (bArmorStrip)
-					pPlayer->m_iArmor = max(0, pPlayer->m_iArmor - ARMORSTRIP_AMOUNT);;
+				// FF Grenade Port: FF's armor-strip effect (pPlayer->m_iArmor) removed -- TF2
+				// has no armor stat at all (confirmed: not used anywhere else in the SDK), so
+				// this would be dead weight with zero gameplay effect. bArmorStrip/
+				// ARMORSTRIP_RATE/ARMORSTRIP_AMOUNT are left defined above (self-contained,
+				// no further dependencies) in case this is revisited later.
 
-				CFFPlayer *pGrenOwner = ToFFPlayer( this->GetOwnerEntity() );
+				CTFPlayer *pGrenOwner = ToTFPlayer( this->GetOwnerEntity() ); // FF Grenade Port: CFFPlayer -> CTFPlayer
 
 				bHitPlayer = true;
 	
@@ -508,14 +505,13 @@ void CFFGrenadeSlowfield::UpdateOnRemove()
 				pBeam->LiveForTime(gpGlobals->interval_per_tick);
 				pBeam->SetNoise( SLOWFIELD_BEAM_NOISE );
 				pBeam->SetBrightness( (1 - flLaggedMovement) * 128 + 128 );
-				if(pGrenOwner->GetTeamNumber() == TEAM_RED)
+				// FF Grenade Port: FF's TEAM_RED/TEAM_BLUE/TEAM_GREEN/TEAM_YELLOW come from FF's
+				// own modified shareddefs.h (4-team) -- undefined in our build, which uses TF2's
+				// shareddefs.h (2-team: TF_TEAM_RED/TF_TEAM_BLUE only).
+				if(pGrenOwner->GetTeamNumber() == TF_TEAM_RED)
 					pBeam->SetColor( 255, 64, 64 );
-				else if(pGrenOwner->GetTeamNumber() == TEAM_BLUE)
+				else if(pGrenOwner->GetTeamNumber() == TF_TEAM_BLUE)
 					pBeam->SetColor( 64, 128, 255 );
-				else if(pGrenOwner->GetTeamNumber() == TEAM_GREEN)
-					pBeam->SetColor( 153, 255, 153 );
-				else if(pGrenOwner->GetTeamNumber() == TEAM_YELLOW)
-					pBeam->SetColor( 255, 178, 0 );
 				else // just in case
 					pBeam->SetColor( 204, 204, 204 );
 				pBeam->PointsInit( vecOrigin, pPlayer->GetAbsOrigin() );
@@ -525,15 +521,6 @@ void CFFGrenadeSlowfield::UpdateOnRemove()
 			{
 				pPlayer->SetLaggedMovementValue( 1.0f );
 				pPlayer->SetActiveSlowfield( NULL );
-				
-				// remove status icon
-				CSingleUserRecipientFilter user( ( CBasePlayer * )pPlayer );
-				user.MakeReliable();
-
-				UserMessageBegin( user, "StatusIconUpdate" );
-					WRITE_BYTE( FF_STATUSICON_SLOWMOTION );
-					WRITE_FLOAT( 0.0f );
-				MessageEnd();
 			}
 		}
 

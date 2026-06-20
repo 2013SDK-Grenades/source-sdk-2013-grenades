@@ -16,12 +16,12 @@
 #ifdef GAME_DLL
 	#include "soundent.h"
 	#include "te_effect_dispatch.h"
-	#include "ff_player.h"
 	#include "ff_utils.h"
-	#include "ff_gamerules.h"
+	// FF Grenade Port: ff_player.h/c_ff_player.h removed -- not actually referenced anywhere
+	// in this file (CFFPlayer/ToFFPlayer never appear). ff_gamerules.h removed too -- see the
+	// note at the FFGameRules() call site below for why CFFGameRules isn't being ported.
 #else
 	#include "c_te_effect_dispatch.h"
-	#include "c_ff_player.h"
 	#include "ff_grenade_parse.h"
 	#include "beamdraw.h"
 	#include "cmodel.h"
@@ -549,11 +549,14 @@ LINK_ENTITY_TO_CLASS(grenade_ff_base, CFFGrenadeBase);
 					vecPushDir = Vector(0.0f, 0.0f, 0.95f);
 				}
 
-				flPushForce = FFGameRules()->GetAdjustedPushForce(flPushForce, pThrower, infoSelfDamage);
-				float flAdjustedDamage = FFGameRules()->GetAdjustedDamage(infoSelfDamage.GetDamage(), pThrower, infoSelfDamage);
-
+				// FF Grenade Port: was FFGameRules()->GetAdjustedPushForce()/GetAdjustedDamage().
+				// CFFGameRules isn't being ported -- it's a large class (similar in scope to
+				// ff_player.cpp), and these two functions specifically pull in FF's class-slot
+				// system (GetClassSlot()==CLASS_HWGUY/CLASS_ENGINEER) and FF's buildable casting
+				// (FF_ToBuildableObject), neither of which exist in this port. Using full,
+				// unadjusted force/damage instead -- no TFC-style 2/3-self-damage reduction, no
+				// class-based modifiers, no buildable-explosion special case.
 				infoSelfDamage.SetDamageForce(vecPushDir * flPushForce);
-				infoSelfDamage.SetDamage(flAdjustedDamage);
 				pThrower->TakeDamage(infoSelfDamage);
 			}
 

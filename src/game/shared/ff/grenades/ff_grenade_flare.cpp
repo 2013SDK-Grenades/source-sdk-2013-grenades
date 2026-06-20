@@ -23,7 +23,8 @@
 #else
 #include "te_effect_dispatch.h"
 #include "ai_basenpc.h"
-#include "ff_player.h"
+// FF Grenade Port: CFFPlayer -> CTFPlayer, since ff_player.cpp isn't being ported.
+#include "tf_player.h"
 #endif
 
 #define FFDEV_FLAREGRENRADIUS 125.0f
@@ -138,8 +139,9 @@ void CFFGrenadeFlare::GrenadeThink(void)
 			if (!pEntity->IsPlayer())
 				continue;
 
-			CFFPlayer* pPlayer = ToFFPlayer(pEntity);
-			CFFPlayer* pTagger = ToFFPlayer(GetOwnerEntity());
+			// FF Grenade Port: CFFPlayer -> CTFPlayer, ToFFPlayer -> ToTFPlayer.
+			CTFPlayer* pPlayer = ToTFPlayer(pEntity);
+			CTFPlayer* pTagger = ToTFPlayer(GetOwnerEntity());
 
 			if (!pPlayer || pPlayer->IsObserver() || !pTagger)
 				continue;

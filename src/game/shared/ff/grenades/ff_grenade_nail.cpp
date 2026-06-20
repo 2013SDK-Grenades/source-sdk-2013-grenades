@@ -31,6 +31,11 @@
 
 #include "baseobject_shared.h"
 
+// FF Grenade Port: CFFPlayer -> CTFPlayer, since ff_player.cpp isn't being ported.
+#ifdef GAME_DLL
+	#include "tf_player.h"
+#endif
+
 #define NAILGRENADE_MODEL "models/grenades/nailgren/nailgren.mdl"
 
 #ifdef CLIENT_DLL
@@ -78,7 +83,7 @@ class PseudoNail
 	// Purpose: Traces the hull of the nail and damages what it "hits"
 	//			Returns true if the nail hits something (whether or not it caused damage), and false otherwise
 	//-------------------------------------------------------------------------------------------------------
-		bool TraceNail( CBaseEntity * pNailOwner, CFFPlayer * pNailGrenOwner )
+		bool TraceNail( CBaseEntity * pNailOwner, CTFPlayer * pNailGrenOwner ) // FF Grenade Port: CFFPlayer -> CTFPlayer
 		{
 			if ( !pNailOwner || !pNailGrenOwner )
 				return false;
@@ -116,7 +121,7 @@ class PseudoNail
 					{
 						if (traceHit.m_pEnt->IsPlayer() )
 						{
-							CFFPlayer *pPlayerTarget = dynamic_cast< CFFPlayer* > ( pTarget );
+							CTFPlayer *pPlayerTarget = dynamic_cast< CTFPlayer* > ( pTarget ); // FF Grenade Port: CFFPlayer -> CTFPlayer
 							pPlayerTarget->TakeDamage( CTakeDamageInfo( pNailOwner, pNailGrenOwner, naildamage.GetInt(), DMG_BULLET ) );
 						}
 						else if( pNailTargetObject && pNailTargetObject->ObjectType() == OBJ_DISPENSER )
@@ -306,7 +311,7 @@ void CFFGrenadeNail::Precache()
 		for ( int i=0; i < m_NailsVector.Count(); i++)
 		{
 			// Remove a nail that hits something
-			if ( m_NailsVector[i].TraceNail( this, ToFFPlayer( GetOwnerEntity() ) ) )
+			if ( m_NailsVector[i].TraceNail( this, ToTFPlayer( GetOwnerEntity() ) ) )
 			{
 				m_NailsVector.Remove(i);
 				// Remove shifts all the vector elements forward, so we have to adjust the index or we will skip a nail

@@ -15,6 +15,10 @@
 #include "cbase.h"
 #include "ff_grenade_base.h"
 #include "ff_utils.h"
+// FF Grenade Port: CFFPlayer -> CTFPlayer, since ff_player.cpp isn't being ported.
+#ifdef GAME_DLL
+	#include "tf_player.h"
+#endif
 
 #define GASGRENADE_MODEL	"models/grenades/gas/gas.mdl"
 #define GAS_SOUND			"GasGrenade.Explode"
@@ -210,8 +214,9 @@ PRECACHE_WEAPON_REGISTER( ff_grenade_gas );
 				if( !pEntity->IsPlayer() )
 					continue;
 
-				CFFPlayer *pPlayer = ToFFPlayer( pEntity );
-				CFFPlayer *pGasser = ToFFPlayer( GetOwnerEntity() );
+				// FF Grenade Port: CFFPlayer -> CTFPlayer, ToFFPlayer -> ToTFPlayer.
+				CTFPlayer *pPlayer = ToTFPlayer( pEntity );
+				CTFPlayer *pGasser = ToTFPlayer( GetOwnerEntity() );
 
 				if( !pPlayer || pPlayer->IsObserver() || !pGasser)
 					continue;

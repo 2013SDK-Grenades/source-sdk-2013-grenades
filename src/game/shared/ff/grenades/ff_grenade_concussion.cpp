@@ -19,7 +19,8 @@
 #include "IEffects.h"
 
 #ifdef GAME_DLL
-	#include "ff_player.h"
+	// FF Grenade Port: CFFPlayer -> CTFPlayer, since ff_player.cpp isn't being ported.
+	#include "tf_player.h"
 	#include "te_effect_dispatch.h"
 #endif
 
@@ -257,7 +258,8 @@ PRECACHE_WEAPON_REGISTER(ff_grenade_concussion);
 			if (!pEntity || !pEntity->IsPlayer())
 				continue;
 
-			CFFPlayer *pPlayer = ToFFPlayer(pEntity);
+			// FF Grenade Port: CFFPlayer -> CTFPlayer, ToFFPlayer -> ToTFPlayer.
+			CTFPlayer *pPlayer = ToTFPlayer(pEntity);
 
 			if( !pPlayer->IsAlive() )// || pPlayer->IsObserver() )
 				continue;
@@ -280,7 +282,10 @@ PRECACHE_WEAPON_REGISTER(ff_grenade_concussion);
 
 				float flDuration = 10.0f;
 				float flIconDuration = flDuration;
-				if( pPlayer->LuaRunEffect( LUA_EF_CONC, pConcOwner, &flDuration, &flIconDuration ) )
+				// FF Grenade Port: was `if( pPlayer->LuaRunEffect( LUA_EF_CONC, pConcOwner,
+				// &flDuration, &flIconDuration ) )`. LuaRunEffect() was FF's Lua-scripting hook
+				// (always returns true with no scripts loaded). Lua has already been removed
+				// project-wide; stripped here too, same pattern -- body now runs unconditionally.
 				{
 					if( pPlayer == GetOwnerEntity() )
 						pPlayer->Concuss( flDuration, flIconDuration, NULL, flDistance);
@@ -293,11 +298,12 @@ PRECACHE_WEAPON_REGISTER(ff_grenade_concussion);
 						CBasePlayer* pSpec = spectators[i];
 						if ( pSpec->GetObserverTarget() == pPlayer )
 						{
-							CFFPlayer *pFFSpec = ToFFPlayer( pSpec );
-							if ( pFFSpec )
+							// FF Grenade Port: CFFPlayer -> CTFPlayer, ToFFPlayer -> ToTFPlayer.
+							CTFPlayer *pTFSpec = ToTFPlayer( pSpec );
+							if ( pTFSpec )
 							{
-								//pFFSpec->m_flConcTime = flDuration;
-								pFFSpec->Concuss( flDuration, flIconDuration, NULL, flDistance );
+								//pTFSpec->m_flConcTime = flDuration;
+								pTFSpec->Concuss( flDuration, flIconDuration, NULL, flDistance );
 							}
 						}
 					}
@@ -363,20 +369,11 @@ PRECACHE_WEAPON_REGISTER(ff_grenade_concussion);
 				vecResult = vecDisplacement;
 			}
 
-			// Jiggles: players can easily get insane speeds by using a jump pad and then concing
-#ifdef GAME_DLL
-			if ( pPlayer->m_flMancannonTime && gpGlobals->curtime < pPlayer->m_flMancannonTime + 3.0f )
-			{
-				float flPreviousVelocityZ = vecResult.z;
-				vecResult.z = 0;
-				if ( vecResult.Length() > MAX_JUMPPAD_TO_CONC_SPEED_HORIZ )
-				{
-					vecResult.NormalizeInPlace();
-					vecResult *= MAX_JUMPPAD_TO_CONC_SPEED_HORIZ;
-				}
-				vecResult.z = min(MAX_JUMPPAD_TO_CONC_SPEED_VERT, flPreviousVelocityZ);
-			}
-#endif
+			// FF Grenade Port: removed a mancannon-specific velocity clamp here ("players can
+			// easily get insane speeds by using a jump pad and then concing", checked against
+			// pPlayer->m_flMancannonTime). Mancannon isn't being ported -- same decision already
+			// made for ff_grenade_laser.cpp -- so this can never trigger meaningfully; removed
+			// rather than keeping a dead member variable around just to satisfy the check.
 			pPlayer->SetAbsVelocity(vecResult);
 
 			//AfterShock: If we ever want to play effects on whoever got hit, we can do it like this

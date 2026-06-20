@@ -19,7 +19,10 @@
 #include "IEffects.h"
 
 #ifdef GAME_DLL
-	#include "ff_projectile_pipebomb.h"
+	// FF Grenade Port: FF's own pipebomb projectile (ff_projectile_pipebomb.h) isn't being
+	// ported -- TF2 already has a real, working stickybomb/pipebomb projectile class of its
+	// own. Explode() below targets that instead (see the rewritten EMP-detection logic).
+	#include "tf_weapon_grenade_pipebomb.h"
 	#include "baseentity.h"
 	#include "beam_flags.h"
 	#include "te_effect_dispatch.h"
@@ -89,77 +92,90 @@ PRECACHE_WEAPON_REGISTER( ff_grenade_emp );
 			if( pEntity == this )
 				continue;
 
-			if( int explode = pEntity->TakeEmp() )
+			// FF Grenade Port: this used to be `if ( int explode = pEntity->TakeEmp() )`, a
+			// virtual function FF added directly to CBaseEntity (default no-op, overridden by
+			// CFFProjectileBase and CFFGrenadeBase). Rather than add that virtual to the engine's
+			// CBaseEntity, this is rewritten as explicit type checks here -- smaller footprint,
+			// and keeps the EMP-specific logic local to the one file that needs it.
+
+			// TF2's real stickybomb projectile: detonate it directly. Replaces the original
+			// CLASS_PIPEBOMB case, which called FF-specific CFFProjectilePipebomb methods
+			// (DecrementHUDCount()/DetonatePipe()) that don't exist on TF2's class.
+			CTFGrenadePipebombProjectile *pPipebomb = dynamic_cast<CTFGrenadePipebombProjectile*>( pEntity );
+			if ( pPipebomb )
 			{
-				switch( pEntity->Classify() )
-				{
-				case CLASS_PIPEBOMB:
-
-					// This will handle the pipes blowing up and setting
-					// the correct owner
-					((CFFProjectilePipebomb *)pEntity)->DecrementHUDCount();
-					((CFFProjectilePipebomb *)pEntity)->DetonatePipe(true, GetOwnerEntity());
-					break;
-
-				default:
-					// For all other projectiles or objects that return
-					// something from TakeEmp we gotta add the explosions
-					// ourselves
-
-					trace_t		tr;						
-					Vector		vecOrigin = pEntity->GetAbsOrigin();
-
-					// Traceline to check if we should do scorch marks on the floor						
-					UTIL_TraceLine( vecOrigin + Vector( 0, 0, 2.0f ), vecOrigin - Vector( 0, 0, FF_DECALTRACE_TRACE_DIST ), MASK_SHOT_HULL, pEntity, COLLISION_GROUP_NONE, &tr);
-
-					// Explode now
-					if( tr.fraction != 1.0 )
-					{
-						Vector vecNormal = tr.plane.normal;
-						surfacedata_t *pdata = physprops->GetSurfaceData( tr.surface.surfaceProps );	
-						CPASFilter filter( vecOrigin );
-
-						te->Explosion( filter, -1.0, // don't apply cl_interp delay
-							&vecOrigin,
-							!pEntity->GetWaterLevel() ? g_sModelIndexFireball : g_sModelIndexWExplosion,
-							m_DmgRadius * .03, 
-							25,
-							TE_EXPLFLAG_NONE,
-							m_DmgRadius,
-							m_flDamage,
-							&vecNormal,
-							( char )pdata->game.material );
-
-						// Normal decals since trace hit something
-						UTIL_DecalTrace( &tr, "Scorch" );
-					}
-					else
-					{
-						CPASFilter filter( vecOrigin );
-
-						te->Explosion( filter, -1.0, // don't apply cl_interp delay
-							&vecOrigin, 
-							!pEntity->GetWaterLevel() != 0 ? g_sModelIndexFireball : g_sModelIndexWExplosion,
-							m_DmgRadius * .03, 
-							25,
-							TE_EXPLFLAG_NONE,
-							m_DmgRadius,
-							m_flDamage );
-
-						// Trace hit nothing so do custom scorch mark finding
-						FF_DecalTrace( pEntity, FF_DECALTRACE_TRACE_DIST, "Scorch" );
-					}
-
-					CTakeDamageInfo info( this, GetOwnerEntity(), GetBlastForce(), pEntity->GetAbsOrigin(), explode, DMG_SHOCK, 0, &vecOrigin );
-					RadiusDamage( info, pEntity->GetAbsOrigin(), m_DmgRadius, CLASS_NONE, NULL );
-						
-					EmitSound( "BaseGrenade.Explode" );
-
-					UTIL_ScreenShake( pEntity->GetAbsOrigin(), explode, 150.0, 1.0, radius, SHAKE_START );
-
-					break;
-				}
+				pPipebomb->Detonate();
+				continue;
 			}
+
+			// Other thrown FF hand grenades (CFFGrenadeBase) are deliberately left untouched.
+			// This matches FF's own CFFGrenadeBase::TakeEmp() override -- a deliberate bug fix
+			// so EMPs don't detonate nearby thrown grenades. Must be checked before the generic
+			// CFFProjectileBase case below, since CFFGrenadeBase derives from CFFProjectileBase.
+			if ( dynamic_cast<CFFGrenadeBase*>( pEntity ) != NULL )
+				continue;
+
+			// Generic FF projectiles (e.g. the nail grenade's CFFProjectileNail nails):
+			// self-destruct, exploding for damage. Matches FF's own
+			// CFFProjectileBase::TakeEmp() override, which did `UTIL_Remove(this); return
+			// m_flDamage;` -- GetDamage() is the public accessor for that same value.
+			CFFProjectileBase *pProjectile = dynamic_cast<CFFProjectileBase*>( pEntity );
+			if ( !pProjectile )
+				continue;
+
+			int explode = (int)pProjectile->GetDamage();
+			UTIL_Remove( pProjectile );
+
+			trace_t		tr;						
+			Vector		vecOrigin = pEntity->GetAbsOrigin();
+
+			// Traceline to check if we should do scorch marks on the floor						
+			UTIL_TraceLine( vecOrigin + Vector( 0, 0, 2.0f ), vecOrigin - Vector( 0, 0, FF_DECALTRACE_TRACE_DIST ), MASK_SHOT_HULL, pEntity, COLLISION_GROUP_NONE, &tr);
+
+			// Explode now
+			if( tr.fraction != 1.0 )
+			{
+				Vector vecNormal = tr.plane.normal;
+				surfacedata_t *pdata = physprops->GetSurfaceData( tr.surface.surfaceProps );	
+				CPASFilter filter( vecOrigin );
+
+				te->Explosion( filter, -1.0, // don't apply cl_interp delay
+					&vecOrigin,
+					!pEntity->GetWaterLevel() ? g_sModelIndexFireball : g_sModelIndexWExplosion,
+					m_DmgRadius * .03, 
+					25,
+					TE_EXPLFLAG_NONE,
+					m_DmgRadius,
+					m_flDamage,
+					&vecNormal,
+					( char )pdata->game.material );
+
+				// Normal decals since trace hit something
+				UTIL_DecalTrace( &tr, "Scorch" );
+			}
+			else
+			{
+				CPASFilter filter( vecOrigin );
+
+				te->Explosion( filter, -1.0, // don't apply cl_interp delay
+					&vecOrigin, 
+					!pEntity->GetWaterLevel() != 0 ? g_sModelIndexFireball : g_sModelIndexWExplosion,
+					m_DmgRadius * .03, 
+					25,
+					TE_EXPLFLAG_NONE,
+					m_DmgRadius,
+					m_flDamage );
+
+				// Trace hit nothing so do custom scorch mark finding
+				FF_DecalTrace( pEntity, FF_DECALTRACE_TRACE_DIST, "Scorch" );
+			}
+
+			CTakeDamageInfo info( this, GetOwnerEntity(), GetBlastForce(), pEntity->GetAbsOrigin(), explode, DMG_SHOCK, 0, &vecOrigin );
+			RadiusDamage( info, pEntity->GetAbsOrigin(), m_DmgRadius, CLASS_NONE, NULL );
+				
+			EmitSound( "BaseGrenade.Explode" );
+
+			UTIL_ScreenShake( pEntity->GetAbsOrigin(), explode, 150.0, 1.0, radius, SHAKE_START );
 		}
 
 		UTIL_Remove(this);

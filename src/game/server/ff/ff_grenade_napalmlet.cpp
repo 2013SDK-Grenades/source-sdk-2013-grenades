@@ -4,7 +4,12 @@
 #include "ff_grenade_napalmlet.h"
 #include "ff_utils.h"
 
-#include "ff_player.h"
+// FF Grenade Port: CFFPlayer -> CTFPlayer. We're not porting ff_player.cpp, so this
+// pulls in TF2's own player class instead. baseobject_shared.h replaces FF's buildable
+// headers for the sentry/dispenser damage case below, same TF2-native pattern used in
+// the earlier ff_grenade_laser.cpp/ff_grenade_nail.cpp buildables rewrite.
+#include "tf_player.h"
+#include "baseobject_shared.h"
 
 //ConVar ffdev_nap_bonusdamage_burn1("ffdev_nap_bonusdamage_burn1", "0", FCVAR_REPLICATED | FCVAR_CHEAT);
 #define NAP_BONUSDAMAGE_BURN1 0 //ffdev_nap_bonusdamage_burn1.GetInt()
@@ -231,32 +236,46 @@ void CFFGrenadeNapalmlet::FlameThink()
 		if( pEntity->GetWaterLevel() >= 2 )
 			continue;
 
-		switch( pEntity->Classify() )
+		// FF Grenade Port: was switch( pEntity->Classify() ) with cases CLASS_PLAYER and
+		// CLASS_SENTRYGUN/CLASS_MANCANNON/CLASS_DISPENSER (FF's own class-ID enum, which never
+		// matches TF2's real entities). Rewritten as if/else-if: the player case still uses
+		// Classify()==CLASS_PLAYER (a stock engine value, unmodified, confirmed real), and the
+		// buildable case now uses TF2's actual ObjectType()/CBaseObject system -- same pattern
+		// as the earlier laser/nail buildables rewrite. Mancannon dropped (no TF2 equivalent
+		// exists, same decision made for ff_grenade_laser.cpp).
+		if ( pEntity->Classify() == CLASS_PLAYER )
 		{
-			case CLASS_PLAYER:
-			{
-				CFFPlayer *pPlayer = ToFFPlayer( pEntity );
-				if( !pPlayer )
-					continue;
+			// FF Grenade Port: CFFPlayer -> CTFPlayer, ToFFPlayer -> ToTFPlayer.
+			CTFPlayer *pPlayer = ToTFPlayer( pEntity );
+			if( !pPlayer )
+				continue;
 
-				if (g_pGameRules->FCanTakeDamage(pPlayer, GetOwnerEntity()))
-				{
-					int damage = BURN_STANDON_NG + CalculateBonusBurnDamage(pPlayer->GetBurnLevel());
-					pPlayer->TakeDamage( CTakeDamageInfo( this, GetOwnerEntity(), damage, DMG_BURN ) );
-					pPlayer->IncreaseBurnLevel ( FFDEV_NAPALM_BURNAMOUNT );
-				}
+			if (g_pGameRules->FCanTakeDamage(pPlayer, GetOwnerEntity()))
+			{
+				// FF Grenade Port: FF's leveled burn system (GetBurnLevel()/IncreaseBurnLevel(),
+				// 0-300 across 3 tiers) doesn't exist in TF2 and isn't being ported -- TF2 has
+				// no leveled-burn concept. CalculateBonusBurnDamage() is left in place below
+				// (unused for now) since it's self-contained FF logic with no further
+				// dependencies; only the base BURN_STANDON_NG damage is applied here.
+				int damage = BURN_STANDON_NG;
+				pPlayer->TakeDamage( CTakeDamageInfo( this, GetOwnerEntity(), damage, DMG_BURN ) );
+
+				// Ignite using TF2's own native afterburn system (CTFPlayerShared::Burn(),
+				// the same call stock TF2's CTFPlayer::IgnitePlayer() uses) instead of porting
+				// FF's burn-level tracking.
+				CTFPlayer *pTFAttacker = ToTFPlayer( GetOwnerEntity() );
+				pPlayer->m_Shared.Burn( pTFAttacker, NULL );
 			}
-			break;
-			case CLASS_SENTRYGUN:
-			case CLASS_MANCANNON://Adding napalm damage to jumppad -GreenMushy
-			case CLASS_DISPENSER:
+		}
+		else if ( pEntity->IsBaseObject() )
+		{
+			CBaseObject *pObject = dynamic_cast<CBaseObject*>( pEntity );
+			if ( pObject && ( pObject->ObjectType() == OBJ_SENTRYGUN || pObject->ObjectType() == OBJ_DISPENSER )
+				 && !pObject->IsBuilding() && !pObject->IsPlacing() )
 			{
 				if (g_pGameRules->FCanTakeDamage( pEntity, GetOwnerEntity()))
 					pEntity->TakeDamage( CTakeDamageInfo( this, GetOwnerEntity(), BURN_STANDON_NG, DMG_BURN ) );
 			}
-			
-			default:
-				break;
 		}
 	}
 

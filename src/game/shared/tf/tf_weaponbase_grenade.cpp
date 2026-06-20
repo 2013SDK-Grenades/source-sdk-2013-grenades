@@ -206,7 +206,8 @@ void CTFWeaponBaseGrenade::Throw()
 	else
 	{
 		// We're holding onto an exploding grenade
-		CTFWeaponBaseGrenadeProj *pGrenade = EmitGrenade( vecSrc, vecAngles, vecThrow, AngularImpulse( 600, random->RandomInt( -1200, 1200 ), 0 ), pPlayer, 0.0 );
+		// FF Grenade Port: CTFWeaponBaseGrenadeProj* -> CBaseGrenade*, matching the EmitGrenade() signature change.
+		CBaseGrenade *pGrenade = EmitGrenade( vecSrc, vecAngles, vecThrow, AngularImpulse( 600, random->RandomInt( -1200, 1200 ), 0 ), pPlayer, 0.0 );
 		if ( pGrenade )
 		{
 			pGrenade->Detonate();
@@ -367,7 +368,9 @@ void CTFWeaponBaseGrenade::HandleAnimEvent( animevent_t *pEvent )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-CTFWeaponBaseGrenadeProj *CTFWeaponBaseGrenade::EmitGrenade( Vector vecSrc, QAngle vecAngles, Vector vecVel, AngularImpulse angImpulse, CBasePlayer *pPlayer, float flTime, int iFlags )
+// FF Grenade Port: return type changed from CTFWeaponBaseGrenadeProj* to CBaseGrenade* --
+// see the matching note in tf_weaponbase_grenade.h.
+CBaseGrenade *CTFWeaponBaseGrenade::EmitGrenade( Vector vecSrc, QAngle vecAngles, Vector vecVel, AngularImpulse angImpulse, CBasePlayer *pPlayer, float flTime, int iFlags )
 {
 	Assert( 0 && "CBaseCSGrenade::EmitGrenade should not be called. Make sure to implement this in your subclass!\n" );
 	return NULL;

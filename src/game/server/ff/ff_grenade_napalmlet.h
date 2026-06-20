@@ -17,8 +17,6 @@
 	#define CFFGrenadeNapalmlet C_FFGrenadeNapalmlet
 #endif
 
-#include "ff_player.h"
-
 //=============================================================================
 //
 // Class CFFGrenadeNapalmlet

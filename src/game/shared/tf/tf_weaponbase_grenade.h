@@ -17,6 +17,8 @@
 #define CTFWeaponBaseGrenade C_TFWeaponBaseGrenade
 #endif
 
+class CBaseGrenade;	// FF Grenade Port: forward declaration for the EmitGrenade() return type change below
+
 //=============================================================================//
 //
 // TF Base Grenade
@@ -60,7 +62,14 @@ public:
 	virtual void			HandleAnimEvent( animevent_t *pEvent );
 
 	// Each derived grenade class implements this.
-	virtual CTFWeaponBaseGrenadeProj *EmitGrenade( Vector vecSrc, QAngle vecAngles, Vector vecVel, AngularImpulse angImpulse, CBasePlayer *pPlayer, float flTime, int iflags = 0 );
+	// FF Grenade Port: return type changed from CTFWeaponBaseGrenadeProj* to CBaseGrenade*.
+	// FF's CFFGrenadeBase chain (CFFGrenadeBase -> CFFProjectileBase -> CBaseGrenade) does NOT
+	// derive from CTFWeaponBaseGrenadeProj, so the per-grenade-type weapon subclasses we're
+	// adding can't covariant-override this with FF's real classes under the original signature.
+	// CBaseGrenade is the actual common ancestor both class chains share. The only place the
+	// return value is used (Throw(), below) just calls ->Detonate() on it, which both chains
+	// support, so this is a safe widening with no other call sites affected.
+	virtual CBaseGrenade *EmitGrenade( Vector vecSrc, QAngle vecAngles, Vector vecVel, AngularImpulse angImpulse, CBasePlayer *pPlayer, float flTime, int iflags = 0 );
 
 #endif
 

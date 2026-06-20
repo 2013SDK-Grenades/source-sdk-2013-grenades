@@ -34,6 +34,7 @@ class CTFReviveMarker;
 class CWaveSpawnPopulator;
 class CTFTauntProp;
 class CTFDroppedWeapon;
+class CFFGrenadeBase;	// FF Grenade Port: ported FF grenade projectile base (ff_grenade_base.h)
 
 extern const float tf_afterburn_max_duration;
 
@@ -566,6 +567,58 @@ public:
 	void PlayerUse( void );
 
 	void IgnitePlayer();
+
+	//=============================================================================
+	// FF Grenade Port: status-effect hooks called directly by the ported Fortress
+	// Forever grenade files (ff_grenade_concussion/gas/flare/slowfield.cpp). These
+	// were originally CFFPlayer methods; they're minimal, self-contained, and have
+	// been retargeted onto CTFPlayer since we are NOT porting ff_player.cpp/the FF
+	// player class. Server-side only (confirmed every call site in the ported
+	// grenade files is wrapped in #ifdef GAME_DLL), so no networking/client
+	// mirroring is required. HUD status-icon networking (FF's "StatusIconUpdate"
+	// usermessage) is deliberately deferred along with all other assets/scripts
+	// work -- the gameplay-affecting state (timers/flags) is preserved as-is.
+	//=============================================================================
+
+	// Concussion grenade (ff_grenade_concussion.cpp) -- ported from CFFPlayer::Concuss/UnConcuss
+	void Concuss( float flDuration, float flIconDuration, const QAngle *viewjerk, float flDistance );
+	void UnConcuss( void );
+	bool IsConcussed( void ) const { return m_bConcussed; }
+
+	// Also referenced by ff_grenade_concussion.cpp ("people who are building shouldn't be
+	// pushed around"). FF's own IsStaticBuilding() ties into its separate deployable-building
+	// system (detpacks/sentries/dispensers built via a multi-second "stand still" mechanic,
+	// distinct from TF2's instant PDA-build engineer) -- that whole system isn't being ported,
+	// it's out of scope for grenades. TF2 has no equivalent player-build-lock state, so this
+	// is a simple always-false stub: concussion grenades will always be able to push players,
+	// there's no FF building system here that would need protecting from it.
+	bool IsStaticBuilding( void ) const { return false; }
+
+	// Gas grenade (ff_grenade_gas.cpp) -- ported from CFFPlayer::Gas/UnGas
+	void Gas( float flDuration, float flIconDuration, CTFPlayer *pGasser );
+	void UnGas( void );
+	bool IsGassed( void ) const { return m_bGassed; }
+
+	// Flare grenade (ff_grenade_flare.cpp) -- ported from CFFPlayer::SetRadioTagged
+	void SetRadioTagged( CTFPlayer *pWhoTaggedMe, float flStartTime, float flDuration, bool bFromLua = false );
+
+	// Slowfield grenade (ff_grenade_slowfield.cpp) -- ported from CFFPlayer's slowfield tracking.
+	// Note: GetLaggedMovementValue()/SetLaggedMovementValue() are NOT ported -- they already
+	// exist as stock engine CBasePlayer methods (confirmed in gamemovement.cpp/player.cpp),
+	// so the slowfield grenade uses those directly without any change needed.
+	CFFGrenadeBase *GetActiveSlowfield( void ) const { return m_hActiveSlowfield.Get(); }
+	void SetActiveSlowfield( CFFGrenadeBase *pActiveSlowfield ) { m_hActiveSlowfield = pActiveSlowfield; }
+	bool IsInSlowfield( void ) const { return ( m_hActiveSlowfield != NULL ); }
+
+	// Grenade weapon-slot completion hook. This is CALLED by stock, UNMODIFIED SDK 2013's
+	// own tf_weaponbase_grenade.cpp (CTFWeaponBaseGrenade::ItemPostFrame(), see the
+	// "we've finished being holstered" branch) but is never actually DEFINED anywhere in
+	// stock SDK 2013 -- a genuine link error waiting to happen in Valve's own dormant
+	// grenade-weapon system, unrelated to FF. Modeled on the working pattern in
+	// game/shared/hl2mp/weapon_frag.cpp (SwitchToNextBestWeapon after a thrown weapon
+	// empties), which is the closest real, working hand-grenade weapon in this codebase.
+	void FinishThrowGrenade( void );
+
 	void SetCustomModel( const char *pszModel );
 	void SetCustomModelWithClassAnimations( const char *pszModel );
 	void SetCustomModelOffset( const Vector &offset );
@@ -1564,7 +1617,26 @@ private:
 	double m_dMaxHealthDrainHealthAccumulator;
 
 	bool m_bAlreadyUsedExtendFreezeThisDeath = false;
-	
+
+	//=============================================================================
+	// FF Grenade Port: backing storage for the status-effect hooks declared above.
+	// Plain (non-networked) members -- see the note at the method declarations for
+	// why no networking is needed yet.
+	//=============================================================================
+	bool	m_bConcussed = false;
+	float	m_flConcTime = 0.0f;
+
+	bool	m_bGassed = false;
+	CHandle<CTFPlayer>	m_hGasser;
+	float	m_flNextGas = 0.0f;
+	float	m_flGasTime = 0.0f;
+
+	CHandle<CTFPlayer>	m_hRadioTagger;
+	float	m_flRadioTagStartTime = 0.0f;
+	float	m_flRadioTagDuration = 0.0f;
+
+	CHandle<CFFGrenadeBase>	m_hActiveSlowfield;
+
 	// begin passtime
 public:
 	bool SayAskForBall();

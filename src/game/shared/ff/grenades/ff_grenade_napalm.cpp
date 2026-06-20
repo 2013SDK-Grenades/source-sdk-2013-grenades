@@ -3,7 +3,6 @@
 #include "ff_utils.h"
 
 #ifdef GAME_DLL
-	#include "ff_player.h"
 	#include "baseentity.h"
 	#include "te_effect_dispatch.h"
 
