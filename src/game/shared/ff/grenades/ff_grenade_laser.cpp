@@ -27,11 +27,7 @@
 	#include "c_te_effect_dispatch.h"
 #endif
 
-#include "ff_buildableobject.h"
-#include "ff_buildable_sentrygun.h"
-#include "ff_buildable_detpack.h"
-#include "ff_buildable_mancannon.h"
-#include "ff_buildable_dispenser.h"
+#include "baseobject_shared.h"
 
 #define GRENADE_BEAM_SPRITE			"sprites/plasma.spr"
 #define NAILGRENADE_MODEL			"models/grenades/nailgren/nailgren.mdl"
@@ -344,7 +340,14 @@ float CFFGrenadeLaser::getLengthPercent()
 				continue;
 
 			// only interested in players, dispensers & sentry guns
-			if ( !(pEntity->IsPlayer() || pEntity->Classify() == CLASS_DISPENSER || pEntity->Classify() == CLASS_SENTRYGUN || pEntity->Classify() == CLASS_MANCANNON) )
+			bool bIsValidBuilding = false;
+			if (pEntity->IsBaseObject())
+			{
+				CBaseObject *pCheckObject = dynamic_cast<CBaseObject*>(pEntity);
+				if (pCheckObject && (pCheckObject->ObjectType() == OBJ_DISPENSER || pCheckObject->ObjectType() == OBJ_SENTRYGUN))
+					bIsValidBuilding = true;
+			}
+			if ( !(pEntity->IsPlayer() || bIsValidBuilding) )
 				continue;
 
 			// If pTarget can take damage from nails...
@@ -358,13 +361,13 @@ float CFFGrenadeLaser::getLengthPercent()
 				if( pPlayer && (!pPlayer->IsAlive() || pPlayer->IsObserver()) )
 					continue;
 			}
-			if (FF_IsBuildableObject(pEntity))
+			if (pEntity->IsBaseObject())
 			{
 				// Is this a buildable of some sort
-				CFFBuildableObject *pBuildable = FF_ToBuildableObject(pEntity);
+				CBaseObject *pBuildable = dynamic_cast<CBaseObject*>(pEntity);
 
-				// Skip objects that are building
-				if(pBuildable && !pBuildable->IsBuilt())
+				// Skip objects that are still being built/placed
+				if(pBuildable && (pBuildable->IsBuilding() || pBuildable->IsPlacing()))
 					continue;
 			}
 
@@ -477,7 +480,15 @@ float CFFGrenadeLaser::getLengthPercent()
 			return;
 
 		// only interested in players, dispensers & sentry guns
-		if ( pTarget->IsPlayer() || pTarget->Classify() == CLASS_DISPENSER || pTarget->Classify() == CLASS_SENTRYGUN || pTarget->Classify() == CLASS_MANCANNON )
+		bool bTargetIsValidBuilding = false;
+		CBaseObject *pTargetObject = NULL;
+		if (pTarget->IsBaseObject())
+		{
+			pTargetObject = dynamic_cast<CBaseObject*>(pTarget);
+			if (pTargetObject && (pTargetObject->ObjectType() == OBJ_DISPENSER || pTargetObject->ObjectType() == OBJ_SENTRYGUN))
+				bTargetIsValidBuilding = true;
+		}
+		if ( pTarget->IsPlayer() || bTargetIsValidBuilding )
 		{
 			// If pTarget can take damage from nails...
 			if ( g_pGameRules->FCanTakeDamage( pTarget, ToFFPlayer( GetOwnerEntity() ) ) )
@@ -490,23 +501,13 @@ float CFFGrenadeLaser::getLengthPercent()
 					
 					pPlayerTarget->TakeDamage( CTakeDamageInfo( this, ToFFPlayer( GetOwnerEntity() ), LASERGREN_DAMAGE, DMG_ENERGYBEAM ) );
 				}
-				else if( FF_IsDispenser( pTarget ) )
+				else if( pTargetObject && pTargetObject->ObjectType() == OBJ_DISPENSER )
 				{
-					CFFDispenser *pDispenser = FF_ToDispenser( pTarget );
-					if( pDispenser )
-						pDispenser->TakeDamage( CTakeDamageInfo( this, ToFFPlayer( GetOwnerEntity() ), LASERGREN_DAMAGE * LASERGREN_DAMAGE_BUILDABLEMULT, DMG_ENERGYBEAM ) );
+					pTargetObject->TakeDamage( CTakeDamageInfo( this, ToFFPlayer( GetOwnerEntity() ), LASERGREN_DAMAGE * LASERGREN_DAMAGE_BUILDABLEMULT, DMG_ENERGYBEAM ) );
 				}
-				else if( FF_IsSentrygun( pTarget ) )
+				else if( pTargetObject && pTargetObject->ObjectType() == OBJ_SENTRYGUN )
 				{
-					CFFSentryGun *pSentrygun = FF_ToSentrygun( pTarget );
-					if( pSentrygun )
-						pSentrygun->TakeDamage( CTakeDamageInfo( this, ToFFPlayer( GetOwnerEntity() ), LASERGREN_DAMAGE * LASERGREN_DAMAGE_BUILDABLEMULT, DMG_ENERGYBEAM ) );
-				}
-				else /*if( FF_IsManCannon( pTarget ) )*/
-				{
-					CFFManCannon *pManCannon = FF_ToManCannon( pTarget );
-					if( pManCannon )
-						pManCannon->TakeDamage( CTakeDamageInfo( this, ToFFPlayer( GetOwnerEntity() ), LASERGREN_DAMAGE * LASERGREN_DAMAGE_BUILDABLEMULT, DMG_ENERGYBEAM ) );
+					pTargetObject->TakeDamage( CTakeDamageInfo( this, ToFFPlayer( GetOwnerEntity() ), LASERGREN_DAMAGE * LASERGREN_DAMAGE_BUILDABLEMULT, DMG_ENERGYBEAM ) );
 				}
 			}
 		}

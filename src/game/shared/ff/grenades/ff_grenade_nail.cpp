@@ -29,11 +29,7 @@
 	#include "c_te_effect_dispatch.h"
 #endif
 
-#include "ff_buildableobject.h"
-#include "ff_buildable_sentrygun.h"
-#include "ff_buildable_detpack.h"
-#include "ff_buildable_mancannon.h"
-#include "ff_buildable_dispenser.h"
+#include "baseobject_shared.h"
 
 #define NAILGRENADE_MODEL "models/grenades/nailgren/nailgren.mdl"
 
@@ -105,7 +101,15 @@ class PseudoNail
 				CBaseEntity *pTarget = traceHit.m_pEnt;
 				
 				// only interested in players, dispensers & sentry guns
-				if ( pTarget->IsPlayer() || pTarget->Classify() == CLASS_DISPENSER || pTarget->Classify() == CLASS_SENTRYGUN )
+				bool bNailTargetIsValidBuilding = false;
+				CBaseObject *pNailTargetObject = NULL;
+				if (pTarget->IsBaseObject())
+				{
+					pNailTargetObject = dynamic_cast<CBaseObject*>(pTarget);
+					if (pNailTargetObject && (pNailTargetObject->ObjectType() == OBJ_DISPENSER || pNailTargetObject->ObjectType() == OBJ_SENTRYGUN))
+						bNailTargetIsValidBuilding = true;
+				}
+				if ( pTarget->IsPlayer() || bNailTargetIsValidBuilding )
 				{
 					// If pTarget can take damage from nails...
 					if ( g_pGameRules->FCanTakeDamage( pTarget, pNailGrenOwner ) )
@@ -115,17 +119,13 @@ class PseudoNail
 							CFFPlayer *pPlayerTarget = dynamic_cast< CFFPlayer* > ( pTarget );
 							pPlayerTarget->TakeDamage( CTakeDamageInfo( pNailOwner, pNailGrenOwner, naildamage.GetInt(), DMG_BULLET ) );
 						}
-						else if( FF_IsDispenser( pTarget ) )
+						else if( pNailTargetObject && pNailTargetObject->ObjectType() == OBJ_DISPENSER )
 						{
-							CFFDispenser *pDispenser = FF_ToDispenser( pTarget );
-							if( pDispenser )
-								pDispenser->TakeDamage( CTakeDamageInfo( pNailOwner, pNailGrenOwner, naildamage.GetInt() + 2, DMG_BULLET ) );
+							pNailTargetObject->TakeDamage( CTakeDamageInfo( pNailOwner, pNailGrenOwner, naildamage.GetInt() + 2, DMG_BULLET ) );
 						}
-						else /*if( FF_IsSentrygun( pTarget ) )*/
+						else if( pNailTargetObject && pNailTargetObject->ObjectType() == OBJ_SENTRYGUN )
 						{
-							CFFSentryGun *pSentrygun = FF_ToSentrygun( pTarget );
-							if( pSentrygun )
-								pSentrygun->TakeDamage( CTakeDamageInfo( pNailOwner, pNailGrenOwner, naildamage.GetInt() + 2, DMG_BULLET ) );
+							pNailTargetObject->TakeDamage( CTakeDamageInfo( pNailOwner, pNailGrenOwner, naildamage.GetInt() + 2, DMG_BULLET ) );
 						}
 					}
 				}
