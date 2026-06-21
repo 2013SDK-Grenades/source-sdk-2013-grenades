@@ -10,7 +10,6 @@
 #endif
 
 #include "tf_weaponbase_grenade.h"
-#include "tf_weaponbase_grenadeproj.h"
 
 // Client specific.
 #ifdef CLIENT_DLL
@@ -39,39 +38,16 @@ public:
 
 	DECLARE_DATADESC();
 
-	virtual CTFWeaponBaseGrenadeProj *EmitGrenade( Vector vecSrc, QAngle vecAngles, Vector vecVel, AngularImpulse angImpulse, CBasePlayer *pPlayer, float flTime, int iflags = 0 );
+	// FF Grenade Port: return type CBaseGrenade* (was CTFWeaponBaseGrenadeProj*). Spawns
+	// FF's real CFFGrenadeNapalm ("ff_grenade_napalm") instead of the native TF2
+	// projectile class this file used to define below (now removed -- unused dead code,
+	// replaced by FF's real, already-ported implementation, which spawns its own
+	// CFFGrenadeNapalmlet sub-entities on detonation).
+	virtual CBaseGrenade *EmitGrenade( Vector vecSrc, QAngle vecAngles, Vector vecVel, AngularImpulse angImpulse, CBasePlayer *pPlayer, float flTime, int iflags = 0 );
 
 #endif
 
 	CTFGrenadeNapalm( const CTFGrenadeNapalm & ) {}
 };
-
-//=============================================================================
-//
-// TF Napalm Grenade Projectile (Server specific.)
-//
-#ifdef GAME_DLL
-
-class CTFGrenadeNapalmProjectile : public CTFWeaponBaseGrenadeProj
-{
-public:
-
-	DECLARE_CLASS( CTFGrenadeNapalmProjectile, CTFWeaponBaseGrenadeProj );
-
-	// Unique identifier.
-	virtual int			GetWeaponID( void ) const			{ return TF_WEAPON_GRENADE_NAPALM; }
-
-	// Creation.
-	static CTFGrenadeNapalmProjectile *Create( const Vector &position, const QAngle &angles, const Vector &velocity, 
-		                                       const AngularImpulse &angVelocity, CBaseCombatCharacter *pOwner, const CTFWeaponInfo &weaponInfo, float timer, int iFlags = 0 );
-
-	// Overrides.
-	virtual void	Spawn();
-	virtual void	Precache();
-	virtual void	BounceSound( void );
-	virtual void	Detonate();
-};
-
-#endif
 
 #endif // TF_WEAPON_GRENADE_NAPALM_H

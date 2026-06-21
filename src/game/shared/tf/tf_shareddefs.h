@@ -515,6 +515,14 @@ enum ETFWeaponType
 	TF_WEAPON_GRENADE_JAR_GAS,
 	TF_WEAPON_FLAME_BALL,
 
+	// FF Grenade Port: FF's flare/laser/slowfield grenades have no stock TF2 equivalent
+	// (unlike the other 8 grenade types, which reused existing TF_WEAPON_GRENADE_* values
+	// above). Appended here, not inserted near the other TF_WEAPON_GRENADE_* entries above,
+	// per this enum's own "ADD NEW WEAPONS HERE" convention just below -- inserting in the
+	// middle would shift every subsequent value's underlying integer.
+	TF_WEAPON_GRENADE_FLARE,
+	TF_WEAPON_GRENADE_LASER,
+	TF_WEAPON_GRENADE_SLOWFIELD,
 
 	//
 	// ADD NEW WEAPONS HERE TO AVOID BREAKING DEMOS

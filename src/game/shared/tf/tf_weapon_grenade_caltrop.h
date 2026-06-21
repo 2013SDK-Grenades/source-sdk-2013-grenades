@@ -10,12 +10,10 @@
 #endif
 
 #include "tf_weaponbase_grenade.h"
-#include "tf_weaponbase_grenadeproj.h"
 
 // Client specific.
 #ifdef CLIENT_DLL
 #define CTFGrenadeCaltrop C_TFGrenadeCaltrop
-#define CTFGrenadeCaltropProjectile C_TFGrenadeCaltropProjectile
 #endif
 
 //=============================================================================
@@ -41,46 +39,15 @@ public:
 
 	DECLARE_DATADESC();
 
-	virtual CTFWeaponBaseGrenadeProj *EmitGrenade( Vector vecSrc, QAngle vecAngles, Vector vecVel, AngularImpulse angImpulse, CBasePlayer *pPlayer, float flTime, int iflags = 0 );
+	// FF Grenade Port: return type CBaseGrenade* (was CTFWeaponBaseGrenadeProj*). Spawns
+	// FF's real CFFGrenadeCaltrop ("ff_grenade_caltrop") instead of the native TF2
+	// projectile class this file used to define below (now removed -- unused dead code,
+	// replaced by FF's real, already-ported implementation).
+	virtual CBaseGrenade *EmitGrenade( Vector vecSrc, QAngle vecAngles, Vector vecVel, AngularImpulse angImpulse, CBasePlayer *pPlayer, float flTime, int iflags = 0 );
 
 #endif
 
 	CTFGrenadeCaltrop( const CTFGrenadeCaltrop & ) {}
-};
-
-//=============================================================================
-//
-// TF Caltrop Grenade Projectile (Server specific.)
-//
-class CTFGrenadeCaltropProjectile : public CTFWeaponBaseGrenadeProj
-{
-public:
-	DECLARE_CLASS( CTFGrenadeCaltropProjectile, CTFWeaponBaseGrenadeProj );
-	DECLARE_NETWORKCLASS();
-
-	// Unique identifier.
-	virtual int			GetWeaponID( void ) const			{ return TF_WEAPON_GRENADE_CALTROP; }
-
-#ifdef GAME_DLL
-	// Creation.
-	static CTFGrenadeCaltropProjectile *Create( const Vector &position, const QAngle &angles, const Vector &velocity, 
-		                                       const AngularImpulse &angVelocity, CBaseCombatCharacter *pOwner, const CTFWeaponInfo &weaponInfo, float timer, int iFlags = 0 );
-	// Overrides.
-	virtual void	Spawn();
-	virtual void	Precache();
-	virtual void	BounceSound( void );
-	virtual void	Detonate();
-#endif
-
-	virtual void	Touch( CBaseEntity *pOther );
-
-#ifdef CLIENT_DLL
-	virtual void	OnDataChanged(DataUpdateType_t updateType);
-#endif
-
-private:
-
-	float m_flDetonateTime;
 };
 
 #endif // TF_WEAPON_GRENADE_CALTROP_H

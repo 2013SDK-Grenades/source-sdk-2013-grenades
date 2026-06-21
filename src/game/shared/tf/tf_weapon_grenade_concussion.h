@@ -10,7 +10,6 @@
 #endif
 
 #include "tf_weaponbase_grenade.h"
-#include "tf_weaponbase_grenadeproj.h"
 
 // Client specific.
 #ifdef CLIENT_DLL
@@ -39,44 +38,18 @@ public:
 
 	DECLARE_DATADESC();
 
-	virtual CTFWeaponBaseGrenadeProj *EmitGrenade( Vector vecSrc, QAngle vecAngles, Vector vecVel, AngularImpulse angImpulse, CBasePlayer *pPlayer, float flTime, int iflags = 0 );
+	// FF Grenade Port: return type CBaseGrenade* (was CTFWeaponBaseGrenadeProj*) -- see the
+	// note on the base class declaration in tf_weaponbase_grenade.h. Spawns FF's real
+	// CFFGrenadeConcussion ("ff_grenade_concussion") instead of the stock projectile class
+	// this file used to define below (now removed -- it was dead code: this dormant system's
+	// CTFGrenadeConcussionProjectile::Explode() called pTestPlayer->m_Shared.Concussion(),
+	// a function that's declared nowhere in stock SDK 2013, so it could never have compiled
+	// as shipped here).
+	virtual CBaseGrenade *EmitGrenade( Vector vecSrc, QAngle vecAngles, Vector vecVel, AngularImpulse angImpulse, CBasePlayer *pPlayer, float flTime, int iflags = 0 );
 
 #endif
 
 	CTFGrenadeConcussion( const CTFGrenadeConcussion & ) {}
 };
-
-//=============================================================================
-//
-// TF Concussion Grenade Projectile (Server specific.)
-//
-#ifdef GAME_DLL
-
-class CTFGrenadeConcussionProjectile : public CTFWeaponBaseGrenadeProj
-{
-public:
-
-	DECLARE_CLASS( CTFGrenadeConcussionProjectile, CTFWeaponBaseGrenadeProj );
-
-	// Unique identifier.
-	virtual int			GetWeaponID( void ) const			{ return TF_WEAPON_GRENADE_CONCUSSION; }
-
-	// Creation.
-	static CTFGrenadeConcussionProjectile *Create( const Vector &position, const QAngle &angles, const Vector &velocity, 
-		                                       const AngularImpulse &angVelocity, CBaseCombatCharacter *pOwner, const CTFWeaponInfo &weaponInfo, float timer, int iFlags = 0 );
-
-	// Overrides.
-	virtual void	Spawn();
-	virtual void	Precache();
-	virtual void	BounceSound( void );
-	virtual void	Explode( trace_t *pTrace, int bitsDamageType );
-	virtual void	Detonate();
-
-private:
-
-	float m_flDetonateTime;
-};
-
-#endif
 
 #endif // TF_WEAPON_GRENADE_CONCUSSION_H

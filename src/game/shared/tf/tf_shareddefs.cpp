@@ -709,6 +709,13 @@ const char *g_aWeaponNames[] =
 	"TF_WEAPON_GRENADE_JAR_GAS",
 	"TF_WEPON_FLAME_BALL",
 
+	// FF Grenade Port: matching the 3 new TF_WEAPON_GRENADE_* enum values added in
+	// tf_shareddefs.h -- this array's size is tied to TF_WEAPON_COUNT by a
+	// COMPILE_TIME_ASSERT below, so these are required, not optional.
+	"TF_WEAPON_GRENADE_FLARE",
+	"TF_WEAPON_GRENADE_LASER",
+	"TF_WEAPON_GRENADE_SLOWFIELD",
+
 };
 COMPILE_TIME_ASSERT( ARRAYSIZE( g_aWeaponNames ) == TF_WEAPON_COUNT );
 
@@ -824,6 +831,14 @@ int g_aWeaponDamageTypes[] =
 	DMG_GENERIC, // TF_WEAPON_JAR_GAS
 	DMG_GENERIC, // TF_WEAPON_GRENADE_JAR_GAS
 	DMG_GENERIC | DMG_PREVENT_PHYSICS_FORCE, // TF_WEAPON_FLAME_BALL
+
+	// FF Grenade Port: matching the 3 new TF_WEAPON_GRENADE_* enum values. Damage types
+	// taken from each grenade's own real Explode()/TakeDamage() calls (already ported,
+	// see ff_grenade_flare.cpp/ff_grenade_laser.cpp/ff_grenade_slowfield.cpp) -- verified
+	// by checking each file directly, not guessed.
+	DMG_GENERIC, // TF_WEAPON_GRENADE_FLARE (verified: flare deals no direct damage at all -- tags players only)
+	DMG_ENERGYBEAM, // TF_WEAPON_GRENADE_LASER (verified: ff_grenade_laser.cpp's TakeDamage calls use DMG_ENERGYBEAM)
+	DMG_GENERIC, // TF_WEAPON_GRENADE_SLOWFIELD (verified: no direct damage -- slow/movement effect only)
 
 };
 

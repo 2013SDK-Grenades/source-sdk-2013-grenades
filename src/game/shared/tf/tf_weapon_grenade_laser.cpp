@@ -1,6 +1,8 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: TF Normal Grenade.
+// Purpose: TF Laser Grenade.
+//
+// FF Grenade Port: new file -- see tf_weapon_grenade_laser.h for context.
 //
 //=============================================================================//
 #include "cbase.h"
@@ -8,7 +10,7 @@
 #include "tf_gamerules.h"
 #include "npcevent.h"
 #include "engine/IEngineSound.h"
-#include "tf_weapon_grenade_normal.h"
+#include "tf_weapon_grenade_laser.h"
 
 // Server specific.
 #ifdef GAME_DLL
@@ -16,59 +18,45 @@
 #include "items.h"
 #include "soundent.h"
 #include "KeyValues.h"
-// FF Grenade Port: spawns FF's real CFFGrenadeNormal instead of a native TF2 projectile
-// (see EmitGrenade() below).
 #include "ff_grenade_base.h"
 #endif
 
-#define GRENADE_TIMER	3.0f //Seconds
-
 //=============================================================================
 //
-// TF Normal Grenade tables.
+// TF Laser Grenade tables.
 //
 
-IMPLEMENT_NETWORKCLASS_ALIASED( TFGrenadeNormal, DT_TFGrenadeNormal )
+IMPLEMENT_NETWORKCLASS_ALIASED( TFGrenadeLaser, DT_TFGrenadeLaser )
 
-BEGIN_NETWORK_TABLE( CTFGrenadeNormal, DT_TFGrenadeNormal )
+BEGIN_NETWORK_TABLE( CTFGrenadeLaser, DT_TFGrenadeLaser )
 END_NETWORK_TABLE()
 
-BEGIN_PREDICTION_DATA( CTFGrenadeNormal )
+BEGIN_PREDICTION_DATA( CTFGrenadeLaser )
 END_PREDICTION_DATA()
 
-LINK_ENTITY_TO_CLASS( tf_weapon_grenade_normal, CTFGrenadeNormal );
-PRECACHE_WEAPON_REGISTER( tf_weapon_grenade_normal );
-
-//IMPLEMENT_ACTTABLE( CTFGrenadeNormal );
+LINK_ENTITY_TO_CLASS( tf_weapon_grenade_laser, CTFGrenadeLaser );
+PRECACHE_WEAPON_REGISTER( tf_weapon_grenade_laser );
 
 //=============================================================================
 //
-// TF Normal Grenade functions.
+// TF Laser Grenade functions.
 //
 
 // Server specific.
 #ifdef GAME_DLL
 
-BEGIN_DATADESC( CTFGrenadeNormal )
+BEGIN_DATADESC( CTFGrenadeLaser )
 END_DATADESC()
 
 //-----------------------------------------------------------------------------
-// Purpose: Spawns FF's real CFFGrenadeNormal ("ff_grenade_normal") entity. Same spawn
+// Purpose: Spawns FF's real CFFGrenadeLaser ("ff_grenade_laser") entity. Same spawn
 // pattern as the other ported grenades -- see tf_weapon_grenade_concussion.cpp for
-// the detailed rationale. Keeps this dormant file's RemoveDisguise() call -- real,
-// native TF2 spy-balance logic (throwing a grenade breaks disguise), unrelated to FF,
-// harmless and worth keeping.
+// the detailed rationale.
 //-----------------------------------------------------------------------------
-CBaseGrenade *CTFGrenadeNormal::EmitGrenade( Vector vecSrc, QAngle vecAngles, Vector vecVel, 
+CBaseGrenade *CTFGrenadeLaser::EmitGrenade( Vector vecSrc, QAngle vecAngles, Vector vecVel, 
 					        AngularImpulse angImpulse, CBasePlayer *pPlayer, float flTime, int iflags )
 {
-	CTFPlayer *pTFPlayer = ToTFPlayer( pPlayer );
-	if ( pTFPlayer )
-	{
-		pTFPlayer->RemoveDisguise();
-	}
-
-	CFFGrenadeBase *pGrenade = (CFFGrenadeBase *)CreateEntityByName( "ff_grenade_normal" );
+	CFFGrenadeBase *pGrenade = (CFFGrenadeBase *)CreateEntityByName( "ff_grenade_laser" );
 	if ( !pGrenade )
 		return NULL;
 

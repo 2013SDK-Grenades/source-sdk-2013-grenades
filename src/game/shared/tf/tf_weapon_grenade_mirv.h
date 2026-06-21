@@ -10,7 +10,6 @@
 #endif
 
 #include "tf_weaponbase_grenade.h"
-#include "tf_weaponbase_grenadeproj.h"
 
 // Client specific.
 #ifdef CLIENT_DLL
@@ -40,14 +39,24 @@ public:
 
 	DECLARE_DATADESC();
 
-	virtual CTFWeaponBaseGrenadeProj *EmitGrenade( Vector vecSrc, QAngle vecAngles, Vector vecVel, AngularImpulse angImpulse, CBasePlayer *pPlayer, float flTime, int iflags = 0 );
+	// FF Grenade Port: return type CBaseGrenade* (was CTFWeaponBaseGrenadeProj*). Spawns
+	// FF's real CFFGrenadeMirv ("ff_grenade_mirv") instead of the native TF2 projectile +
+	// "bomb" submunition pair this file used to define below (now removed -- unused dead
+	// code, replaced by FF's real, already-ported implementation, which spawns its own
+	// CFFGrenadeMirvlet sub-entities on detonation -- confirmed by reading
+	// ff_grenade_mirv.cpp directly, same two-stage pattern as napalm/napalmlet).
+	virtual CBaseGrenade *EmitGrenade( Vector vecSrc, QAngle vecAngles, Vector vecVel, AngularImpulse angImpulse, CBasePlayer *pPlayer, float flTime, int iflags = 0 );
 
 #endif
 
 	CTFGrenadeMirv( const CTFGrenadeMirv & ) {}
 };
 
-// Demoman version calls different models
+// Demoman version calls different models. FF Grenade Port: kept as-is -- trivial,
+// harmless, inherits EmitGrenade() from CTFGrenadeMirv unchanged. FF doesn't have a
+// class-specific mirv variant, but this costs nothing to keep around for whenever
+// per-class loadout/cosmetic assignment is set up later (deferred along with other
+// assets/scripts work).
 class CTFGrenadeMirv_Demoman : public CTFGrenadeMirv
 {
 public:
@@ -57,58 +66,5 @@ public:
 
 	virtual int		GetWeaponID( void ) const		{ return TF_WEAPON_GRENADE_MIRV_DEMOMAN; }
 };
-
-//=============================================================================
-//
-// TF Mirv Grenade Projectile and Bombs (Server specific.)
-//
-#ifdef GAME_DLL
-
-class CTFGrenadeMirvProjectile : public CTFWeaponBaseGrenadeProj
-{
-public:
-
-	DECLARE_CLASS( CTFGrenadeMirvProjectile, CTFWeaponBaseGrenadeProj );
-
-	// Unique identifier.
-	virtual int			GetWeaponID( void ) const			{ return TF_WEAPON_GRENADE_MIRV; }
-
-	// Creation.
-	static CTFGrenadeMirvProjectile *Create( const Vector &position, const QAngle &angles, const Vector &velocity, 
-		                                     const AngularImpulse &angVelocity, CBaseCombatCharacter *pOwner, const CTFWeaponInfo &weaponInfo, float timer, int iFlags = 0 );
-
-	// Overrides.
-	virtual void	Spawn();
-	virtual void	Precache();
-	virtual void	BounceSound( void );
-	virtual void	Detonate();
-	virtual void	Explode( trace_t *pTrace, int bitsDamageType );
-	void			DetonateThink( void );
-
-	DECLARE_DATADESC();
-
-private:
-
-	bool			m_bPlayedLeadIn;
-};
-
-class CTFGrenadeMirvBomb : public CTFWeaponBaseGrenadeProj
-{
-public:
-
-	DECLARE_CLASS( CTFGrenadeMirvBomb, CTFWeaponBaseGrenadeProj );
-
-	// Creation.
-	static CTFGrenadeMirvBomb *Create( const Vector &position, const QAngle &angles, const Vector &velocity, 
-		                               const AngularImpulse &angVelocity, CBaseCombatCharacter *pOwner, float timer );
-
-	virtual int			GetWeaponID( void ) const			{ return TF_WEAPON_GRENADE_MIRVBOMB; }
-
-	virtual void	Spawn();
-	virtual void	Precache();
-	virtual void	BounceSound( void );
-};
-
-#endif
 
 #endif // TF_WEAPON_GRENADE_MIRV_H

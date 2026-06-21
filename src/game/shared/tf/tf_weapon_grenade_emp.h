@@ -10,7 +10,6 @@
 #endif
 
 #include "tf_weaponbase_grenade.h"
-#include "tf_weaponbase_grenadeproj.h"
 
 // Client specific.
 #ifdef CLIENT_DLL
@@ -40,46 +39,16 @@ public:
 
 	DECLARE_DATADESC();
 
-	virtual CTFWeaponBaseGrenadeProj *EmitGrenade( Vector vecSrc, QAngle vecAngles, Vector vecVel, AngularImpulse angImpulse, CBasePlayer *pPlayer, float flTime, int iflags = 0 );
+	// FF Grenade Port: return type CBaseGrenade* (was CTFWeaponBaseGrenadeProj*). Spawns
+	// FF's real CFFGrenadeEmp ("ff_grenade_emp") instead of the native TF2 projectile
+	// class this file used to define below (now removed -- unused dead code, replaced by
+	// FF's real, already-ported and rewritten implementation -- see ff_grenade_emp.cpp,
+	// patched in an earlier batch to detonate TF2's real stickybombs).
+	virtual CBaseGrenade *EmitGrenade( Vector vecSrc, QAngle vecAngles, Vector vecVel, AngularImpulse angImpulse, CBasePlayer *pPlayer, float flTime, int iflags = 0 );
 
 #endif
 
 	CTFGrenadeEmp( const CTFGrenadeEmp & ) {}
 };
-
-//=============================================================================
-//
-// TF Emp Grenade Projectile (Server specific.)
-//
-#ifdef GAME_DLL
-
-class CTFGrenadeEmpProjectile : public CTFWeaponBaseGrenadeProj
-{
-public:
-
-	DECLARE_CLASS( CTFGrenadeEmpProjectile, CTFWeaponBaseGrenadeProj );
-
-	// Unique identifier.
-	virtual int			GetWeaponID( void ) const			{ return TF_WEAPON_GRENADE_EMP; }
-
-	// Creation.
-	static CTFGrenadeEmpProjectile *Create( const Vector &position, const QAngle &angles, const Vector &velocity, 
-		                                       const AngularImpulse &angVelocity, CBaseCombatCharacter *pOwner, const CTFWeaponInfo &weaponInfo, float timer, int iFlags = 0 );
-
-	// Overrides.
-	virtual void	Spawn();
-	virtual void	Precache();
-	virtual void	BounceSound( void );
-	virtual void	Detonate();
-	void			DetonateThink( void );
-
-	DECLARE_DATADESC();
-
-private:
-
-	bool			m_bPlayedLeadIn;
-};
-
-#endif
 
 #endif // TF_WEAPON_GRENADE_EMP_H
