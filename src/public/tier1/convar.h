@@ -376,6 +376,12 @@ public:
 	const char					*GetDefault( void ) const;
 	void						SetDefault( const char *pszDefault );
 
+	// Added from Open Fortress (via PF2C port): setter counterparts to GetMin/GetMax.
+	void						SetMin( float min );
+	void						SetMax( float max );
+	void						SetFlags( int flags );
+	void						Nuke( void );
+
 	// True if it has a min/max competitive setting
 	bool						GetCompMin( float& minVal ) const;
 	bool						GetCompMax( float& maxVal ) const;
@@ -451,6 +457,42 @@ private:
 	bool						m_bCompetitiveRestrictions;
 };
 
+
+//-----------------------------------------------------------------------------
+// PF2C port (Open Fortress): set a convar's min bound
+//-----------------------------------------------------------------------------
+FORCEINLINE_CVAR void ConVar::SetMin( float min )
+{
+	m_pParent->m_bHasMin = true;
+	m_pParent->m_fMinVal = min;
+}
+
+//-----------------------------------------------------------------------------
+// PF2C port (Open Fortress): set a convar's max bound
+//-----------------------------------------------------------------------------
+FORCEINLINE_CVAR void ConVar::SetMax( float max )
+{
+	m_pParent->m_bHasMax = true;
+	m_pParent->m_fMaxVal = max;
+}
+
+//-----------------------------------------------------------------------------
+// PF2C port (Open Fortress): override convar flags
+//-----------------------------------------------------------------------------
+FORCEINLINE_CVAR void ConVar::SetFlags( int flags )
+{
+	m_pParent->m_nFlags = flags;
+	m_nFlags = flags;
+}
+
+//-----------------------------------------------------------------------------
+// PF2C port (Open Fortress): shut down this convar and its parent
+//-----------------------------------------------------------------------------
+FORCEINLINE_CVAR void ConVar::Nuke( void )
+{
+	m_pParent->Shutdown();
+	Shutdown();
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: Return ConVar value as a float
