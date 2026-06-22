@@ -714,7 +714,7 @@ TF_Gamestats_RoundStats_t* CTFGameStats::GetRoundStatsForTeam( int iTeamNumber )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CTFGameStats::Event_PlayerHealedOther( CTFPlayer *pPlayer, float amount ) 
+void CTFGameStats::Event_PlayerHealedOther( CTFPlayer *pPlayer, float amount, bool bMedigun /*=true*/ )
 {
 	// make sure value is sane
 	int iAmount = (int) amount;
@@ -726,6 +726,12 @@ void CTFGameStats::Event_PlayerHealedOther( CTFPlayer *pPlayer, float amount )
 		return;
 	}
 	IncrementStat( pPlayer, TFSTAT_HEALING, (int) amount );
+
+	// PF2C port: track non-medigun healing (e.g. Heal grenade) separately.
+	if ( !bMedigun )
+	{
+		IncrementStat( pPlayer, TFSTAT_HEALING_OTHER, (int) amount );
+	}
 
 	TF_Gamestats_RoundStats_t* round = GetRoundStatsForTeam( pPlayer->GetTeamNumber() );
 	if ( round )

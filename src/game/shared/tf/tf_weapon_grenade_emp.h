@@ -71,6 +71,8 @@ public:
 	virtual void	Precache();
 	virtual void	BounceSound( void );
 	virtual void	Detonate();
+
+	void			EMPBeam(CBaseEntity *pEntity);
 	void			DetonateThink( void );
 
 	DECLARE_DATADESC();

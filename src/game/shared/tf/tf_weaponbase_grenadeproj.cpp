@@ -35,6 +35,7 @@
 #ifdef GAME_DLL
 BEGIN_DATADESC( CTFWeaponBaseGrenadeProj )
 DEFINE_THINKFUNC( DetonateThink ),
+DEFINE_THINKFUNC( BeepThink ),		// PF2C port
 END_DATADESC()
 
 
@@ -199,6 +200,27 @@ void CTFWeaponBaseGrenadeProj::OnDataChanged( DataUpdateType_t type )
 }
 
 //=============================================================================
+// PF2C port: team-colored particle name getters for grenade trail/pulse/final-pulse effects.
+// These are called by BeepThink (on the projectile, scheduled by the weapon class).
+//=============================================================================
+ConVar tf_grenade_show_radius_time( "tf_grenade_show_radius_time", "5.0", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY, "Time to show grenade radius" );
+
+const char *CTFWeaponBaseGrenadeProj::GetTrailParticleName( void )
+{
+	return ( GetTeamNumber() == TF_TEAM_BLUE ) ? "stickybombtrail_blue" : "stickybombtrail_red";
+}
+
+const char *CTFWeaponBaseGrenadeProj::GetPulseParticleName( void )
+{
+	return ( GetTeamNumber() == TF_TEAM_BLUE ) ? "nadepulse_blue" : "nadepulse_red";
+}
+
+const char *CTFWeaponBaseGrenadeProj::GetFinalPulseParticleName( void )
+{
+	return ( GetTeamNumber() == TF_TEAM_BLUE ) ? "nadepulse_final_blue" : "nadepulse_final_red";
+}
+
+//=============================================================================
 //
 // Server specific functions.
 //
@@ -217,6 +239,21 @@ CTFWeaponBaseGrenadeProj *CTFWeaponBaseGrenadeProj::Create( const char *szName, 
 		pGrenade->InitGrenade( velocity, angVelocity, pOwner, weaponInfo );
 	}
 
+	return pGrenade;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: PF2C port -- timer overload used by every in-scope grenade type.
+//-----------------------------------------------------------------------------
+CTFWeaponBaseGrenadeProj *CTFWeaponBaseGrenadeProj::Create( const char *szName, const Vector &position, const QAngle &angles,
+													   const Vector &velocity, const AngularImpulse &angVelocity,
+													   CBaseCombatCharacter *pOwner, const CTFWeaponInfo &weaponInfo, float timer, int iFlags )
+{
+	CTFWeaponBaseGrenadeProj *pGrenade = Create( szName, position, angles, velocity, angVelocity, pOwner, weaponInfo, iFlags );
+	if ( pGrenade )
+	{
+		pGrenade->SetDetonateTimerLength( timer );
+	}
 	return pGrenade;
 }
 
@@ -289,9 +326,16 @@ void CTFWeaponBaseGrenadeProj::Spawn( void )
 
 	m_flDestroyableTime = gpGlobals->curtime + TF_GRENADE_DESTROYABLE_TIMER;
 
+	// PF2C port: brief window after spawn where grenade won't collide with thrower's teammates.
+	m_flCollideWithTeammatesTime = gpGlobals->curtime + 0.25f;
+	m_bCollideWithTeammates = false;
+
 	// Setup the think and touch functions (see CBaseEntity).
 	SetThink( &CTFWeaponBaseGrenadeProj::DetonateThink );
 	SetNextThink( gpGlobals->curtime + 0.2 );
+
+	// PF2C port: register BeepThink context (initial scheduling done by weapon class).
+	RegisterThinkContext( "BeepThink" );
 }
 
 //-----------------------------------------------------------------------------
@@ -791,6 +835,106 @@ void CTFWeaponBaseGrenadeProj::VPhysicsUpdate( IPhysicsObject *pPhysics )
 			angVel *= -0.5f;
 			pPhysics->SetVelocity( &vel, &angVel );
 		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: PF2C port -- grenade detonated while still held/primed.
+//-----------------------------------------------------------------------------
+void CTFWeaponBaseGrenadeProj::ExplodeInHand( CTFPlayer *pPlayer )
+{
+	Detonate();
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: PF2C port -- warning beep/particle approaching detonation.
+// Scheduled by the weapon class via SetContextThink.
+//-----------------------------------------------------------------------------
+void CTFWeaponBaseGrenadeProj::BeepThink( void )
+{
+	if ( m_flDetonateTime - 0.8f > gpGlobals->curtime )
+	{
+		if ( m_flDetonateTime - 1.8f <= gpGlobals->curtime )
+		{
+			SetNextThink( gpGlobals->curtime + 0.2f, "BeepThink" );
+		}
+		else
+		{
+			EmitSound( "Weapon_Grenade.Beep" );
+			DispatchParticleEffect( GetPulseParticleName(), PATTACH_ABSORIGIN_FOLLOW, this );
+			SetNextThink( gpGlobals->curtime + 0.8f, "BeepThink" );
+		}
+	}
+	else
+	{
+		EmitSound( "Weapon_Grenade.FinalBeep" );
+		DispatchParticleEffect( GetFinalPulseParticleName(), PATTACH_ABSORIGIN_FOLLOW, this );
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: PF2C port -- removes the grenade projectile cleanly.
+// Used by all 9 in-scope grenade types.
+//-----------------------------------------------------------------------------
+void CTFWeaponBaseGrenadeProj::RemoveGrenade( bool bBlinkOut )
+{
+	SetThink( &BaseClass::SUB_Remove );
+	SetNextThink( gpGlobals->curtime );
+	SetTouch( NULL );
+	AddEffects( EF_NODRAW );
+
+	if ( bBlinkOut )
+	{
+		CSprite *pGlowSprite = CSprite::SpriteCreate( NOGRENADE_SPRITE, GetAbsOrigin(), false );
+		if ( pGlowSprite )
+		{
+			pGlowSprite->SetTransparency( kRenderGlow, 255, 255, 255, 255, kRenderFxFadeFast );
+			pGlowSprite->SetThink( &CSprite::SUB_Remove );
+			pGlowSprite->SetNextThink( gpGlobals->curtime + 1.0f );
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: PF2C port -- LOS check for area-effect grenades (EMP, Gas).
+//-----------------------------------------------------------------------------
+bool CTFWeaponBaseGrenadeProj::RadiusHit( const Vector &vecSrcIn, CBaseEntity *pInflictor, CBaseEntity *pInflicted )
+{
+	const int MASK_RADIUS_DAMAGE = MASK_SHOT & (~CONTENTS_HITBOX);
+	trace_t tr;
+
+	if ( pInflicted->m_takedamage == DAMAGE_NO )
+		return false;
+
+	Vector vecSpot = pInflicted->BodyTarget( vecSrcIn, false );
+	UTIL_TraceLine( vecSrcIn, vecSpot, MASK_RADIUS_DAMAGE, pInflictor, COLLISION_GROUP_DEBRIS, &tr );
+
+	if ( tr.fraction != 1.0f && tr.m_pEnt != pInflicted )
+		return false;
+
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: PF2C port -- debug overlay showing grenade blast radius.
+//-----------------------------------------------------------------------------
+void CTFWeaponBaseGrenadeProj::DrawRadius( float flRadius )
+{
+	Vector pos = GetAbsOrigin();
+	float flLifetime = tf_grenade_show_radius_time.GetFloat();
+	bool bDepthTest = true;
+
+	Vector edge, lastEdge;
+	NDebugOverlay::Line( pos, pos + Vector( 0, 0, 50 ), 255, 0, 0, !bDepthTest, flLifetime );
+
+	lastEdge = Vector( flRadius + pos.x, pos.y, pos.z );
+	for ( float angle = 0.0f; angle <= 360.0f; angle += 22.5f )
+	{
+		edge.x = flRadius * cos( angle ) + pos.x;
+		edge.y = pos.y;
+		edge.z = flRadius * sin( angle ) + pos.z;
+		NDebugOverlay::Line( edge, lastEdge, 255, 0, 0, !bDepthTest, flLifetime );
+		lastEdge = edge;
 	}
 }
 

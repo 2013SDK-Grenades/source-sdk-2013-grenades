@@ -28,6 +28,9 @@
 #include "c_tf_mvm_boss_progress_user.h"
 #include "c_te_legacytempents.h"
 
+// PF2C port: ConVar defined in tf_weaponbase_grenade.cpp (CLIENT_DLL), used by GetGrenadePressThrow().
+extern ConVar pf_grenade_press_throw;
+
 
 class C_MuzzleFlashModel;
 class C_BaseObject;
@@ -370,6 +373,12 @@ public:
 	void			SetOffHandWeapon( CTFWeaponBase *pWeapon );
 	void			HolsterOffHandWeapon( void );
 	CTFWeaponBase*	GetOffHandWeapon( void ) { return m_hOffHandWeapon; }
+
+	// PF2C port: grenade-throw support -- client-side declarations.
+	bool			IsPrimed( void );
+	void			FinishThrowGrenade( void );
+	// Client reads a ConVar for press-to-throw preference; server reads a member variable.
+	bool			GetGrenadePressThrow( void ) { return pf_grenade_press_throw.GetBool(); }
 
 	void			GetActiveSets( CUtlVector<const CEconItemSetDefinition *> *pItemSets );
 

@@ -1190,6 +1190,16 @@ private:
 	// Combat.
 	CNetworkHandle( CTFWeaponBase, m_hOffHandWeapon );
 
+public:
+	// Grenades (PF2C port).
+	bool					GetGrenadePressThrow( void ) { return m_bGrenadePressThrow; }
+	void					SetGrenadePressThrow( bool bGrenadePressThrow ) { m_bGrenadePressThrow = bGrenadePressThrow; }
+	void					FinishThrowGrenade( void );
+	bool					IsPrimed( void );
+private:
+	bool					m_bGrenadePressThrow;
+	float					m_flNextDenySound;
+
 	float					m_flHealthBuffTime;
 	int						m_iHealthBefore;
 

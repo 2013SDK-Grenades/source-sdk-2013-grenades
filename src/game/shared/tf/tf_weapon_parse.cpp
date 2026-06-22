@@ -30,6 +30,7 @@ CTFWeaponInfo::CTFWeaponInfo()
 	m_flPrimerTime = 0.0f;
 	m_bSuppressGrenTimer = false;
 	m_bLowerWeapon = false;
+	m_bCanThrowGrenade = true;	// PF2C port
 
 	m_bHasTeamSkins_Viewmodel = false;
 	m_bHasTeamSkins_Worldmodel = false;
@@ -173,6 +174,7 @@ void CTFWeaponInfo::Parse( KeyValues *pKeyValuesData, const char *szWeaponName )
 	m_bSuppressGrenTimer	= ( pKeyValuesData->GetInt( "PlayGrenTimer", 1 ) <= 0 );
 
 	m_bLowerWeapon			= ( pKeyValuesData->GetInt( "LowerMainWeapon", 0 ) != 0 );
+	m_bCanThrowGrenade		= ( pKeyValuesData->GetInt( "CanThrowGrenade", 1 ) != 0 );	// PF2C port
 	m_bHasTeamSkins_Viewmodel	= ( pKeyValuesData->GetInt( "HasTeamSkins_Viewmodel", 0 ) != 0 );
 	m_bHasTeamSkins_Worldmodel	= ( pKeyValuesData->GetInt( "HasTeamSkins_Worldmodel", 0 ) != 0 );
 

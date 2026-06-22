@@ -15,7 +15,7 @@
 // Client specific.
 #ifdef CLIENT_DLL
 #define CTFGrenadeMirv C_TFGrenadeMirv
-#define CTFGrenadeMirv_Demoman C_TFGrenadeMirv_Demoman
+#define CTFGrenadeMirvProjectile C_TFGrenadeMirvProjectile
 #endif
 
 //=============================================================================
@@ -34,6 +34,7 @@ public:
 
 	// Unique identifier.
 	virtual int			GetWeaponID( void ) const			{ return TF_WEAPON_GRENADE_MIRV; }
+	//virtual const char *GetViewModel(int iViewModel = 0) const;
 
 // Server specific.
 #ifdef GAME_DLL
@@ -46,30 +47,22 @@ public:
 
 	CTFGrenadeMirv( const CTFGrenadeMirv & ) {}
 };
-
-// Demoman version calls different models
-class CTFGrenadeMirv_Demoman : public CTFGrenadeMirv
-{
-public:
-	DECLARE_CLASS( CTFGrenadeMirv_Demoman, CTFGrenadeMirv );
-	DECLARE_NETWORKCLASS(); 
-	DECLARE_PREDICTABLE();
-
-	virtual int		GetWeaponID( void ) const		{ return TF_WEAPON_GRENADE_MIRV_DEMOMAN; }
-};
-
 //=============================================================================
 //
 // TF Mirv Grenade Projectile and Bombs (Server specific.)
 //
-#ifdef GAME_DLL
+
 
 class CTFGrenadeMirvProjectile : public CTFWeaponBaseGrenadeProj
 {
 public:
 
 	DECLARE_CLASS( CTFGrenadeMirvProjectile, CTFWeaponBaseGrenadeProj );
+	DECLARE_NETWORKCLASS();
 
+	CTFGrenadeMirvProjectile();
+	~CTFGrenadeMirvProjectile();
+#ifndef CLIENT_DLL
 	// Unique identifier.
 	virtual int			GetWeaponID( void ) const			{ return TF_WEAPON_GRENADE_MIRV; }
 
@@ -86,17 +79,20 @@ public:
 	void			DetonateThink( void );
 
 	DECLARE_DATADESC();
-
+#endif
 private:
 
 	bool			m_bPlayedLeadIn;
 };
-
+#ifdef GAME_DLL
 class CTFGrenadeMirvBomb : public CTFWeaponBaseGrenadeProj
 {
 public:
 
 	DECLARE_CLASS( CTFGrenadeMirvBomb, CTFWeaponBaseGrenadeProj );
+
+	CTFGrenadeMirvBomb();
+	~CTFGrenadeMirvBomb();
 
 	// Creation.
 	static CTFGrenadeMirvBomb *Create( const Vector &position, const QAngle &angles, const Vector &velocity, 
@@ -106,6 +102,7 @@ public:
 
 	virtual void	Spawn();
 	virtual void	Precache();
+	virtual void	Detonate();
 	virtual void	BounceSound( void );
 };
 

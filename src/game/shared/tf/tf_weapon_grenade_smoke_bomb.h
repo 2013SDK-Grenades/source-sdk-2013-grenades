@@ -42,6 +42,7 @@ public:
 
 	virtual CTFWeaponBaseGrenadeProj *EmitGrenade( Vector vecSrc, QAngle vecAngles, Vector vecVel, AngularImpulse angImpulse, CBasePlayer *pPlayer, float flTime, int iflags = 0 );
 
+	virtual void	Precache();
 	virtual bool ShouldDetonate( void );
 
 #endif

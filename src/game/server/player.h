@@ -406,6 +406,9 @@ public:
 	void					SmoothViewOnStairs( Vector& eyeOrigin );
 	virtual float			CalcRoll (const QAngle& angles, const Vector& velocity, float rollangle, float rollspeed);
 	void					CalcViewRoll( QAngle& eyeAngles );
+#ifdef TF_DLL
+	QAngle					ConcAngles();	// PF2C port
+#endif
 
 	virtual int				Save( ISave &save );
 	virtual int				Restore( IRestore &restore );

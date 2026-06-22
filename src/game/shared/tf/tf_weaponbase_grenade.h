@@ -38,15 +38,26 @@ public:
 	bool					IsPrimed( void );
 	void					Prime( void );
 
+	bool					CanThrow( void ) { return gpGlobals->curtime >= m_flPrimeStartTime + 0.8f; }
+	void					CheckThrow( CTFPlayer* pPlayer );
+
+	virtual void			WeaponReset(void);
+
 	void					Throw( void );
 
 	bool					ShouldDetonate( void );
 
 	virtual void			ItemPostFrame();
+	virtual void			ItemBusyFrame();
 
 	virtual void			HideThink( void )	{ SetWeaponVisible( false ); }
 
 	bool					ShouldLowerMainWeapon( void );
+
+#ifdef GAME_DLL
+	void					BeepThink(void);
+#endif
+
 
 // Client specific.
 #ifdef CLIENT_DLL
@@ -69,7 +80,11 @@ protected:
 	CNetworkVar( bool, m_bPrimed );			// Set to true when the pin has been pulled but the grenade hasn't been thrown yet.
 	CNetworkVar( float, m_flThrowTime );	// the time at which the grenade will be thrown.  If this value is 0 then the time hasn't been set yet.
 	CNetworkVar( bool, m_bThrow );			// True when the player is throwing the grenade
-
+	CNetworkVar( float, m_flPrimeStartTime );
+#ifdef GAME_DLL
+	int m_nTeamNum;
+#endif
+	
 private:
 
 	CTFWeaponBaseGrenade( const CTFWeaponBaseGrenade & ) {}

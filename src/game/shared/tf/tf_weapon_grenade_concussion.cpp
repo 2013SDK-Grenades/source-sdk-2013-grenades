@@ -17,6 +17,7 @@
 #include "tf_weaponbase_grenadeproj.h"
 #include "soundent.h"
 #include "KeyValues.h"
+#include "particle_parse.h"
 
 #endif
 
@@ -37,6 +38,26 @@ END_PREDICTION_DATA()
 
 LINK_ENTITY_TO_CLASS( tf_weapon_grenade_concussion, CTFGrenadeConcussion );
 PRECACHE_WEAPON_REGISTER( tf_weapon_grenade_concussion );
+
+IMPLEMENT_NETWORKCLASS_ALIASED(TFGrenadeConcussionProjectile, DT_TFGrenadeConcussionProjectile)
+
+BEGIN_NETWORK_TABLE(CTFGrenadeConcussionProjectile, DT_TFGrenadeConcussionProjectile)
+END_NETWORK_TABLE()
+
+//=============================================================================
+//
+// TF Normal Grenade functions.
+//
+
+CTFGrenadeConcussionProjectile::CTFGrenadeConcussionProjectile()
+{
+}
+CTFGrenadeConcussionProjectile::~CTFGrenadeConcussionProjectile()
+{
+#ifdef CLIENT_DLL
+	ParticleProp()->StopEmission();
+#endif
+}
 
 //=============================================================================
 //
@@ -68,6 +89,7 @@ CTFWeaponBaseGrenadeProj *CTFGrenadeConcussion::EmitGrenade( Vector vecSrc, QAng
 #ifdef GAME_DLL
 
 #define GRENADE_MODEL "models/weapons/w_models/w_grenade_conc.mdl"
+#define TF_CONC_RADIUS 150
 
 LINK_ENTITY_TO_CLASS( tf_weapon_grenade_concussion_projectile, CTFGrenadeConcussionProjectile );
 PRECACHE_WEAPON_REGISTER( tf_weapon_grenade_concussion_projectile );
@@ -83,6 +105,7 @@ CTFGrenadeConcussionProjectile* CTFGrenadeConcussionProjectile::Create( const Ve
 	if ( pGrenade )
 	{
 		pGrenade->ApplyLocalAngularVelocityImpulse( angVelocity );
+		pGrenade->SetDamageRadius(TF_CONC_RADIUS);
 	}
 
 	return pGrenade;
@@ -104,6 +127,8 @@ void CTFGrenadeConcussionProjectile::Spawn()
 void CTFGrenadeConcussionProjectile::Precache()
 {
 	PrecacheModel( GRENADE_MODEL );
+	PrecacheParticleSystem("conc_warp");
+	PrecacheScriptSound("Weapon_Grenade_Concussion.Explode");
 
 	BaseClass::Precache();
 }
@@ -132,10 +157,10 @@ void CTFGrenadeConcussionProjectile::Detonate()
 	Vector vecEnd = vecStart + Vector( 0.0f, 0.0f, -32.0f );
 
 	trace_t	trace;
-	UTIL_TraceLine ( vecStart, vecEnd, MASK_SHOT_HULL, this, COLLISION_GROUP_NONE, &trace );
+	UTIL_TraceLine( vecStart, vecEnd, MASK_SHOT_HULL, this, COLLISION_GROUP_DEBRIS, &trace );
 
 	// Explode (concuss).
-	Explode( &trace, DMG_BLAST );
+	Explode( &trace, GetDamageType());
 
 	// Screen shake.
 	if ( GetShakeAmplitude() )
@@ -151,63 +176,61 @@ extern ConVar tf_grenade_show_radius;
 //-----------------------------------------------------------------------------
 void CTFGrenadeConcussionProjectile::Explode( trace_t *pTrace, int bitsDamageType )
 {
-// Server specific.
+	// Server specific.
 #ifdef GAME_DLL
+	DispatchParticleEffect("conc_warp", GetAbsOrigin(), QAngle(0, 0, 0));
 
 	// Invisible.
-	SetModelName( NULL_STRING );	
-	AddSolidFlags( FSOLID_NOT_SOLID );
+	SetModelName(NULL_STRING);
+	AddSolidFlags(FSOLID_NOT_SOLID);
 	m_takedamage = DAMAGE_NO;
-	
-	// Move the impact point away from the surface a little bit.
-	if ( pTrace->fraction != 1.0 )
-	{
-		SetLocalOrigin( pTrace->endpos + ( pTrace->plane.normal * 0.6 ) );
-	}
 
-	// Explosion effect on client
-	SendDispatchEffect();
+	// Move the impact point away from the surface a little bit.
+	if (pTrace->fraction != 1.0)
+	{
+		SetLocalOrigin(pTrace->endpos + (pTrace->plane.normal * 0.6));
+	}
 
 	// Explosion sound.
-	CSoundEnt::InsertSound( SOUND_COMBAT, GetAbsOrigin(), BASEGRENADE_EXPLOSION_VOLUME, 3.0 );
+	Vector soundPosition = GetAbsOrigin() + Vector(0, 0, 5);
+	CPASAttenuationFilter filter(soundPosition);
+
+	EmitSound(filter, entindex(), "Weapon_Grenade_Concussion.Explode");
 
 	// Explosion damage, using the thrower's position as the report position.
-	CTFPlayer *pPlayer = ToTFPlayer( GetThrower() );
-	Vector vecReported = pPlayer ? pPlayer->GetAbsOrigin() : vec3_origin;
-	CTakeDamageInfo info( this, pPlayer, GetBlastForce(), GetAbsOrigin(), m_flDamage, bitsDamageType, 0, &vecReported );
+	CTFPlayer* pThrower = ToTFPlayer(GetThrower());
+	Vector vecReported = pThrower ? pThrower->GetAbsOrigin() : vec3_origin;
+	CTakeDamageInfo info( this, pThrower, GetBlastForce(), GetAbsOrigin(), m_flDamage, bitsDamageType, 0, &vecReported );
 	RadiusDamage( info, GetAbsOrigin(), m_DmgRadius, CLASS_NONE, NULL );
 
-	// Concussion.
-	CBaseEntity *pEntityList[64];
-	int nEntityCount = UTIL_EntitiesInSphere( pEntityList, 64, GetAbsOrigin(), m_DmgRadius, FL_CLIENT );
-	for ( int iEntity = 0; iEntity < nEntityCount; ++iEntity )
-	{
-		CBaseEntity *pEntity = pEntityList[iEntity];
-		CTFPlayer *pTestPlayer = ToTFPlayer( pEntity );
+	CTFWeaponInfo pWeaponInfo = *GetTFWeaponInfo( GetWeaponID() );
+	float flRadius = pWeaponInfo.m_flDamageRadius;
 
-		// You can concuss yourself.
-		bool bIsThrower = ( pPlayer == pTestPlayer );
-		if ( bIsThrower || ( pTestPlayer && !InSameTeam( pTestPlayer) ) )
-		{
-			pTestPlayer->m_Shared.Concussion( this, m_DmgRadius );
-		}
-	}
-
-	if ( tf_grenade_show_radius.GetBool() )
+	if (tf_grenade_show_radius.GetBool())
 	{
-		DrawRadius( m_DmgRadius );
+		DrawRadius( flRadius );
 	}
 
 	// Explosion decal.
-	UTIL_DecalTrace( pTrace, "Scorch" );
+	UTIL_DecalTrace(pTrace, "Scorch");
 
 	// Reset.
-	SetThink( &CBaseGrenade::SUB_Remove );
-	SetTouch( NULL );
-	AddEffects( EF_NODRAW );
-	SetAbsVelocity( vec3_origin );
-	SetNextThink( gpGlobals->curtime );
+	SetThink(&CBaseGrenade::SUB_Remove);
+	SetTouch(NULL);
+	AddEffects(EF_NODRAW);
+	SetAbsVelocity(vec3_origin);
+	SetNextThink(gpGlobals->curtime);
 #endif
+}
+
+void CTFGrenadeConcussionProjectile::ExplodeInHand(CTFPlayer* pPlayer)
+{
+	//if (!pPlayer)
+	//	return;
+
+	//Vector a = pPlayer->GetAbsVelocity() * m_flDamage;
+	//pPlayer->VelocityPunch(a);
+	Detonate();
 }
 
 #endif

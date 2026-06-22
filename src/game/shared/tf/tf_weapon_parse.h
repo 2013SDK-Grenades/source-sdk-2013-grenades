@@ -82,6 +82,7 @@ public:
 	float	m_flPrimerTime;
 	bool	m_bLowerWeapon;
 	bool	m_bSuppressGrenTimer;
+	bool	m_bCanThrowGrenade;		// PF2C port: does the active weapon allow grenade-throw input?
 
 	// Skins
 	bool	m_bHasTeamSkins_Viewmodel;

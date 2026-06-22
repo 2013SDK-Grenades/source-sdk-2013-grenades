@@ -53,10 +53,21 @@ extern ConVar tf_smoke_bomb_time;
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
+void CTFGrenadeSmokeBomb::Precache()
+{
+	PrecacheParticleSystem( "smoke_disappear" );
+
+	BaseClass::Precache();
+}
+
+
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
 CTFWeaponBaseGrenadeProj *CTFGrenadeSmokeBomb::EmitGrenade( Vector vecSrc, QAngle vecAngles, Vector vecVel, 
 													 AngularImpulse angImpulse, CBasePlayer *pPlayer, float flTime, int iflags )
 {
-#if 0
 	CTFPlayer *pTFPlayer = ToTFPlayer( pPlayer );
 
 	if ( pTFPlayer )
@@ -68,6 +79,7 @@ CTFWeaponBaseGrenadeProj *CTFGrenadeSmokeBomb::EmitGrenade( Vector vecSrc, QAngl
 		explosionData.m_vOrigin = pPlayer->GetAbsOrigin();
 		explosionData.m_vAngles = pPlayer->GetAbsAngles();
 		explosionData.m_fFlags = GetWeaponID();
+		//smoke_disappear.pcf
 //		DispatchEffect( "TF_Explosion", explosionData );
 
 		// give them the smoke bomb condition
@@ -77,9 +89,9 @@ CTFWeaponBaseGrenadeProj *CTFGrenadeSmokeBomb::EmitGrenade( Vector vecSrc, QAngl
 		if ( pTFPlayer->CanGoInvisible() )
 		{
 			pTFPlayer->m_Shared.AddCond( TF_COND_SMOKE_BOMB, tf_smoke_bomb_time.GetFloat() );
+			DispatchParticleEffect( "smoke_disappear", GetAbsOrigin(), QAngle( 0, 0, 0 ) );
 		}
 	}
-#endif
 
 	return NULL;
 }

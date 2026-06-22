@@ -53,7 +53,7 @@ public:
 	void Event_PlayerSpawned( CTFPlayer *pPlayer );
 	void Event_PlayerForceRespawn( CTFPlayer *pPlayer );
 	void Event_PlayerLeachedHealth( CTFPlayer *pPlayer, bool bDispenserHeal, float amount );
-	void Event_PlayerHealedOther( CTFPlayer *pPlayer, float amount );
+	void Event_PlayerHealedOther( CTFPlayer *pPlayer, float amount, bool bMedigun = true );	// PF2C port: added bMedigun param
 	void Event_PlayerHealedOtherAssist( CTFPlayer *pPlayer, float amount );
 	void Event_PlayerBlockedDamage( CTFPlayer *pPlayer, int nAmount );
 	void Event_AssistKill( CTFPlayer *pPlayer, CBaseEntity *pVictim );

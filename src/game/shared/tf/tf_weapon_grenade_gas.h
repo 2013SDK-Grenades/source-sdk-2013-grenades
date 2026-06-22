@@ -15,6 +15,7 @@
 // Client specific.
 #ifdef CLIENT_DLL
 #define CTFGrenadeGas C_TFGrenadeGas
+#define CTFGrenadeGasProjectile C_TFGrenadeGasProjectile
 #endif
 
 //=============================================================================
@@ -80,13 +81,19 @@ public:
 //
 // TF Gase Grenade Projectile (Server specific.)
 //
-#ifdef GAME_DLL
 
 class CTFGrenadeGasProjectile : public CTFWeaponBaseGrenadeProj
 {
 public:
 
 	DECLARE_CLASS( CTFGrenadeGasProjectile, CTFWeaponBaseGrenadeProj );
+	DECLARE_NETWORKCLASS();
+
+	bool m_bIsGassing;
+	float m_flInitialDetTime;
+
+
+#ifndef CLIENT_DLL
 	DECLARE_DATADESC();
 
 	~CTFGrenadeGasProjectile();
@@ -104,6 +111,9 @@ public:
 	virtual void	BounceSound( void );
 	virtual void	Detonate();
 	virtual void	DetonateThink( void );
+	virtual bool	ShouldNotDetonate(void);
+	virtual void	VPhysicsCollision(int index, gamevcollisionevent_t* pEvent);
+	virtual void	ExplodeInHand(CTFPlayer* pPlayer);
 
 	void Think_Emit( void );
 	void Think_Fade( void );
@@ -112,8 +122,8 @@ private:
 	int	m_nPulses;
 
 	CHandle<CTFGasGrenadeEffect> m_hGasEffect;
+#endif
 };
 
-#endif
 
 #endif // TF_WEAPON_GRENADE_GAS_H

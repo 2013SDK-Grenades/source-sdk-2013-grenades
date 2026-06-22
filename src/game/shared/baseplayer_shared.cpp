@@ -53,6 +53,17 @@
 
 // NVNT haptic utils
 #include "haptics/haptic_utils.h"
+
+// PF2C port: needed for ConcAngles()'s ToTFPlayer() call.
+#ifdef TF_DLL
+#include "tf_player_shared.h"
+#ifdef GAME_DLL
+#include "tf_player.h"
+#else
+#include "c_tf_player.h"
+#endif
+#endif
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -1766,6 +1777,26 @@ void CBasePlayer::CalcViewRoll( QAngle& eyeAngles )
 	float side = CalcRoll( GetAbsAngles(), GetAbsVelocity(), sv_rollangle.GetFloat(), sv_rollspeed.GetFloat() );
 	eyeAngles[ROLL] += side;
 }
+
+// PF2C port: aim-wobble applied while under the Concussion grenade's TF_COND_DIZZY.
+#ifdef TF_DLL
+#define CONC_MULTIPLIER 14
+#define CONC_CLAMP_MAX 4.0f
+QAngle CBasePlayer::ConcAngles()
+{
+	CTFPlayer *tfPlayer = ToTFPlayer( this );
+	QAngle qConcAngles = QAngle( 0, 0, 0 );
+	if ( tfPlayer && tfPlayer->m_Shared.InCond( TF_COND_DIZZY ) )
+	{
+		VectorAdd( qConcAngles, QAngle(
+			sin( gpGlobals->curtime ) * ( CONC_MULTIPLIER * Clamp<float>( tfPlayer->m_Shared.m_flConcussionTime, 0.0f, CONC_CLAMP_MAX ) ),
+			cos( gpGlobals->curtime ) * ( CONC_MULTIPLIER * Clamp<float>( tfPlayer->m_Shared.m_flConcussionTime, 0.0f, CONC_CLAMP_MAX ) ),
+			0 ),
+			qConcAngles );
+	}
+	return qConcAngles;
+}
+#endif
 
 
 void CBasePlayer::DoMuzzleFlash()

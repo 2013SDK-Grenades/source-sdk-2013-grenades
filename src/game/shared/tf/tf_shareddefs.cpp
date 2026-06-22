@@ -431,6 +431,8 @@ static const char *g_aConditionNames[] =
 	"TF_COND_HALLUCINATING",					// = 134
 	"TF_COND_NAPALM_BURNING",					// = 135
 	"TF_COND_BUILDING_DETPACK",					// = 136
+	"TF_COND_DIZZY",							// = 137
+	"TF_COND_LEG_DAMAGED",						// = 138
 
 	//
 	// ADD NEW ITEMS HERE TO AVOID BREAKING DEMOS

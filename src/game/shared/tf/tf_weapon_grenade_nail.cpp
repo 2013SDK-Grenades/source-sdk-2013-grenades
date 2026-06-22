@@ -40,6 +40,8 @@ END_PREDICTION_DATA()
 LINK_ENTITY_TO_CLASS( tf_weapon_grenade_nail, CTFGrenadeNail );
 PRECACHE_WEAPON_REGISTER( tf_weapon_grenade_nail );
 
+
+
 //=============================================================================
 //
 // TF Nail Grenade functions.
@@ -62,6 +64,15 @@ CTFWeaponBaseGrenadeProj *CTFGrenadeNail::EmitGrenade( Vector vecSrc, QAngle vec
 }
 
 #endif
+IMPLEMENT_NETWORKCLASS_ALIASED(TFGrenadeNailProjectile, DT_TFGrenadeNailProjectile)
+
+BEGIN_NETWORK_TABLE(CTFGrenadeNailProjectile, DT_TFGrenadeNailProjectile)
+END_NETWORK_TABLE()
+
+//=============================================================================
+//
+// TF Normal Grenade functions.
+//
 
 //=============================================================================
 //
@@ -99,6 +110,9 @@ CTFGrenadeNailProjectile* CTFGrenadeNailProjectile::Create( const Vector &positi
 
 CTFGrenadeNailProjectile::~CTFGrenadeNailProjectile()
 {
+#ifdef CLIENT_DLL
+	ParticleProp()->StopEmission();
+#endif
 	if ( m_pMotionController != NULL )
 	{
 		physenv->DestroyMotionController( m_pMotionController );
@@ -126,7 +140,6 @@ void CTFGrenadeNailProjectile::Spawn()
 void CTFGrenadeNailProjectile::Precache()
 {
 	PrecacheModel( GRENADE_MODEL );
-
 	PrecacheScriptSound( "Weapon_Grenade_Nail.Launch" );
 
 	BaseClass::Precache();
@@ -209,6 +222,8 @@ void CTFGrenadeNailProjectile::EmitNails( void )
 {
 	m_iNumNailBurstsLeft--;
 
+	float flDamage = GetTFWeaponInfo(GetWeaponID())->GetWeaponDamage(TF_WEAPON_SECONDARY_MODE);
+
 	if ( m_iNumNailBurstsLeft < 0 )
 	{
 		BaseClass::Detonate();
@@ -229,11 +244,20 @@ void CTFGrenadeNailProjectile::EmitNails( void )
 		CTFProjectile_Nail *pNail = CTFProjectile_Nail::Create( GetAbsOrigin(), angNail, this, GetThrower() );	
 		if ( pNail )
 		{
-			pNail->SetDamage( 18 );
+			pNail->SetWeaponID(GetWeaponID());
+			pNail->SetDamage( flDamage );
 		}
 	}
 
 	SetNextThink( gpGlobals->curtime + 0.1 );
+}
+
+int	CTFGrenadeNailProjectile::GetDamageType()
+{
+	int iDmgType = g_aWeaponDamageTypes[GetWeaponID()];
+	iDmgType |= DMG_HALF_FALLOFF;
+
+	return iDmgType;
 }
 
 IMotionEvent::simresult_e CNailGrenadeController::Simulate( IPhysicsMotionController *pController, IPhysicsObject *pObject, float deltaTime, Vector &linear, AngularImpulse &angular )

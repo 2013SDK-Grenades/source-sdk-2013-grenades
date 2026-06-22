@@ -15,8 +15,10 @@
 // Client specific.
 #ifdef CLIENT_DLL
 #define CTFGrenadeConcussion C_TFGrenadeConcussion
+#define CTFGrenadeConcussionProjectile C_TFGrenadeConcussionProjectile
 #endif
 
+#define TF_CONC_RADIUS 150
 //=============================================================================
 //
 // TF Concussion Grenade
@@ -30,9 +32,12 @@ public:
 	DECLARE_PREDICTABLE();
 
 	CTFGrenadeConcussion() {}
+	
+
 
 	// Unique identifier.
 	virtual int			GetWeaponID( void ) const			{ return TF_WEAPON_GRENADE_CONCUSSION; }
+	virtual float GetDamageRadius(){ return TF_CONC_RADIUS; }
 
 // Server specific.
 #ifdef GAME_DLL
@@ -50,13 +55,19 @@ public:
 //
 // TF Concussion Grenade Projectile (Server specific.)
 //
-#ifdef GAME_DLL
+
 
 class CTFGrenadeConcussionProjectile : public CTFWeaponBaseGrenadeProj
 {
 public:
 
 	DECLARE_CLASS( CTFGrenadeConcussionProjectile, CTFWeaponBaseGrenadeProj );
+	DECLARE_NETWORKCLASS();
+
+	CTFGrenadeConcussionProjectile();
+	~CTFGrenadeConcussionProjectile();
+
+#ifndef CLIENT_DLL
 
 	// Unique identifier.
 	virtual int			GetWeaponID( void ) const			{ return TF_WEAPON_GRENADE_CONCUSSION; }
@@ -71,12 +82,13 @@ public:
 	virtual void	BounceSound( void );
 	virtual void	Explode( trace_t *pTrace, int bitsDamageType );
 	virtual void	Detonate();
-
+	virtual void	ExplodeInHand(CTFPlayer* pPlayer);
+#endif
 private:
 
 	float m_flDetonateTime;
+
 };
 
-#endif
 
 #endif // TF_WEAPON_GRENADE_CONCUSSION_H

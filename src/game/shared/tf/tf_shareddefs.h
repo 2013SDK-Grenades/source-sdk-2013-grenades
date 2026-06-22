@@ -836,6 +836,8 @@ enum ETFCond
 	TF_COND_HALLUCINATING					 = 134,
 	TF_COND_NAPALM_BURNING					 = 135,
 	TF_COND_BUILDING_DETPACK				 = 136,
+	TF_COND_DIZZY							 = 137,	// Concussion grenade screen-shake/aim-wobble
+	TF_COND_LEG_DAMAGED						 = 138,	// Caltrop grenade movement-speed slow
 
 	// ******** Keep this block last! ********
 	// Keep experimental conditions below and graduate out of it before shipping

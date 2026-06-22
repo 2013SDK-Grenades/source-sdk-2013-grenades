@@ -140,25 +140,7 @@ void CTFGrenadeCaltropProjectile::BounceSound( void )
 //-----------------------------------------------------------------------------
 void CTFGrenadeCaltropProjectile::Detonate()
 {
-	if ( ShouldNotDetonate() )
-	{
-		RemoveGrenade();
-		return;
-	}
-
-	// have the caltrop disappear
-	UTIL_Remove( this );
-
-#if 0
-	// Tell the bots an HE grenade has exploded
-	CTFPlayer *pPlayer = ToTFPlayer( GetThrower() );
-	if ( pPlayer )
-	{
-		KeyValues *pEvent = new KeyValues( "tf_weapon_grenade_detonate" );
-		pEvent->SetInt( "userid", pPlayer->GetUserID() );
-		gameeventmanager->FireEventServerOnly( pEvent );
-	}
-#endif
+	RemoveGrenade();
 }
 #endif
 
@@ -171,7 +153,8 @@ void CTFGrenadeCaltropProjectile::Touch( CBaseEntity *pOther )
 		return;
 
 	// Don't hurt friendlies
-	if ( GetTeamNumber() == pOther->GetTeamNumber() )
+	//if (pThrower == pTFPlayer || !InSameTeam( pTFPlayer ))
+	if (pOther != GetThrower() && GetTeamNumber() == pOther->GetTeamNumber())
 		return;
 
 	// Caltrops need to be on the ground. Check to see if we're still moving.
@@ -181,9 +164,16 @@ void CTFGrenadeCaltropProjectile::Touch( CBaseEntity *pOther )
 		return;
 
 #ifdef GAME_DLL
-	// Do the leg damage to the player
-	CTakeDamageInfo info( this, GetThrower(), GRENADE_CALTROP_DAMAGE, DMG_LEG_DAMAGE | DMG_PREVENT_PHYSICS_FORCE );
-	pOther->TakeDamage( info );
+	CTFPlayer* pPlayer = ToTFPlayer( pOther );
+	if (pPlayer && !pPlayer->m_Shared.InCond( TF_COND_INVULNERABLE ))
+	{
+		// Do the leg damage to the player
+		CTakeDamageInfo info( this, GetThrower(), GetTFWeaponInfo( GetWeaponID())->GetWeaponDamage(TF_WEAPON_PRIMARY_MODE), DMG_CLUB | DMG_PREVENT_PHYSICS_FORCE );
+		pPlayer->TakeDamage( info );
+
+		pPlayer->m_Shared.AddCond(TF_COND_LEG_DAMAGED, 8.0f);
+		pPlayer->TeamFortress_SetSpeed();
+	}
 
 	// have the caltrop disappear
 	UTIL_Remove( this );
@@ -197,10 +187,10 @@ void CTFGrenadeCaltropProjectile::Touch( CBaseEntity *pOther )
 void CTFGrenadeCaltropProjectile::OnDataChanged(DataUpdateType_t updateType)
 {
 	BaseClass::OnDataChanged(updateType);
-	
+	/*
 	if ( updateType == DATA_UPDATE_CREATED )
 	{
-		/*
+		
 		SetSolidFlags( FSOLID_NOT_STANDABLE );
 		SetSolid( SOLID_BBOX );	
 
@@ -214,7 +204,8 @@ void CTFGrenadeCaltropProjectile::OnDataChanged(DataUpdateType_t updateType)
 		UpdatePartitionListEntry();
 
 		CollisionProp()->UpdatePartition();
-		*/
+		
 	}
+	*/
 }
 #endif

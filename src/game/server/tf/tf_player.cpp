@@ -10667,6 +10667,12 @@ int CTFPlayer::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		m_Shared.MakeBleed( pTFAttacker, dynamic_cast< CTFWeaponBase * >( info.GetWeapon() ), flBleedingTime );
 	}
 
+	// PF2C port: sonic damage (Concussion grenade) concusses.
+	if ( info.GetDamageType() & DMG_SONIC )
+	{
+		m_Shared.Concussion();
+	}
+
 	// Don't recieve reflected damage if you are carrying Reflect (prevents a loop in a game with two Reflect players)
 	if ( ( info.GetDamageType() & TF_DMG_CUSTOM_RUNE_REFLECT ) && m_Shared.GetCarryingRuneType() == RUNE_REFLECT )
 	{

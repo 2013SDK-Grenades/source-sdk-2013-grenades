@@ -255,6 +255,10 @@ CBaseObject::CBaseObject()
 	m_flPlasmaDisableTime = 0;
 	m_bPlasmaDisable = false;
 
+	// PF2C port: EMP grenade timed disable.
+	m_flDisableTime = gpGlobals->curtime + 1e16;
+	m_flSparkTime = gpGlobals->curtime + 1e16;
+
 	m_bDisposableBuilding = false;
 
 	m_vecBuildForward = vec3_origin;
@@ -387,6 +391,11 @@ void CBaseObject::Spawn( void )
 
 	m_bWasMapPlaced = false;
 	m_bHasSapper = false;
+
+	// PF2C port: prevents a stale-sound issue with the EMP disable timer.
+	m_flDisableTime = gpGlobals->curtime + 1e16;
+	m_flSparkTime = gpGlobals->curtime + 1e16;
+
 	if ( HasSpawnFlags(SF_BASEOBJ_INVULN) )
 	{
 		m_takedamage = DAMAGE_NO;
@@ -587,6 +596,25 @@ void CBaseObject::BaseObjectThink( void )
 			m_bPlasmaDisable = false;
 			UpdateDisabledState();
 		}
+	}
+
+	// PF2C port: EMP grenade timed disable + spark effect while disabled.
+	if ( m_bDisabled && !m_bHasSapper && m_flDisableTime < gpGlobals->curtime )
+	{
+		SetDisabled( false );
+		UpdateDisabledState();
+		m_flSparkTime = gpGlobals->curtime + 1e16;
+		m_flDisableTime = gpGlobals->curtime + 1e16;
+		EmitSound( "Building_Sentrygun.Built" );
+	}
+
+	if ( m_bDisabled && !m_bHasSapper && m_flSparkTime < gpGlobals->curtime )
+	{
+		CPVSFilter filter( GetAbsOrigin() );
+		float flRand = RandomFloat( 0.2, 0.5 );
+		te->Sparks( filter, 0.0, &WorldSpaceCenter(), 3, 2, &vec3_origin );
+		EmitSound( "Breakable.Spark" );
+		m_flSparkTime = m_flSparkTime + flRand;
 	}
 
 	// Do nothing while we're being placed
@@ -3800,6 +3828,16 @@ void CBaseObject::InputDisable( inputdata_t &inputdata )
 		SetDisabled( true );
 		OnGoInactive();
 	}
+}
+
+// PF2C port: timed disable used by the EMP grenade.
+void CBaseObject::Disable( float flTime )
+{
+	SetDisabled( true );
+	m_flDisableTime = gpGlobals->curtime + flTime;
+	CPVSFilter filter( GetAbsOrigin() );
+	te->Sparks( filter, 0.0, &WorldSpaceCenter(), 3, 1, &vec3_origin );
+	m_flSparkTime = gpGlobals->curtime;
 }
 
 //-----------------------------------------------------------------------------

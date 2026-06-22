@@ -31,6 +31,8 @@ IMPLEMENT_NETWORKCLASS_ALIASED( TFGrenadeNormal, DT_TFGrenadeNormal )
 BEGIN_NETWORK_TABLE( CTFGrenadeNormal, DT_TFGrenadeNormal )
 END_NETWORK_TABLE()
 
+
+
 BEGIN_PREDICTION_DATA( CTFGrenadeNormal )
 END_PREDICTION_DATA()
 
@@ -39,11 +41,25 @@ PRECACHE_WEAPON_REGISTER( tf_weapon_grenade_normal );
 
 //IMPLEMENT_ACTTABLE( CTFGrenadeNormal );
 
+IMPLEMENT_NETWORKCLASS_ALIASED(TFGrenadeNormalProjectile, DT_TFGrenadeNormalProjectile)
+
+BEGIN_NETWORK_TABLE(CTFGrenadeNormalProjectile, DT_TFGrenadeNormalProjectile)
+END_NETWORK_TABLE()
+
 //=============================================================================
 //
 // TF Normal Grenade functions.
 //
 
+CTFGrenadeNormalProjectile::CTFGrenadeNormalProjectile()
+{
+}
+CTFGrenadeNormalProjectile::~CTFGrenadeNormalProjectile()
+{
+#ifdef CLIENT_DLL
+	ParticleProp()->StopEmission();
+#endif
+}
 // Server specific.
 #ifdef GAME_DLL
 
@@ -75,7 +91,7 @@ CTFWeaponBaseGrenadeProj *CTFGrenadeNormal::EmitGrenade( Vector vecSrc, QAngle v
 #ifdef GAME_DLL
 
 #define GRENADE_MODEL "models/Weapons/w_models/w_grenade_frag.mdl"
-//#define GRENADE_MODEL "models/weapons/w_grenade_normal.mdl"
+
 
 LINK_ENTITY_TO_CLASS( tf_weapon_grenade_normal_projectile, CTFGrenadeNormalProjectile );
 PRECACHE_WEAPON_REGISTER( tf_weapon_grenade_normal_projectile );
@@ -97,7 +113,6 @@ CTFGrenadeNormalProjectile* CTFGrenadeNormalProjectile::Create( const Vector &po
 void CTFGrenadeNormalProjectile::Spawn()
 {
 	SetModel( GRENADE_MODEL );
-
 	BaseClass::Spawn();
 }
 

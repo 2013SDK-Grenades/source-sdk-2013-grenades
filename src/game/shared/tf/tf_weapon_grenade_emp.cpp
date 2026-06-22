@@ -19,6 +19,8 @@
 #include "KeyValues.h"
 #include "particle_parse.h"
 #include "beam_shared.h"
+#include "tf_ammo_pack.h"
+#include "tf_obj.h"
 #endif
 
 #define GRENADE_EMP_TIMER	3.0f //Seconds
@@ -109,6 +111,9 @@ void CTFGrenadeEmpProjectile::Spawn()
 	SetThink( &CTFGrenadeEmpProjectile::DetonateThink );
 }
 
+#define LIGHTNING_RED "sprites/lightning_red.vmt"
+#define LIGHTNING_BLUE "sprites/lightning_blue.vmt"
+
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
@@ -116,8 +121,11 @@ void CTFGrenadeEmpProjectile::Precache()
 {
 	PrecacheModel( GRENADE_MODEL );
 	PrecacheScriptSound( "Weapon_Grenade_Emp.LeadIn" );
-	PrecacheModel( "sprites/physcannon_bluelight1b.vmt" );
-	PrecacheParticleSystem( "emp_shockwave" );
+	PrecacheScriptSound("Weapon_Grenade_Emp.Explode");
+	PrecacheModel( LIGHTNING_RED );
+	PrecacheModel( LIGHTNING_BLUE );
+	PrecacheParticleSystem( "emp_blue" );
+	PrecacheParticleSystem( "emp_red" );
 	BaseClass::Precache();
 }
 
@@ -130,7 +138,7 @@ void CTFGrenadeEmpProjectile::BounceSound( void )
 }
 
 extern ConVar tf_grenade_show_radius;
-
+ConVar tf_emp_explode_ammo( "tf_emp_explode_ammo", "1", FCVAR_DEVELOPMENTONLY );
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
@@ -143,10 +151,13 @@ void CTFGrenadeEmpProjectile::Detonate()
 	}
 
 	// Explosion effect on client
-	SendDispatchEffect();
+	//SendDispatchEffect();
 
-	float flRadius = 180;
-	float flDamage = 1;
+	CTFWeaponInfo pWeaponInfo = *GetTFWeaponInfo( GetWeaponID() );
+
+	float flRadius = pWeaponInfo.m_flDamageRadius;
+	float flDamage = pWeaponInfo.GetWeaponDamage(TF_WEAPON_PRIMARY_MODE);
+	
 
 	if ( tf_grenade_show_radius.GetBool() )
 	{
@@ -156,47 +167,59 @@ void CTFGrenadeEmpProjectile::Detonate()
 	// Apply some amount of EMP damage to every entity in the radius. They will calculate 
 	// their own damage based on how much ammo they have or some other wacky calculation.
 
-	CTakeDamageInfo info( this, GetThrower(), vec3_origin, GetAbsOrigin(), flDamage, DMG_EMP | DMG_PREVENT_PHYSICS_FORCE );
-
-	CBaseEntity *pEntityList[100];
-	int nEntityCount = UTIL_EntitiesInSphere( pEntityList, 100, GetAbsOrigin(), flRadius, 0 );
-	int iEntity;
-	for ( iEntity = 0; iEntity < nEntityCount; ++iEntity )
+	CTakeDamageInfo info( this, GetThrower(), vec3_origin, GetAbsOrigin(), flDamage, DMG_DISSOLVE | DMG_PREVENT_PHYSICS_FORCE );
+	CTFPlayer* pTestPlayer = ToTFPlayer( GetThrower() );
+	CBaseEntity *pEntity = NULL;
+	for (CEntitySphereQuery sphere( GetAbsOrigin(), flRadius ); (pEntity = sphere.GetCurrentEntity()) != NULL; sphere.NextEntity())
 	{
-		CBaseEntity *pEntity = pEntityList[iEntity];
-
-		if ( pEntity == this )
+		CTFPlayer* pPlayer = ToTFPlayer( pEntity );
+		CTFAmmoPack *pAmmo = dynamic_cast< CTFAmmoPack * >(pEntity);
+		CBaseObject *pObj = dynamic_cast<CBaseObject*>(pEntity);
+		
+		if (!RadiusHit(GetAbsOrigin(), this, pEntity))
 			continue;
 
-		if ( pEntity && pEntity->IsPlayer() )
-			continue;
-
-		if ( pEntity && ( pEntity->m_takedamage == DAMAGE_YES || pEntity->m_takedamage == DAMAGE_EVENTS_ONLY ) )
+		bool bIsThrower = (pPlayer == pTestPlayer);
+		if( pPlayer )
 		{
-			pEntity->TakeDamage( info );
-
-			//if ( pEntity->IsPlayer() /* || is ammo box || is enemy object */ )
+			if (!pPlayer->IsAlive() || (pPlayer->GetTeamNumber() == GetThrower()->GetTeamNumber() && !bIsThrower) || pPlayer->m_Shared.InCond(TF_COND_INVULNERABLE))
+				continue;
+			EMPBeam( pEntity );
+			pPlayer->TakeDamage( info );
+		}
+		if( pAmmo )
+		{
+			EMPBeam( pEntity );
+			if (tf_emp_explode_ammo.GetBool())
 			{
-				CBeam *pBeam = CBeam::BeamCreate( "sprites/physcannon_bluelight1b.vmt", 3.0 );
-				if ( !pBeam )
-					return;
-
-				pBeam->PointsInit( GetAbsOrigin(), pEntity->WorldSpaceCenter() );
-
-				pBeam->SetColor( 255, 255, 255 );
-				pBeam->SetBrightness( 128 );
-				pBeam->SetNoise( 12.0f );
-				pBeam->SetEndWidth( 3.0f );
-				pBeam->SetWidth( 3.0f );
-				pBeam->LiveForTime( 0.5f );	// Fail-safe
-				pBeam->SetFrameRate( 25.0f );
-				pBeam->SetFrame( random->RandomInt( 0, 2 ) );
+				pAmmo->Explode( GetThrower() );
+				UTIL_Remove( pAmmo );
 			}
+			else
+			{
+				pAmmo->GetBaseAnimating()->Dissolve( "", gpGlobals->curtime, false, ENTITY_DISSOLVE_NORMAL );
+			}
+			
+		}
+		if ( pObj )
+		{
+			EMPBeam( pEntity );
+			if ((pObj->GetTeamNumber() == GetThrower()->GetTeamNumber()))
+			{
+				continue;
+			}
+			if (pObj->IsPlacing())
+			{
+				continue;
+			}
+			pObj->Disable(7.5);
 		}
 	}
+	Vector soundPosition = GetAbsOrigin() + Vector(0, 0, 5);
+	CPASAttenuationFilter filter(soundPosition);
 
-	DispatchParticleEffect( "emp_shockwave", GetAbsOrigin(), vec3_angle );
-
+	DispatchParticleEffect( GetThrower()->GetTeamNumber() == TF_TEAM_RED ? "emp_red" : "emp_blue", GetAbsOrigin(), vec3_angle );
+	EmitSound(filter, entindex(), "Weapon_Grenade_Emp.Explode");
 	UTIL_Remove( this );
 
 #if 0
@@ -209,6 +232,29 @@ void CTFGrenadeEmpProjectile::Detonate()
 		gameeventmanager->FireEventServerOnly( pEvent );
 	}
 #endif
+}
+void CTFGrenadeEmpProjectile::EMPBeam( CBaseEntity *pEntity )
+{
+	trace_t c;
+	UTIL_TraceLine( GetAbsOrigin(), GetAbsOrigin() + Vector( 0, 0, 16 ), MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_DEBRIS, &c );
+	trace_t trace;
+	UTIL_TraceLine( GetAbsOrigin() + Vector( 0, 0, 16 * c.fraction ), pEntity->GetAbsOrigin(), MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_DEBRIS, &trace );
+	if (trace.fraction >= 1)
+	{
+		CBeam* pBeam = CBeam::BeamCreate( GetThrower()->GetTeamNumber() == TF_TEAM_BLUE ? LIGHTNING_BLUE : LIGHTNING_RED, 5.0 );
+		if (!pBeam)
+			return;
+
+		pBeam->PointsInit( GetAbsOrigin(), pEntity->WorldSpaceCenter() );
+		pBeam->SetColor( 255, 255, 255 );
+		pBeam->SetBrightness( 128 );
+		pBeam->SetNoise( 8.0f );
+		pBeam->SetEndWidth( 5.0f );
+		pBeam->SetWidth( 5.0f );
+		pBeam->LiveForTime( 0.5f );	// Fail-safe
+		pBeam->SetFrameRate( 25.0f );
+		pBeam->SetFrame( random->RandomInt( 0, 2 ) );
+	}
 }
 
 //-----------------------------------------------------------------------------

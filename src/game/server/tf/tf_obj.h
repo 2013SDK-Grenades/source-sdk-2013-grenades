@@ -179,6 +179,7 @@ public:
 	void			InputHide( inputdata_t &inputdata );
 	virtual void	InputEnable( inputdata_t &inputdata );
 	virtual void	InputDisable( inputdata_t &inputdata );
+	void			Disable( float flTime );	// PF2C port: EMP grenade timed disable
 
 	// Wrench hits
 	virtual bool	InputWrenchHit( CTFPlayer *pPlayer, CTFWrench *pWrench, Vector hitLoc );
@@ -464,6 +465,10 @@ protected:
 
 	float m_flPlasmaDisableTime;
 	CNetworkVar( bool, m_bPlasmaDisable );
+
+	// PF2C port: EMP grenade timed disable.
+	float m_flDisableTime;
+	float m_flSparkTime;
 
 private:
 	int			m_iHealthOnPickup;

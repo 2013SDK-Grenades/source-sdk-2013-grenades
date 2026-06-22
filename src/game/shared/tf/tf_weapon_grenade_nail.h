@@ -15,6 +15,7 @@
 // Client specific.
 #ifdef CLIENT_DLL
 #define CTFGrenadeNail C_TFGrenadeNail
+#define CTFGrenadeNailProjectile C_TFGrenadeNailProjectile
 #endif
 
 //=============================================================================
@@ -71,16 +72,22 @@ private:
 	bool m_bReachedPos;
 	bool m_bReachedOrientation;
 };
-
+#endif
 class CTFGrenadeNailProjectile : public CTFWeaponBaseGrenadeProj
 {
 public:
-
-	~CTFGrenadeNailProjectile();
+	
+	
 
 	DECLARE_CLASS( CTFGrenadeNailProjectile, CTFWeaponBaseGrenadeProj );
-	DECLARE_DATADESC();
+	
+	DECLARE_NETWORKCLASS();
 
+
+#ifndef CLIENT_DLL
+
+	DECLARE_DATADESC();
+	~CTFGrenadeNailProjectile();
 	// Unique identifier.
 	virtual int			GetWeaponID( void ) const			{ return TF_WEAPON_GRENADE_NAIL; }
 
@@ -94,6 +101,7 @@ public:
 	virtual void	BounceSound( void );
 	virtual void	Detonate();
 	virtual int		OnTakeDamage( const CTakeDamageInfo &info );
+	virtual int		GetDamageType();
 
 	void StartEmittingNails( void );
 	void EmitNails( void );
@@ -105,8 +113,8 @@ public:
 	bool m_bActivated;
 	float m_flNailAngle;
 	int m_iNumNailBurstsLeft;
+#endif
 };
 
-#endif // GAME_DLL
 
 #endif // TF_WEAPON_GRENADE_NAIL_H

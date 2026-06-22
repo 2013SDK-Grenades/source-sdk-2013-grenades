@@ -67,6 +67,7 @@ enum TFStatType_t
 	TFSTAT_KILLSTREAK_MAX,
 	TFSTAT_KILLS_RUNECARRIER,
 	TFSTAT_FLAGRETURNS,
+	TFSTAT_HEALING_OTHER,	// PF2C port: non-medigun healing (e.g. Heal grenade)
 	TFSTAT_TOTAL
 };
 

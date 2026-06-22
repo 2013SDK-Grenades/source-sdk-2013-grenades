@@ -48,6 +48,14 @@ public:
 	virtual int GetWeaponID( void ) const { return TF_WEAPON_NONE; }
 	virtual int GetCustomDamageType() const { return TF_DMG_CUSTOM_NONE; }
 
+	// PF2C port: team-colored trail/pulse particle names called by BeepThink.
+	virtual const char*		GetTrailParticleName( void );
+	virtual const char*		GetPulseParticleName( void );
+	virtual const char*		GetFinalPulseParticleName( void );
+
+	// PF2C port: identifies thrown pipebombs to launcher code.
+	virtual bool			IsPillGrenade() { return false; }
+
 	// This gets sent to the client and placed in the client's interpolation history
 	// so the projectile starts out moving right off the bat.
 	CNetworkVector( m_vInitialVelocity );
@@ -101,15 +109,29 @@ public:
 				const Vector &velocity, const AngularImpulse &angVelocity, 
 				CBaseCombatCharacter *pOwner, const CTFWeaponInfo &weaponInfo, int iFlags );
 
+	// PF2C port: timer overload used by every in-scope grenade type.
+	static CTFWeaponBaseGrenadeProj *Create( const char *szName, const Vector &position, const QAngle &angles,
+				const Vector &velocity, const AngularImpulse &angVelocity,
+				CBaseCombatCharacter *pOwner, const CTFWeaponInfo &weaponInfo, float timer, int iFlags );
+
 	int						OnTakeDamage( const CTakeDamageInfo &info );
 
 	virtual void			DetonateThink( void );
 	void					Detonate( void );
 
+	// PF2C port: called when grenade detonates while still held/primed (timer expired).
+	virtual void			ExplodeInHand( CTFPlayer *pPlayer );
+
+	// PF2C port: in-flight warning beep/pulse visual/audio.
+	void					BeepThink( void );
+
 	void					SetupInitialTransmittedGrenadeVelocity( const Vector &velocity )	{ m_vInitialVelocity = velocity; }
 
 	bool					ShouldNotDetonate( void );
 	virtual void 			Destroy( bool bBlinkOut = true, bool bBreak = false ) OVERRIDE;
+
+	// PF2C port: used by all 9 in-scope grenade types instead of Destroy().
+	void					RemoveGrenade( bool bBlinkOut = true );
 
 	void					SetTimer( float time ){ m_flDetonateTime = time; }
 	float					GetDetonateTime( void ){ return m_flDetonateTime; }
@@ -124,6 +146,9 @@ public:
 	bool					UseImpactNormal()							{ return m_bUseImpactNormal; }
 	const Vector			&GetImpactNormal( void ) const				{ return m_vecImpactNormal; }
 
+	// PF2C port: LOS check used by EMP and Gas radius damage.
+	virtual bool			RadiusHit( const Vector &vecSrc, CBaseEntity *pInflictor, CBaseEntity *pInflicted );
+
 	bool					IsCritical() { return m_bCritical; }
 	virtual bool			IsDestroyable( bool bOrbAttack = false ) OVERRIDE { return ( !bOrbAttack ? ( gpGlobals->curtime > m_flDestroyableTime ) : true ); }
 
@@ -131,12 +156,14 @@ public:
 
 protected:
 
-
 	bool					m_bUseImpactNormal;
 	Vector					m_vecImpactNormal;
 
 	// Custom collision to allow for constant elasticity on hit surfaces.
 	virtual void			ResolveFlyCollisionCustom( trace_t &trace, Vector &vecVelocity ) OVERRIDE;
+
+	// PF2C port: debug helper for DrawRadius (used by Concussion, EMP, Heal).
+	void					DrawRadius( float flRadius );
 
 	float					m_flDetonateTime;
 	CHandle<CBaseEntity>	m_hEnemy;
@@ -148,6 +175,10 @@ private:
 
 	float					m_flDestroyableTime;
 	bool					m_bIsMerasmusGrenade;
+
+	// PF2C port: brief window after spawn where grenade doesn't collide with thrower's teammates.
+	float					m_flCollideWithTeammatesTime;
+	bool					m_bCollideWithTeammates;
 
 #endif
 };

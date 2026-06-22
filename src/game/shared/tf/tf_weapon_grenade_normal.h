@@ -15,6 +15,7 @@
 // Client specific.
 #ifdef CLIENT_DLL
 #define CTFGrenadeNormal C_TFGrenadeNormal
+#define CTFGrenadeNormalProjectile C_TFGrenadeNormalProjectile
 #endif
 
 //=============================================================================
@@ -34,6 +35,7 @@ public:
 
 	// Unique identifier.
 	virtual int			GetWeaponID( void ) const			{ return TF_WEAPON_GRENADE_NORMAL; }
+	
 
 // Server specific.
 #ifdef GAME_DLL
@@ -51,13 +53,21 @@ public:
 //
 // TF Normal Grenade Projectile (Server specific.)
 //
-#ifdef GAME_DLL
+
 
 class CTFGrenadeNormalProjectile : public CTFWeaponBaseGrenadeProj
 {
 public:
+	DECLARE_CLASS(CTFGrenadeNormalProjectile, CTFWeaponBaseGrenadeProj);
 
-	DECLARE_CLASS( CTFGrenadeNormalProjectile, CTFWeaponBaseGrenadeProj );
+	DECLARE_NETWORKCLASS();
+
+
+	CTFGrenadeNormalProjectile();
+	~CTFGrenadeNormalProjectile();
+
+#ifndef CLIENT_DLL
+
 
 	// Unique identifier.
 	virtual int			GetWeaponID( void ) const			{ return TF_WEAPON_GRENADE_NORMAL; }
@@ -71,8 +81,8 @@ public:
 	virtual void	Precache();
 	virtual void	BounceSound( void );
 	virtual void	Detonate();
+#endif
 };
 
-#endif
 
 #endif // TF_WEAPON_GRENADE_NORMAL_H

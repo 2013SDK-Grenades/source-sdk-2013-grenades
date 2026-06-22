@@ -18,6 +18,8 @@
 #define CTFGrenadeCaltropProjectile C_TFGrenadeCaltropProjectile
 #endif
 
+#define CALTROP_MOVEMENT_CHANGE 0.5f
+
 //=============================================================================
 //
 // TF Caltrop Grenade

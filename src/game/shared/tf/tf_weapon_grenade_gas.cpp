@@ -17,6 +17,7 @@
 #include "tf_weaponbase_grenadeproj.h"
 #include "soundent.h"
 #include "KeyValues.h"
+#include "trigger_area_capture.h"
 #endif
 
 #define GRENADE_GAS_TIMER	3.0f //Seconds
@@ -60,6 +61,12 @@ CTFWeaponBaseGrenadeProj *CTFGrenadeGas::EmitGrenade( Vector vecSrc, QAngle vecA
 
 #endif
 
+IMPLEMENT_NETWORKCLASS_ALIASED(TFGrenadeGasProjectile, DT_TFGrenadeGasProjectile)
+
+BEGIN_NETWORK_TABLE(CTFGrenadeGasProjectile, DT_TFGrenadeGasProjectile)
+END_NETWORK_TABLE()
+
+
 //=============================================================================
 //
 // TF Gas Grenade Projectile functions (Server specific).
@@ -86,7 +93,8 @@ CTFGrenadeGasProjectile* CTFGrenadeGasProjectile::Create( const Vector &position
 	CTFGrenadeGasProjectile *pGrenade = static_cast<CTFGrenadeGasProjectile*>( CTFWeaponBaseGrenadeProj::Create( "tf_weapon_grenade_gas_projectile", position, angles, velocity, angVelocity, pOwner, weaponInfo, timer, iFlags ) );
 	if ( pGrenade )
 	{
-		pGrenade->ApplyLocalAngularVelocityImpulse( angVelocity );	
+		pGrenade->ApplyLocalAngularVelocityImpulse( angVelocity );
+		pGrenade->m_flInitialDetTime = gpGlobals->curtime + timer;
 	}
 
 	return pGrenade;
@@ -106,6 +114,9 @@ void CTFGrenadeGasProjectile::Spawn()
 
 CTFGrenadeGasProjectile::~CTFGrenadeGasProjectile()
 {
+#ifdef CLIENT_DLL
+	ParticleProp()->StopEmission();
+#endif
 	if ( m_hGasEffect.Get() )
 	{
 		UTIL_Remove( m_hGasEffect );
@@ -118,7 +129,9 @@ CTFGrenadeGasProjectile::~CTFGrenadeGasProjectile()
 void CTFGrenadeGasProjectile::Precache()
 {
 	PrecacheModel( GRENADE_MODEL );
-	PrecacheParticleSystem( "spy_gasgrenade" );
+	PrecacheParticleSystem( "spy_gasgrenade_blue" );
+	PrecacheParticleSystem( "spy_gasgrenade_red" );
+	PrecacheScriptSound("BaseSmokeEffect.Sound");
 	BaseClass::Precache();
 }
 
@@ -136,18 +149,40 @@ void CTFGrenadeGasProjectile::BounceSound( void )
 void CTFGrenadeGasProjectile::DetonateThink( void )
 {
 	// if we're past the detonate time but still moving, delay the detonate
-	if ( gpGlobals->curtime > GetDetonateTime() && VPhysicsGetObject() )
+	if (gpGlobals->curtime > GetDetonateTime() && VPhysicsGetObject())
 	{
 		Vector vel;
-		VPhysicsGetObject()->GetVelocity( &vel, NULL );
-
-		if ( vel.Length() > 35.0 )
+		VPhysicsGetObject()->GetVelocity(&vel, NULL);
+		// we've failed to find a ground entity so wait for the grenade to stop moving or to find ground
+		// this also helps in cases where we've somehow not registered that we've touched the ground
+		if (!GetGroundEntity() && vel.Length() > 25.0)
 		{
-			SetTimer( gpGlobals->curtime + 0.5 );
+			SetTimer(gpGlobals->curtime + 0.05f);
 		}
 	}
 
 	BaseClass::DetonateThink();
+}
+
+bool CTFGrenadeGasProjectile::ShouldNotDetonate(void)
+{
+	CBaseEntity* pTempEnt = NULL;
+
+	while ((pTempEnt = gEntList.FindEntityByClassname(pTempEnt, "trigger_capture_area")) != NULL)
+	{
+		CTriggerAreaCapture* pZone = dynamic_cast<CTriggerAreaCapture*>(pTempEnt);
+
+		if (pZone->IsTouching(this))
+		{
+			return true;
+		}
+	}
+	if (UTIL_PointContents(GetAbsOrigin()) & CONTENTS_WATER)
+	{
+		return true;
+	}
+
+	return BaseClass::ShouldNotDetonate();
 }
 
 //-----------------------------------------------------------------------------
@@ -162,7 +197,9 @@ void CTFGrenadeGasProjectile::Detonate()
 	}
 
 	// start emitting gas
-	VPhysicsGetObject()->EnableMotion( false );
+	//VPhysicsGetObject()->EnableMotion( false ); removed so they dont float if detonated in hand
+	m_bIsGassing = true;
+	//AddSolidFlags(FSOLID_TRIGGER);
 
 	m_hGasEffect = ( CTFGasGrenadeEffect * )CreateEntityByName("tf_gas_grenade_effect");
 	CBaseEntity *pGasEffect = m_hGasEffect.Get();
@@ -170,12 +207,14 @@ void CTFGrenadeGasProjectile::Detonate()
 	{	
 		DispatchSpawn( pGasEffect );
 		pGasEffect->SetAbsOrigin( GetAbsOrigin() );
+		pGasEffect->SetParent(this);
+		pGasEffect->ChangeTeam(GetTeamNumber());
 	}
 
 	EmitSound( "BaseSmokeEffect.Sound" );
 
 	// damage / hallucination effect in waves
-	m_nPulses = 20;
+	m_nPulses = 15;
 
 	SetThink( &CTFGrenadeGasProjectile::Think_Emit );
 	SetNextThink( gpGlobals->curtime + 0.1f );
@@ -187,30 +226,77 @@ void CTFGrenadeGasProjectile::Detonate()
 void CTFGrenadeGasProjectile::Think_Emit( void )
 {
 	Vector vecOrigin = GetAbsOrigin();
-	float flDamage = 10;
-	CTakeDamageInfo info( this, GetThrower(), vec3_origin, vecOrigin, flDamage, DMG_NERVEGAS | DMG_PREVENT_PHYSICS_FORCE );
 
-	CBaseEntity* pEntity = NULL;
-	while ( ( pEntity = gEntList.FindEntityInSphere( pEntity, vecOrigin, TF_HALLUCINATION_RADIUS ) ) != NULL )
+	CTFWeaponInfo pWeaponInfo = *GetTFWeaponInfo( GetWeaponID() );
+
+	float flDamage = pWeaponInfo.GetWeaponDamage(TF_WEAPON_PRIMARY_MODE);
+	float flRadius = pWeaponInfo.m_flDamageRadius;
+
+	CBaseEntity * pEntity = NULL;
+
+	for (CEntitySphereQuery sphere( GetAbsOrigin(), flRadius ); (pEntity = sphere.GetCurrentEntity()) != NULL; sphere.NextEntity())
 	{
-		// check for valid player
-		if ( !pEntity->IsPlayer() )
+		if (pEntity->m_takedamage == DAMAGE_NO)
 			continue;
 
-		pEntity->TakeDamage( info );
+		// check for valid player
+		if (!pEntity->IsPlayer())
+			continue;
+
+		if (!RadiusHit( GetAbsOrigin(), this, pEntity ))
+			continue;
+
+		CTFPlayer *pPlayer = ToTFPlayer(pEntity);
+		if (pPlayer && !pPlayer->m_Shared.InCond( TF_COND_INVULNERABLE ))
+		{
+			CTakeDamageInfo info( this, GetThrower(), vec3_origin, pPlayer->WorldSpaceCenter(), flDamage, DMG_NERVEGAS | DMG_PREVENT_PHYSICS_FORCE );
+			pPlayer->TakeDamage( info );
+			//if (GetThrower() == pEntity || !InSameTeam( pEntity ))
+			//	pPlayer->m_Shared.BeginHallucinating();
+		}
 	}
 
 	m_nPulses--;
 
-	if ( m_nPulses <= 0 )
+	if (m_nPulses <= 0)
 	{
 		// Fade out
-		SetThink( &CTFGrenadeGasProjectile::Think_Fade );
+		SetThink(&CTFGrenadeGasProjectile::Think_Fade);
 	}
 
-	SetNextThink( gpGlobals->curtime + 0.75 );
+	SetNextThink(gpGlobals->curtime + 0.75);
 }
 
+void CTFGrenadeGasProjectile::VPhysicsCollision(int index, gamevcollisionevent_t* pEvent)
+{
+	BaseClass::VPhysicsCollision( index, pEvent );
+
+	if (!m_bIsGassing)
+	{
+		int otherIndex = !index;
+		CBaseEntity* pHitEntity = pEvent->pEntities[otherIndex];
+
+		if (pEvent->deltaCollisionTime < 0.2f && (pHitEntity == this))
+			return;
+
+		Vector vel;
+		VPhysicsGetObject()->GetVelocity(&vel, NULL);
+		float flSpeedSqr = DotProduct(vel, vel);
+		if (flSpeedSqr < 400.0f)
+		{
+			if (pHitEntity->IsStandable())
+			{
+				SetGroundEntity(pHitEntity);
+			}
+		}
+		return;
+	}
+	VPhysicsGetObject()->EnableMotion(false);
+}
+void CTFGrenadeGasProjectile::ExplodeInHand(CTFPlayer* pPlayer)
+{
+	SetTimer(gpGlobals->curtime+0.5);
+}
 //-----------------------------------------------------------------------------
 // Fade the projectile out over time before making it disappear
 //-----------------------------------------------------------------------------
@@ -242,10 +328,10 @@ END_NETWORK_TABLE()
 
 #ifndef CLIENT_DLL
 
-	int CTFGasGrenadeEffect::UpdateTransmitState( void )
-	{
-		return SetTransmitState( FL_EDICT_PVSCHECK );
-	}
+int CTFGasGrenadeEffect::UpdateTransmitState( void )
+{
+	return SetTransmitState( FL_EDICT_PVSCHECK );
+}
 
 #else
 
@@ -253,7 +339,7 @@ END_NETWORK_TABLE()
 	{
 		if ( updateType == DATA_UPDATE_CREATED && m_pGasEffect == NULL )
 		{
-			m_pGasEffect = ParticleProp()->Create( "spy_gasgrenade", PATTACH_ABSORIGIN );
+			m_pGasEffect = ParticleProp()->Create(GetTeamNumber() == TF_TEAM_BLUE ? "spy_gasgrenade_blue" : "spy_gasgrenade_red", PATTACH_ABSORIGIN );
 		}
 	}
 
