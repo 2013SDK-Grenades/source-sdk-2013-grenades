@@ -13,6 +13,9 @@
 
 #include "cbase.h"
 #include "ff_projectile_base.h"
+// FF Grenade Port: needed for TFCOLLISION_GROUP_ROCKETS (replaces FF's own
+// COLLISION_GROUP_ROCKET -- see SetCollisionGroup call below).
+#include "tf_shareddefs.h"
 
 #ifdef GAME_DLL
 	// FF Grenade Port: ff_player.h removed -- not actually referenced anywhere in this file.
@@ -57,7 +60,9 @@ END_NETWORK_TABLE()
 
 #ifdef CLIENT_DLL
 
-	static ConVar ffdev_addinterpsamples("ffdev_addinterpsamples", "1", FCVAR_FF_FFDEV_CLIENT, "");
+	// FF Grenade Port: was FCVAR_FF_FFDEV_CLIENT -- FF's own macro (== FCVAR_CHEAT) defined
+	// in FF's modified public/tier1/iconvar.h, which we don't have. Spelled out directly.
+	static ConVar ffdev_addinterpsamples("ffdev_addinterpsamples", "1", FCVAR_CHEAT, "");
 
 	//----------------------------------------------------------------------------
 	// Purpose: When the rocket enters the client's PVS, add the flight sound
@@ -229,7 +234,12 @@ void CFFProjectileBase::Spawn()
 	SetSolidFlags(FSOLID_NOT_STANDABLE);
 
 	// New Group that everything "projectiles" do, and players -GreenMushy
-	SetCollisionGroup(COLLISION_GROUP_ROCKET);
+	// FF Grenade Port: was COLLISION_GROUP_ROCKET -- FF's own collision group defined in
+	// FF's modified public/const.h ("Projectiles that HIT PLAYERS"). TF2's equivalent is
+	// TFCOLLISION_GROUP_ROCKETS, defined in tf_shareddefs.h with identical semantics
+	// ("Solid to players, but not player movement. ensures touch calls are originating
+	// from rocket"). Confirmed by cross-referencing both const.h comments.
+	SetCollisionGroup(TFCOLLISION_GROUP_ROCKETS);
 }
 
 //----------------------------------------------------------------------------

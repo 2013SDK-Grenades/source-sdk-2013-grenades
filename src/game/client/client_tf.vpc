@@ -599,6 +599,19 @@ $Project "Client (TF)"
 
 			$Folder	"FF Grenades"
 			{
+				// FF Grenade Port: FF files use a nested directory structure
+				// (ff/grenades/, ff/projectiles/, client/ff/fx/) and include headers
+				// across those subdirs using bare filenames. The SDK's default include
+				// directories don't cover these; adding them explicitly here.
+				// client/ff/fx is included so the emitter files can find ff_grenade_base.h.
+				$Configuration
+				{
+					$Compiler
+					{
+						$AdditionalIncludeDirectories	"$SRCDIR\game\shared\ff;$SRCDIR\game\shared\ff\grenades;$SRCDIR\game\shared\ff\projectiles;$SRCDIR\game\client\ff\fx;%(AdditionalIncludeDirectories)"
+					}
+				}
+
 				// FF Grenade Port: shared grenade projectile entities (game/shared/ff/)
 				// These files use #ifdef CLIENT_DLL / #ifdef GAME_DLL guards internally and
 				// must be present in both the client and server builds.

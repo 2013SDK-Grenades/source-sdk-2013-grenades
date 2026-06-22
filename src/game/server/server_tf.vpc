@@ -492,6 +492,80 @@ $Project "Server (TF)"
 				$File	"$SRCDIR\game\shared\tf\tf_weapon_rocketpack.h"
 			}
 
+			$Folder	"FF Grenades"
+			{
+				// FF Grenade Port: FF files use a nested directory structure
+				// (ff/grenades/, ff/projectiles/) and include headers across those
+				// subdirs using bare filenames (e.g. #include "ff_projectile_base.h"
+				// from inside the grenades/ subdir). The SDK's default include
+				// directories don't cover these subdirectories; adding them here.
+				$Configuration
+				{
+					$Compiler
+					{
+						$AdditionalIncludeDirectories	"$SRCDIR\game\shared\ff;$SRCDIR\game\shared\ff\grenades;$SRCDIR\game\shared\ff\projectiles;%(AdditionalIncludeDirectories)"
+					}
+				}
+
+				// FF Grenade Port: shared grenade projectile entities (game/shared/ff/)
+				// These files use #ifdef CLIENT_DLL / #ifdef GAME_DLL guards internally.
+				$File	"$SRCDIR\game\shared\ff\ff_shareddefs.h"
+				$File	"$SRCDIR\game\shared\ff\ff_utils.h"
+				$File	"$SRCDIR\game\shared\ff\ff_utils.cpp"
+				$File	"$SRCDIR\game\shared\ff\grenades\ff_grenade_base.h"
+				$File	"$SRCDIR\game\shared\ff\grenades\ff_grenade_base.cpp"
+				$File	"$SRCDIR\game\shared\ff\grenades\ff_grenade_caltrop.cpp"
+				$File	"$SRCDIR\game\shared\ff\grenades\ff_grenade_concussion.cpp"
+				$File	"$SRCDIR\game\shared\ff\grenades\ff_grenade_emp.h"
+				$File	"$SRCDIR\game\shared\ff\grenades\ff_grenade_emp.cpp"
+				$File	"$SRCDIR\game\shared\ff\grenades\ff_grenade_flare.cpp"
+				$File	"$SRCDIR\game\shared\ff\grenades\ff_grenade_gas.cpp"
+				$File	"$SRCDIR\game\shared\ff\grenades\ff_grenade_laser.cpp"
+				$File	"$SRCDIR\game\shared\ff\grenades\ff_grenade_mirv.cpp"
+				$File	"$SRCDIR\game\shared\ff\grenades\ff_grenade_mirvlet.cpp"
+				$File	"$SRCDIR\game\shared\ff\grenades\ff_grenade_nail.cpp"
+				$File	"$SRCDIR\game\shared\ff\grenades\ff_grenade_napalm.cpp"
+				$File	"$SRCDIR\game\shared\ff\grenades\ff_grenade_normal.cpp"
+				$File	"$SRCDIR\game\shared\ff\grenades\ff_grenade_parse.h"
+				$File	"$SRCDIR\game\shared\ff\grenades\ff_grenade_parse.cpp"
+				$File	"$SRCDIR\game\shared\ff\grenades\ff_grenade_slowfield.cpp"
+				$File	"$SRCDIR\game\shared\ff\projectiles\ff_projectile_base.h"
+				$File	"$SRCDIR\game\shared\ff\projectiles\ff_projectile_base.cpp"
+				$File	"$SRCDIR\game\shared\ff\projectiles\ff_projectile_nail.h"
+				$File	"$SRCDIR\game\shared\ff\projectiles\ff_projectile_nail.cpp"
+
+				// FF Grenade Port: server-only grenade/sub-entity files (game/server/ff/)
+				$File	"$SRCDIR\game\server\ff\ff_caltrop.h"
+				$File	"$SRCDIR\game\server\ff\ff_caltrop.cpp"
+				$File	"$SRCDIR\game\server\ff\ff_grenade_napalmlet.h"
+				$File	"$SRCDIR\game\server\ff\ff_grenade_napalmlet.cpp"
+
+				// FF Grenade Port: the 11 per-grenade CTFWeaponBaseGrenade subclasses
+				// (game/shared/tf/) -- 8 adapted from dormant stock TF2 weapon stubs, 3 new
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_caltrop.h"
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_caltrop.cpp"
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_concussion.h"
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_concussion.cpp"
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_emp.h"
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_emp.cpp"
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_flare.h"
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_flare.cpp"
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_gas.h"
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_gas.cpp"
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_laser.h"
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_laser.cpp"
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_mirv.h"
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_mirv.cpp"
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_nail.h"
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_nail.cpp"
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_napalm.h"
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_napalm.cpp"
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_normal.h"
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_normal.cpp"
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_slowfield.h"
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_slowfield.cpp"
+			}
+
 			$Folder	"Raid"
 			{
 				$File	"tf\raid\tf_raid_logic.cpp"
