@@ -203,7 +203,6 @@ void CTFWeaponBaseGrenadeProj::OnDataChanged( DataUpdateType_t type )
 // PF2C port: team-colored particle name getters for grenade trail/pulse/final-pulse effects.
 // These are called by BeepThink (on the projectile, scheduled by the weapon class).
 //=============================================================================
-ConVar tf_grenade_show_radius_time( "tf_grenade_show_radius_time", "5.0", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY, "Time to show grenade radius" );
 
 const char *CTFWeaponBaseGrenadeProj::GetTrailParticleName( void )
 {
@@ -918,6 +917,9 @@ bool CTFWeaponBaseGrenadeProj::RadiusHit( const Vector &vecSrcIn, CBaseEntity *p
 //-----------------------------------------------------------------------------
 // Purpose: PF2C port -- debug overlay showing grenade blast radius.
 //-----------------------------------------------------------------------------
+// PF2C port: ConVar for DrawRadius debug overlay -- server-only since DrawRadius is #ifdef GAME_DLL.
+static ConVar tf_grenade_show_radius_time( "tf_grenade_show_radius_time", "5.0", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY, "Time to show grenade radius" );
+
 void CTFWeaponBaseGrenadeProj::DrawRadius( float flRadius )
 {
 	Vector pos = GetAbsOrigin();
