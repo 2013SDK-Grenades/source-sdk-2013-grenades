@@ -199,9 +199,11 @@ void CTFWeaponBaseGrenadeProj::OnDataChanged( DataUpdateType_t type )
 	}
 }
 
+#endif // CLIENT_DLL
+
 //=============================================================================
 // PF2C port: team-colored particle name getters for grenade trail/pulse/final-pulse effects.
-// These are called by BeepThink (on the projectile, scheduled by the weapon class).
+// Shared client+server: server calls these from BeepThink; client may call for prediction.
 //=============================================================================
 
 const char *CTFWeaponBaseGrenadeProj::GetTrailParticleName( void )
@@ -223,7 +225,7 @@ const char *CTFWeaponBaseGrenadeProj::GetFinalPulseParticleName( void )
 //
 // Server specific functions.
 //
-#else
+#ifdef GAME_DLL
 
 //-----------------------------------------------------------------------------
 // Purpose:
