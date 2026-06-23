@@ -18,6 +18,11 @@
 #endif
 
 #include "basegrenade_shared.h"
+// FF Grenade Port: pulls in FCVAR_FF_FFDEV* macros (and other FF constants) so
+// they're available to every file that includes this header -- which covers every
+// ff_grenade_*.cpp (via ff_grenade_base.h -> ff_projectile_base.h) and
+// ff_projectile_base.cpp (direct include).
+#include "ff_shareddefs.h"
 
 #ifdef CLIENT_DLL
 	#define CFFProjectileBase C_FFProjectileBase

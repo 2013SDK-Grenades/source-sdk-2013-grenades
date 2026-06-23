@@ -18,7 +18,7 @@ $Configuration
 {
 	$Compiler
 	{
-		$AdditionalIncludeDirectories	"$BASE;$SRCDIR\game\shared\hl2;.\tf;.\tf\vgui;$SRCDIR\statemachine;$SRCDIR\game\shared\Multiplayer;$SRCDIR\game\shared\tf"
+		$AdditionalIncludeDirectories	"$BASE;$SRCDIR\game\shared\hl2;.\tf;.\tf\vgui;$SRCDIR\statemachine;$SRCDIR\game\shared\Multiplayer;$SRCDIR\game\shared\tf;$SRCDIR\game\shared\ff;$SRCDIR\game\shared\ff\grenades;$SRCDIR\game\shared\ff\projectiles;$SRCDIR\game\server\ff"
 		$PreprocessorDefinitions		"$BASE;TF_DLL;ENABLE_GC_MATCHMAKING;GLOWS_ENABLE;USE_DYNAMIC_ASSET_LOADING;NEXT_BOT"
 		$PreprocessorDefinitions		"$BASE;DISABLE_GC_CONNECTION;DISABLE_IN_SOURCESDK;INVENTORY_VIA_WEBAPI" [$SOURCESDK]		
 	}
@@ -494,18 +494,10 @@ $Project "Server (TF)"
 
 			$Folder	"FF Grenades"
 			{
-				// FF Grenade Port: FF files use a nested directory structure
-				// (ff/grenades/, ff/projectiles/) and include headers across those
-				// subdirs using bare filenames (e.g. #include "ff_projectile_base.h"
-				// from inside the grenades/ subdir). The SDK's default include
-				// directories don't cover these subdirectories; adding them here.
-				$Configuration
-				{
-					$Compiler
-					{
-						$AdditionalIncludeDirectories	"$SRCDIR\game\shared\ff;$SRCDIR\game\shared\ff\grenades;$SRCDIR\game\shared\ff\projectiles;%(AdditionalIncludeDirectories)"
-					}
-				}
+				// FF Grenade Port: FF include directories are now in the project-level
+				// $AdditionalIncludeDirectories above (the $Configuration block here was
+				// invalid VPC syntax -- $Configuration is only valid inside $File or at
+				// project level, not inside $Folder).
 
 				// FF Grenade Port: shared grenade projectile entities (game/shared/ff/)
 				// These files use #ifdef CLIENT_DLL / #ifdef GAME_DLL guards internally.

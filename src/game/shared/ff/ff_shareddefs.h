@@ -6,6 +6,16 @@
 
 #ifndef FF_SHAREDDEFS_H
 #define FF_SHAREDDEFS_H
+
+// FF Grenade Port: FF's ConVar flag macros. In FF these were defined in FF's own
+// modified public/tier1/iconvar.h. We use stock iconvar.h, so they're defined here
+// instead. Every FF grenade/projectile file gets them transitively via
+// ff_projectile_base.h -> ff_shareddefs.h. Values verbatim from FF's iconvar.h.
+#ifndef FCVAR_FF_FFDEV
+	#define FCVAR_FF_FFDEV				(FCVAR_CHEAT|FCVAR_NOTIFY)
+	#define FCVAR_FF_FFDEV_REPLICATED	(FCVAR_CHEAT|FCVAR_NOTIFY|FCVAR_REPLICATED)
+	#define FCVAR_FF_FFDEV_CLIENT		(FCVAR_CHEAT)
+#endif
 #ifdef _WIN32
 #pragma once
 #endif
