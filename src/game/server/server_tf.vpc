@@ -164,6 +164,8 @@ $Project "Server (TF)"
 			$File	"$SRCDIR\game\shared\tf\baseobject_shared.h"
 			$File	"tf\entity_ammopack.cpp"
 			$File	"tf\entity_ammopack.h"
+			$File	"tf\entity_grenadepack.cpp"		// PF2C port
+			$File	"tf\entity_grenadepack.h"		// PF2C port
 			$File	"tf\entity_rune.cpp"
 			$File	"tf\entity_rune.h"
 			$File	"tf\entity_armor.cpp"

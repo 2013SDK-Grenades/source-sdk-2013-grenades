@@ -131,6 +131,7 @@
 #include "tf_weapon_bonesaw.h"
 #include "pointhurt.h"
 #include "info_camera_link.h"
+#include "pf_cvars.h"			// PF2C port
 
 // NVNT haptic utils
 #include "haptics/haptic_utils.h"
@@ -4243,6 +4244,12 @@ void CTFPlayer::GiveDefaultItems()
 		ManageBuilderWeapons( pData );
 	}
 
+	// PF2C port: give grenade weapons for each grenade slot the class has.
+	if ( pf_grenades.GetBool() )
+	{
+		ManageGrenades( pData );
+	}
+
 	// Weapons that added greater ammo than base require us to now fill the player up to max ammo
 	for ( int iAmmo = 0; iAmmo < TF_AMMO_COUNT; ++iAmmo )
 	{
@@ -4256,6 +4263,56 @@ void CTFPlayer::GiveDefaultItems()
 	m_Shared.RemoveCond( TF_COND_NOHEALINGDAMAGEBUFF );
 	m_Shared.RemoveCond( TF_COND_DEFENSEBUFF_NO_CRIT_BLOCK );
 	m_Shared.RemoveCond( TF_COND_DEFENSEBUFF_HIGH );
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: PF2C port -- give/refresh grenade weapons for this class.
+//-----------------------------------------------------------------------------
+void CTFPlayer::ManageGrenades( TFPlayerClassData_t *pData )
+{
+	for ( int iGrenade = 0; iGrenade < TF_PLAYER_GRENADE_COUNT; ++iGrenade )
+	{
+		int iWeaponID = pData->m_aGrenades[ iGrenade ];
+
+		if ( iWeaponID != TF_WEAPON_NONE && iWeaponID != TF_WEAPON_BUILDER )
+		{
+			char szWeaponName[ 256 ];
+			Q_strcpy( szWeaponName, WeaponIdToAlias( iWeaponID ) );
+			Q_strlower( szWeaponName );
+
+			CTFWeaponBase *pGrenade = (CTFWeaponBase *)GetWeapon( m_iWeaponCount + iGrenade );
+
+			// If we already have a weapon in this slot but it's the wrong type, remove it (class changed).
+			if ( pGrenade && pGrenade->GetWeaponID() != iWeaponID )
+			{
+				Weapon_Detach( pGrenade );
+				GetViewModel( pGrenade->m_nViewModelIndex, false )->SetWeaponModel( NULL, NULL );
+				UTIL_Remove( pGrenade );
+			}
+
+			pGrenade = (CTFWeaponBase *)Weapon_OwnsThisID( iWeaponID );
+
+			if ( pGrenade )
+			{
+				pGrenade->ChangeTeam( GetTeamNumber() );
+				pGrenade->GiveDefaultAmmo();
+
+				if ( m_bRegenerating == false )
+				{
+					pGrenade->WeaponReset();
+				}
+			}
+			else
+			{
+				pGrenade = (CTFWeaponBase *)GiveNamedItem( szWeaponName );
+
+				if ( pGrenade )
+				{
+					pGrenade->DefaultTouch( this );
+				}
+			}
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------
