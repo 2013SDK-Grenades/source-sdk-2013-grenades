@@ -172,7 +172,7 @@ public:
 	virtual void Precache();
 	virtual const char *GetBounceSound() { return "NailGrenade.Bounce"; }
 
-	virtual Class_T Classify( void ) { return CLASS_GREN_NAIL; } 
+	virtual Class_T Classify( void ) { return (Class_T)CLASS_GREN_NAIL; } 
 
 	virtual color32 GetColour() { color32 col = { 128, 225, 255, GREN_ALPHA_DEFAULT }; return col; }
 

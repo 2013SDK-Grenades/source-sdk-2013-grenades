@@ -50,7 +50,7 @@ public:
 
 	virtual void Precache();
 	virtual const char *GetBounceSound() { return "MirvGrenade.Bounce"; }
-	virtual Class_T Classify( void ) { return CLASS_GREN_MIRV; }
+	virtual Class_T Classify( void ) { return (Class_T)CLASS_GREN_MIRV; }
 
 	virtual color32 GetColour() { color32 col = { 255, 64, 64, GREN_ALPHA_DEFAULT }; return col; }
 

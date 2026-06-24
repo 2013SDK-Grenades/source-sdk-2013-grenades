@@ -203,8 +203,21 @@ enum DamageTypes_t
 #define FF_SNIPER_MAXCHARGE 5.0f //sniperrifle_chargetime.GetFloat()
 
 // FF Grenade Port: TE_EXPLFLAG_* constants used in te->Explosion() calls throughout
-// the grenade files. tempentity.h is in game/shared/ so it compiles on both sides.
-#include "tempentity.h"
+// the grenade files. Copied verbatim from game/shared/tempentity.h rather than
+// #include-ing that header, because including tempentity.h from ff_shareddefs.h
+// breaks the client include chain and makes Class_T undefined in every translation
+// unit that includes ff_shareddefs.h before the client base-entity headers.
+#ifndef TE_EXPLFLAG_NONE
+#define TE_EXPLFLAG_NONE            0x0000  // default Half-Life explosion
+#define TE_EXPLFLAG_NOADDITIVE      0x0001  // sprite drawn opaque
+#define TE_EXPLFLAG_NODLIGHTS       0x0002  // no dynamic lights
+#define TE_EXPLFLAG_NOSOUND         0x0004  // no client explosion sound
+#define TE_EXPLFLAG_NOPARTICLES     0x0008  // no particles
+#define TE_EXPLFLAG_DRAWALPHA       0x0010  // sprite drawn alpha
+#define TE_EXPLFLAG_ROTATE          0x0020  // rotate sprite randomly
+#define TE_EXPLFLAG_NOFIREBALL      0x0040  // no fireball
+#define TE_EXPLFLAG_NOFIREBALLSMOKE 0x0080  // no smoke with fireball
+#endif
 
 #ifdef CLIENT_DLL
 // dlight_t struct used in client-side particle/light code in grenade effect files.
@@ -215,8 +228,8 @@ enum DamageTypes_t
 // the Class_T enum in server/baseentity.h and client/c_baseentity.h. Stock SDK 2013
 // TF2-branch Class_T is { CLASS_NONE=0, CLASS_PLAYER=1, CLASS_PLAYER_ALLY=2,
 // NUM_AI_CLASSES=3 } -- we cannot modify those headers. Defined here as static const
-// int instead. C++ allows implicit int->Class_T conversion in return statements, so
-// Classify() overrides returning these values compile without modification.
+// int instead. All Classify() overrides cast the return value to (Class_T) explicitly
+// because MSVC rejects implicit const int -> enum conversion (C2440).
 // Values start at 100 to guarantee no collision with any stock SDK Class_T value.
 static const int CLASS_DISPENSER      = 100;
 static const int CLASS_SENTRYGUN      = 101;

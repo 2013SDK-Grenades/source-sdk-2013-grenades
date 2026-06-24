@@ -42,7 +42,7 @@ public:
 	virtual float GetGrenadeDamage() { return 0.0f; }
 	virtual float GetGrenadeRadius() { return FFDEV_FLAREGRENRADIUS; }
 	virtual const char* GetBounceSound() { return "GasGrenade.Bounce"; }
-	virtual Class_T Classify(void) { return CLASS_GREN_FLARE; }
+	virtual Class_T Classify(void) { return (Class_T)CLASS_GREN_FLARE; }
 
 	virtual color32 GetColour() { color32 col = { 255, 20, 0, GREN_ALPHA_DEFAULT }; return col; }
 

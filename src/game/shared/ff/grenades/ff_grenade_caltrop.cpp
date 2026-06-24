@@ -57,7 +57,7 @@ public:
 	DECLARE_NETWORKCLASS();
 
 	virtual void Precache();
-	virtual Class_T Classify( void ) { return CLASS_GREN_CALTROP; }
+	virtual Class_T Classify( void ) { return (Class_T)CLASS_GREN_CALTROP; }
 
 	virtual float		GetShakeAmplitude( void ) { return 0.0f; }	// remove the shake
 

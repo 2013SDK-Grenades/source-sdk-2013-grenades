@@ -39,7 +39,7 @@ public:
 
 	virtual void		Precache();
 	virtual const char	*GetBounceSound() { return "NapalmGrenade.Bounce"; }
-	virtual Class_T		Classify() { return CLASS_GREN_NAPALM; }
+	virtual Class_T		Classify() { return (Class_T)CLASS_GREN_NAPALM; }
 	virtual void UpdateOnRemove( void );
 
 	float m_flLastBurnCheck;
