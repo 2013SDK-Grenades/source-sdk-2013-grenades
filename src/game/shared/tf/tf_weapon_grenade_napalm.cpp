@@ -303,7 +303,8 @@ void CTFGrenadeNapalmFire::Think()
 		return;
 	}
 
-	float flDamage = GetTFWeaponInfo( TF_WEAPON_GRENADE_NAPALM )->m_WeaponData[TF_WEAPON_SECONDARY_MODE].m_nDamage;
+	// GetTFWeaponInfo is client-only. Hardcoded from tf_weapon_grenade_napalm.txt: Secondary_Damage=10.
+	float flDamage = 10.0f;
 
 	CBaseEntity *pEntity = NULL;
 	for (CEntitySphereQuery sphere( GetAbsOrigin(), m_DmgRadius ); (pEntity = sphere.GetCurrentEntity()) != NULL; sphere.NextEntity())

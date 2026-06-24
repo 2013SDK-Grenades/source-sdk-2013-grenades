@@ -227,10 +227,8 @@ void CTFGrenadeGasProjectile::Think_Emit( void )
 {
 	Vector vecOrigin = GetAbsOrigin();
 
-	CTFWeaponInfo pWeaponInfo = *GetTFWeaponInfo( GetWeaponID() );
-
-	float flDamage = pWeaponInfo.GetWeaponDamage(TF_WEAPON_PRIMARY_MODE);
-	float flRadius = pWeaponInfo.m_flDamageRadius;
+	float flDamage = m_flDamage;
+	float flRadius = m_DmgRadius;
 
 	CBaseEntity * pEntity = NULL;
 

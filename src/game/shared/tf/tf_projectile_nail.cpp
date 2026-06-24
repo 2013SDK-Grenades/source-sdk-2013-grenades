@@ -143,3 +143,41 @@ void ClientsideProjectileSyringeCallback( const CEffectData &data )
 DECLARE_CLIENT_EFFECT( SYRINGE_DISPATCH_EFFECT, ClientsideProjectileSyringeCallback );
 
 #endif
+
+//=============================================================================
+//
+// CTFProjectile_Nail — PF2C port
+// Fired by the Nail Grenade when it detonates.  Uses w_nail.mdl from PF2C assets.
+//
+//=============================================================================
+#define NAIL_MODEL				"models/weapons/w_models/w_nail.mdl"
+#define NAIL_DISPATCH_EFFECT	"ClientProjectile_Syringe"		// reuse syringe effect as placeholder
+#define NAIL_VELOCITY			2000.0f							// fast nail
+
+#ifdef GAME_DLL
+LINK_ENTITY_TO_CLASS( tf_projectile_nail, CTFProjectile_Nail );
+PRECACHE_REGISTER( tf_projectile_nail );
+
+static short g_sModelIndexNail;
+void PrecacheNail( void *pUser )
+{
+	g_sModelIndexNail = modelinfo->GetModelIndex( NAIL_MODEL );
+}
+PRECACHE_REGISTER_FN( PrecacheNail );
+#endif
+
+CTFBaseProjectile *CTFProjectile_Nail::Create(
+	const Vector &vecOrigin,
+	const QAngle &vecAngles,
+	CTFWeaponBaseGun *pLauncher /*= NULL*/,
+	CBaseEntity *pOwner /*= NULL*/,
+	CBaseEntity *pScorer /*= NULL*/,
+	bool bCritical /*= false*/
+)
+{
+#ifdef GAME_DLL
+	return CTFBaseProjectile::Create( "tf_projectile_nail", vecOrigin, vecAngles, pOwner, NAIL_VELOCITY, g_sModelIndexNail, NAIL_DISPATCH_EFFECT, pScorer, bCritical );
+#else
+	return NULL;
+#endif
+}

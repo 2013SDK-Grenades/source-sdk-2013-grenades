@@ -256,8 +256,10 @@ CTFGrenadeMirvBomb *CTFGrenadeMirvBomb::Create( const Vector &position, const QA
 		pBomb->SetFriction( TF_WEAPON_GRENADE_MIRV_BOMB_GRAVITY );
 		pBomb->SetElasticity( TF_WEAPON_GRENADE_MIRV_BOMB_ELASTICITY );
 
-		pBomb->m_flDamage = GetTFWeaponInfo(TF_WEAPON_GRENADE_MIRV)->GetWeaponData(TF_WEAPON_SECONDARY_MODE).m_nDamage;
-		pBomb->m_DmgRadius = GetTFWeaponInfo(TF_WEAPON_GRENADE_MIRV)->m_flDamageRadius;
+		// GetTFWeaponInfo is client-only. Hardcoded from tf_weapon_grenade_mirv.txt:
+		// Secondary_Damage=60, DamageRadius=132.
+		pBomb->m_flDamage = 60.0f;
+		pBomb->m_DmgRadius = 132.0f;
 
 		pBomb->ChangeTeam( pOwner->GetTeamNumber() );
 

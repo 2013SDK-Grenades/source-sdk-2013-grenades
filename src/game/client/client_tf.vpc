@@ -675,6 +675,7 @@ $Project "Client (TF)"
 				$File	"$SRCDIR\game\shared\tf\tf_weapon_wrench.h"
 				$File	"$SRCDIR\game\shared\tf\tf_weaponbase.cpp"
 				$File	"$SRCDIR\game\shared\tf\tf_weaponbase.h"
+				$File	"$SRCDIR\game\shared\tf\tf_weaponbase_grenade.cpp"			// PF2C port — client needs this for CTFWeaponBaseGrenade method definitions
 				$File	"$SRCDIR\game\shared\tf\tf_weaponbase_grenade.h"				// PF2C port — .cpp is server-only
 				$File	"$SRCDIR\game\shared\tf\tf_weaponbase_grenadeproj.cpp"
 				$File	"$SRCDIR\game\shared\tf\tf_weaponbase_grenadeproj.h"

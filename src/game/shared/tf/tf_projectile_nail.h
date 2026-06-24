@@ -29,5 +29,18 @@ public:
 	virtual float GetGravity( void );
 };
 
+//-----------------------------------------------------------------------------
+// Purpose: Nail projectile — fired by the Nail Grenade when it detonates.
+//-----------------------------------------------------------------------------
+class CTFProjectile_Nail : public CTFBaseProjectile
+{
+	DECLARE_CLASS( CTFProjectile_Nail, CTFBaseProjectile );
+
+public:
+	static CTFBaseProjectile *Create( const Vector &vecOrigin, const QAngle &vecAngles, CTFWeaponBaseGun *pLauncher = NULL, CBaseEntity *pOwner = NULL, CBaseEntity *pScorer = NULL, bool bCritical = false );
+
+	virtual const char *GetProjectileModelName( void ) { return "models/weapons/w_models/w_nail.mdl"; }
+};
+
 
 #endif	//TF_PROJECTILE_NAIL_H

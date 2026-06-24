@@ -158,12 +158,10 @@ void CTFGrenadeHealProjectile::Detonate()
 	}
 	
 	CTFPlayer* pThrower = ToTFPlayer(GetThrower());
-	CTFWeaponInfo pWeaponInfo = *GetTFWeaponInfo( GetWeaponID() );
+	float flRadius = m_DmgRadius;
+	float flHealAmount = m_flDamage;	// weapon script "Damage" field doubles as heal amount
 
-	float flRadius = pWeaponInfo.m_flDamageRadius;
-	float flHealAmount = pWeaponInfo.m_WeaponData->m_nHeal;
-
-	CTakeDamageInfo info( this, GetThrower(), vec3_origin, GetAbsOrigin(), pWeaponInfo.GetWeaponDamage(TF_WEAPON_PRIMARY_MODE), DMG_GENERIC | DMG_PREVENT_PHYSICS_FORCE );
+	CTakeDamageInfo info( this, GetThrower(), vec3_origin, GetAbsOrigin(), m_flDamage, DMG_GENERIC | DMG_PREVENT_PHYSICS_FORCE );
 
 	if ( tf_grenade_show_radius.GetBool() )
 	{
@@ -210,10 +208,10 @@ void CTFGrenadeHealProjectile::Detonate()
 				gameeventmanager->FireEvent( event );
 			}
 		}
-		else /* Infect enemies */
+		else /* damage enemies */
 		{
 			pPlayer->TakeDamage( info );
-			pPlayer->m_Shared.Infect( pThrower );
+			// m_Shared.Infect() is PF2C-specific gas infection — not ported.
 		}
 	}
 

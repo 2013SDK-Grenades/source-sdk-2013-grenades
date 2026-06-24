@@ -203,8 +203,7 @@ void CTFGrenadeConcussionProjectile::Explode( trace_t *pTrace, int bitsDamageTyp
 	CTakeDamageInfo info( this, pThrower, GetBlastForce(), GetAbsOrigin(), m_flDamage, bitsDamageType, 0, &vecReported );
 	RadiusDamage( info, GetAbsOrigin(), m_DmgRadius, CLASS_NONE, NULL );
 
-	CTFWeaponInfo pWeaponInfo = *GetTFWeaponInfo( GetWeaponID() );
-	float flRadius = pWeaponInfo.m_flDamageRadius;
+	float flRadius = m_DmgRadius;
 
 	if (tf_grenade_show_radius.GetBool())
 	{

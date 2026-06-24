@@ -168,10 +168,9 @@ void CTFWeaponBaseGrenade::Prime()
 			{
 				if ( pPlayer->GetActiveTFWeapon() )
 				{
-					if ( ShouldLowerMainWeapon() && !pPlayer->GetActiveTFWeapon()->IsLowered() )
+					if ( ShouldLowerMainWeapon() )
 					{
-						if ( !pPlayer->GetActiveTFWeapon()->Lower() )
-							return;
+						pPlayer->GetActiveTFWeapon()->Lower();
 					}
 				}
 			}
@@ -313,8 +312,7 @@ void CTFWeaponBaseGrenade::Throw()
 	{
 		if (pPlayer->GetActiveTFWeapon())
 		{
-			if (pPlayer->GetActiveTFWeapon()->IsLowered())
-				pPlayer->GetActiveTFWeapon()->Ready();
+			pPlayer->GetActiveTFWeapon()->Ready();
 		}
 	}
 

@@ -35,7 +35,7 @@ public:
 	virtual void			Precache();
 
 	bool					Deploy( void );
-	bool					IsPrimed( void ) { return m_bPrimed; }		// Inline: tf_weaponbase_grenade.cpp not compiled into client
+	bool					IsPrimed( void );
 	void					Prime( void );
 
 	bool					CanThrow( void ) { return gpGlobals->curtime >= m_flPrimeStartTime + 0.8f; }

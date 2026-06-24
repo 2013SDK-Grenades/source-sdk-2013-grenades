@@ -222,7 +222,7 @@ void CTFGrenadeNailProjectile::EmitNails( void )
 {
 	m_iNumNailBurstsLeft--;
 
-	float flDamage = GetTFWeaponInfo(GetWeaponID())->GetWeaponDamage(TF_WEAPON_SECONDARY_MODE);
+	float flDamage = m_flDamage;
 
 	if ( m_iNumNailBurstsLeft < 0 )
 	{
@@ -241,7 +241,9 @@ void CTFGrenadeNailProjectile::EmitNails( void )
 		QAngle angNail( random->RandomFloat( -3, 3 ), m_flNailAngle, 0 );
 
 		// Emit a nail
-		CTFProjectile_Nail *pNail = CTFProjectile_Nail::Create( GetAbsOrigin(), angNail, this, GetThrower() );	
+		// CTFProjectile_Nail::Create takes (origin, angles, launcher=CTFWeaponBaseGun*, owner).
+		// Pass NULL for launcher since we are a projectile, not a gun.
+		CTFBaseProjectile *pNail = CTFProjectile_Nail::Create( GetAbsOrigin(), angNail, NULL, GetThrower() );	
 		if ( pNail )
 		{
 			pNail->SetWeaponID(GetWeaponID());

@@ -168,7 +168,7 @@ void CTFGrenadeCaltropProjectile::Touch( CBaseEntity *pOther )
 	if (pPlayer && !pPlayer->m_Shared.InCond( TF_COND_INVULNERABLE ))
 	{
 		// Do the leg damage to the player
-		CTakeDamageInfo info( this, GetThrower(), GetTFWeaponInfo( GetWeaponID())->GetWeaponDamage(TF_WEAPON_PRIMARY_MODE), DMG_CLUB | DMG_PREVENT_PHYSICS_FORCE );
+		CTakeDamageInfo info( this, GetThrower(), m_flDamage, DMG_CLUB | DMG_PREVENT_PHYSICS_FORCE );
 		pPlayer->TakeDamage( info );
 
 		pPlayer->m_Shared.AddCond(TF_COND_LEG_DAMAGED, 8.0f);
