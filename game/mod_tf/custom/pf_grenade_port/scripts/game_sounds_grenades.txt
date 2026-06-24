@@ -97,3 +97,129 @@
 	}
 	//"wave"		"weapons/emp_explode.wav"
 }
+// ---------------------------------------------------------------------------
+// Bounce sounds — per-type stubs using existing impact wavs.
+// Replace with dedicated wavs once assets are sourced.
+// ---------------------------------------------------------------------------
+"Weapon_Grenade_Caltrop.Bounce"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.7"
+	"soundlevel"	"SNDLVL_85dB"
+	"rndwave"
+	{
+		"wave"		"weapons/grenade_impact.wav"
+		"wave"		"weapons/grenade_impact2.wav"
+		"wave"		"weapons/grenade_impact3.wav"
+	}
+}
+"Weapon_Grenade_Concussion.Bounce"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.7"
+	"soundlevel"	"SNDLVL_85dB"
+	"rndwave"
+	{
+		"wave"		"weapons/grenade_impact.wav"
+		"wave"		"weapons/grenade_impact2.wav"
+		"wave"		"weapons/grenade_impact3.wav"
+	}
+}
+"Weapon_Grenade_Emp.Bounce"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.7"
+	"soundlevel"	"SNDLVL_85dB"
+	"rndwave"
+	{
+		"wave"		"weapons/grenade_impact.wav"
+		"wave"		"weapons/grenade_impact2.wav"
+		"wave"		"weapons/grenade_impact3.wav"
+	}
+}
+"Weapon_Grenade_Gas.Bounce"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.7"
+	"soundlevel"	"SNDLVL_85dB"
+	"rndwave"
+	{
+		"wave"		"weapons/grenade_impact.wav"
+		"wave"		"weapons/grenade_impact2.wav"
+		"wave"		"weapons/grenade_impact3.wav"
+	}
+}
+"Weapon_Grenade_Heal.Bounce"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.7"
+	"soundlevel"	"SNDLVL_85dB"
+	"rndwave"
+	{
+		"wave"		"weapons/grenade_impact.wav"
+		"wave"		"weapons/grenade_impact2.wav"
+		"wave"		"weapons/grenade_impact3.wav"
+	}
+}
+"Weapon_Grenade_Mirv.Bounce"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.7"
+	"soundlevel"	"SNDLVL_85dB"
+	"rndwave"
+	{
+		"wave"		"weapons/grenade_impact.wav"
+		"wave"		"weapons/grenade_impact2.wav"
+		"wave"		"weapons/grenade_impact3.wav"
+	}
+}
+"Weapon_Grenade_MirvBomb.Bounce"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.7"
+	"soundlevel"	"SNDLVL_85dB"
+	"rndwave"
+	{
+		"wave"		"weapons/grenade_impact.wav"
+		"wave"		"weapons/grenade_impact2.wav"
+		"wave"		"weapons/grenade_impact3.wav"
+	}
+}
+"Weapon_Grenade_Nail.Bounce"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.7"
+	"soundlevel"	"SNDLVL_85dB"
+	"rndwave"
+	{
+		"wave"		"weapons/grenade_impact.wav"
+		"wave"		"weapons/grenade_impact2.wav"
+		"wave"		"weapons/grenade_impact3.wav"
+	}
+}
+
+// ---------------------------------------------------------------------------
+// LeadIn sounds (EMP, Heal, Mirv arm sequence) — placeholder using beep.
+// Replace once dedicated wavs are sourced.
+// ---------------------------------------------------------------------------
+"Weapon_Grenade_Emp.LeadIn"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0.5"
+	"soundlevel"	"SNDLVL_74dB"
+	"wave"			"weapons/grenade_beep.wav"
+}
+"Weapon_Grenade_Heal.LeadIn"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0.5"
+	"soundlevel"	"SNDLVL_74dB"
+	"wave"			"weapons/grenade_beep.wav"
+}
+"Weapon_Grenade_Mirv.LeadIn"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0.5"
+	"soundlevel"	"SNDLVL_74dB"
+	"wave"			"weapons/grenade_beep.wav"
+}

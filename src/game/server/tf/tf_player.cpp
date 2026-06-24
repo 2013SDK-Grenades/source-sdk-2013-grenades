@@ -4319,7 +4319,11 @@ void CTFPlayer::ManageGrenades( TFPlayerClassData_t *pData )
 			}
 			else
 			{
-				pGrenade = (CTFWeaponBase *)GiveNamedItem( szWeaponName );
+				// Grenades are not registered in items_game.txt, so we must bypass
+			// CTFPlayer::GiveNamedItem (which goes through the econ item schema and
+			// returns NULL for unknown items).  CBasePlayer::GiveNamedItem creates
+			// the entity directly via CreateEntityByName without a schema lookup.
+			pGrenade = (CTFWeaponBase *)CBasePlayer::GiveNamedItem( szWeaponName );
 
 				if ( pGrenade )
 				{

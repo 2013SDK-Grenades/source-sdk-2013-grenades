@@ -1,0 +1,21 @@
+// PF2C grenade port — custom game_sounds_manifest.txt
+//
+// This file shadows TF2's manifest (from tf2_sound_misc.vpk) because it sits
+// earlier in the search path (mod_tf/custom/ is mounted first).
+// It must re-declare ALL of TF2's standard entries so that base game audio
+// still loads, plus add our grenade script at the end.
+//
+// If you find TF2 sounds missing in-game, compare this list against
+// the manifest inside tf2_sound_misc.vpk and add any missing entries.
+
+"game_sounds_manifest"
+{
+	"precache_file"		"scripts/game_sounds.txt"
+	"precache_file"		"scripts/game_sounds_player.txt"
+	"precache_file"		"scripts/game_sounds_weapons.txt"
+	"precache_file"		"scripts/game_sounds_vo.txt"
+	"precache_file"		"scripts/game_sounds_vo_game.txt"
+	"precache_file"		"scripts/game_sounds_music.txt"
+	"precache_file"		"scripts/game_sounds_physics.txt"
+	"precache_file"		"scripts/game_sounds_grenades.txt"	// PF2C grenade port
+}
