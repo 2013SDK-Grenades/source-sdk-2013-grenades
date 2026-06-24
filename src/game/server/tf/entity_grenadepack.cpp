@@ -53,6 +53,14 @@ void CGrenadePack::Precache( void )
 }
 
 //-----------------------------------------------------------------------------
+// Purpose: Return the default model path for this powerup.
+//-----------------------------------------------------------------------------
+const char *CGrenadePack::GetDefaultPowerupModel( void )
+{
+	return TF_GRENADEPACK_MODEL;
+}
+
+//-----------------------------------------------------------------------------
 // Purpose: MyTouch function for the grenadepack
 //-----------------------------------------------------------------------------
 bool CGrenadePack::MyTouch( CBasePlayer *pPlayer )

@@ -25,6 +25,8 @@ public:
 	void	Spawn( void );
 	void	Precache( void );
 	bool	MyTouch( CBasePlayer *pPlayer );
+
+	virtual const char *GetDefaultPowerupModel( void );
 };
 
 #endif // ENTITY_GRENADEPACK_H

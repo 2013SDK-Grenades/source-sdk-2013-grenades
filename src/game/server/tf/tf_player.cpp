@@ -132,6 +132,7 @@
 #include "pointhurt.h"
 #include "info_camera_link.h"
 #include "pf_cvars.h"			// PF2C port
+#include "tf_weaponbase_grenade.h"	// PF2C port — ManageGrenades
 
 // NVNT haptic utils
 #include "haptics/haptic_utils.h"
@@ -4270,6 +4271,20 @@ void CTFPlayer::GiveDefaultItems()
 //-----------------------------------------------------------------------------
 void CTFPlayer::ManageGrenades( TFPlayerClassData_t *pData )
 {
+	// Count non-throwable-grenade weapons already in the array so we know
+	// which indices are the grenade slots.  Grenades are appended after
+	// the regular weapons (primary/secondary/melee/builder), so this offset
+	// tells us exactly where to look when removing a stale grenade on class change.
+	int iWeaponCount = 0;
+	for ( int i = 0; i < MAX_WEAPONS; ++i )
+	{
+		CBaseCombatWeapon *pWep = GetWeapon( i );
+		if ( pWep && !dynamic_cast<CTFWeaponBaseGrenade *>( pWep ) )
+		{
+			iWeaponCount++;
+		}
+	}
+
 	for ( int iGrenade = 0; iGrenade < TF_PLAYER_GRENADE_COUNT; ++iGrenade )
 	{
 		int iWeaponID = pData->m_aGrenades[ iGrenade ];
@@ -4280,7 +4295,7 @@ void CTFPlayer::ManageGrenades( TFPlayerClassData_t *pData )
 			Q_strcpy( szWeaponName, WeaponIdToAlias( iWeaponID ) );
 			Q_strlower( szWeaponName );
 
-			CTFWeaponBase *pGrenade = (CTFWeaponBase *)GetWeapon( m_iWeaponCount + iGrenade );
+			CTFWeaponBase *pGrenade = (CTFWeaponBase *)GetWeapon( iWeaponCount + iGrenade );
 
 			// If we already have a weapon in this slot but it's the wrong type, remove it (class changed).
 			if ( pGrenade && pGrenade->GetWeaponID() != iWeaponID )
