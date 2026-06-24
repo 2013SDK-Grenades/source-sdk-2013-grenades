@@ -250,7 +250,7 @@ void CFFGrenadeNapalmlet::FlameThink()
 			if( !pPlayer )
 				continue;
 
-			if (g_pGameRules->FCanTakeDamage(pPlayer, GetOwnerEntity()))
+			if (!pPlayer->InSameTeam(GetOwnerEntity()))  // FF Grenade Port: FCanTakeDamage->InSameTeam
 			{
 				// FF Grenade Port: FF's leveled burn system (GetBurnLevel()/IncreaseBurnLevel(),
 				// 0-300 across 3 tiers) doesn't exist in TF2 and isn't being ported -- TF2 has
@@ -273,7 +273,7 @@ void CFFGrenadeNapalmlet::FlameThink()
 			if ( pObject && ( pObject->ObjectType() == OBJ_SENTRYGUN || pObject->ObjectType() == OBJ_DISPENSER )
 				 && !pObject->IsBuilding() && !pObject->IsPlacing() )
 			{
-				if (g_pGameRules->FCanTakeDamage( pEntity, GetOwnerEntity()))
+				if (!pEntity->InSameTeam( GetOwnerEntity()))  // FF Grenade Port: FCanTakeDamage->InSameTeam
 					pEntity->TakeDamage( CTakeDamageInfo( this, GetOwnerEntity(), BURN_STANDON_NG, DMG_BURN ) );
 			}
 		}

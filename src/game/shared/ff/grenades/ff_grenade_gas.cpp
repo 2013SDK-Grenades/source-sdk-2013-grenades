@@ -221,7 +221,7 @@ PRECACHE_WEAPON_REGISTER( ff_grenade_gas );
 				if( !pPlayer || pPlayer->IsObserver() || !pGasser)
 					continue;
 
-				if( !g_pGameRules->FCanTakeDamage( pPlayer, GetOwnerEntity() ) )
+				if( pPlayer->InSameTeam( GetOwnerEntity() ) )  // FF Grenade Port: FCanTakeDamage->InSameTeam (gas skips same team)
 					continue;
 
 				pPlayer->Gas(10.0f, 10.0f, pGasser);

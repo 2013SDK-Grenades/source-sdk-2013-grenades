@@ -36,6 +36,9 @@ public:
 
 public:
 	bool m_bNailGrenadeNail;
+	// FF Grenade Port: m_iDamageType existed on FF's nail projectile for NailTouch()
+	// damage-type tracking. Stock SDK doesn't have it; added here.
+	int  m_iDamageType;
 	virtual void Precache();
 	void BubbleThink();
 	void NailTouch(CBaseEntity *pOther);

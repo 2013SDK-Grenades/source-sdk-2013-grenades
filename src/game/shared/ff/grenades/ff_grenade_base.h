@@ -81,12 +81,22 @@ public:
 	virtual void	Explode(trace_t *pTrace, int bitsDamageType);
 	void SetDetonateTimerLength(float timer);
 	
-	virtual Class_T		Classify( void ) { return CLASS_GREN; }
-	Class_T	GetGrenId() { return Classify(); }
+	// FF Grenade Port: CLASS_GREN is a static const int (defined in ff_shareddefs.h),
+	// not a real Class_T enumerator. The cast silences any -Wconversion warning.
+	virtual Class_T		Classify( void ) { return (Class_T)CLASS_GREN; }
+	// FF Grenade Port: return int (not Class_T) so callers comparing against
+	// CLASS_GREN_* constants (also int) don't get implicit-conversion warnings.
+	int		GetGrenId() { return (int)Classify(); }
 	virtual color32 GetColour();
 
 	bool	m_fIsHandheld;
 	CNetworkVar( bool, m_bIsOn );
+
+	// FF Grenade Port: these members existed in FF's modified basegrenade_shared.h
+	// (which extended CBaseGrenade). Stock SDK 2013 doesn't have them; defined here
+	// on CFFGrenadeBase instead so all grenade Explode() implementations can use them.
+	int		m_iKillType;		// kill-type tag passed into CTakeDamageInfo in Explode()
+	int		m_iDamageType;		// damage-type override for RadiusDamage
 
 #ifdef GAME_DLL
 

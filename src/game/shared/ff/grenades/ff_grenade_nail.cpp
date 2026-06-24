@@ -117,7 +117,7 @@ class PseudoNail
 				if ( pTarget->IsPlayer() || bNailTargetIsValidBuilding )
 				{
 					// If pTarget can take damage from nails...
-					if ( g_pGameRules->FCanTakeDamage( pTarget, pNailGrenOwner ) )
+					if ( !pTarget->InSameTeam( pNailGrenOwner ) )  // FF Grenade Port: FCanTakeDamage->InSameTeam
 					{
 						if (traceHit.m_pEnt->IsPlayer() )
 						{

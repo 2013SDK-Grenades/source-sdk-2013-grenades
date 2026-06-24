@@ -202,4 +202,36 @@ enum DamageTypes_t
 //extern ConVar sniperrifle_chargetime;
 #define FF_SNIPER_MAXCHARGE 5.0f //sniperrifle_chargetime.GetFloat()
 
+// FF Grenade Port: TE_EXPLFLAG_* constants used in te->Explosion() calls throughout
+// the grenade files. tempentity.h is in game/shared/ so it compiles on both sides.
+#include "tempentity.h"
+
+#ifdef CLIENT_DLL
+// dlight_t struct used in client-side particle/light code in grenade effect files.
+#include "dlight.h"
+#endif
+
+// FF Grenade Port: CLASS_GREN_* and related class IDs were added by FF directly to
+// the Class_T enum in server/baseentity.h and client/c_baseentity.h. Stock SDK 2013
+// TF2-branch Class_T is { CLASS_NONE=0, CLASS_PLAYER=1, CLASS_PLAYER_ALLY=2,
+// NUM_AI_CLASSES=3 } -- we cannot modify those headers. Defined here as static const
+// int instead. C++ allows implicit int->Class_T conversion in return statements, so
+// Classify() overrides returning these values compile without modification.
+// Values start at 100 to guarantee no collision with any stock SDK Class_T value.
+static const int CLASS_DISPENSER      = 100;
+static const int CLASS_SENTRYGUN      = 101;
+static const int CLASS_MANCANNON      = 102;
+static const int CLASS_GREN           = 103;
+static const int CLASS_GREN_EMP       = 104;
+static const int CLASS_GREN_NAIL      = 105;
+static const int CLASS_GREN_MIRV      = 106;
+static const int CLASS_GREN_MIRVLET   = 107;
+static const int CLASS_GREN_NAPALM    = 108;
+static const int CLASS_GREN_GAS       = 109;
+static const int CLASS_GREN_FLARE     = 110;
+static const int CLASS_GREN_CONC      = 111;
+static const int CLASS_GREN_CALTROP   = 112;  // commented out in FF's enum; defined here for our caltrop
+static const int CLASS_GREN_LASER     = 113;
+static const int CLASS_GREN_SLOWFIELD = 114;
+
 #endif // FF_SHAREDDEFS_H

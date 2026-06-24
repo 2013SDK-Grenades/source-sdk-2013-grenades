@@ -258,7 +258,7 @@ void CFFCaltrop::CaltropTouch ( CBaseEntity *pOther )
 	CTFPlayer *pPlayer = ToTFPlayer(pOther);
 	if( pPlayer && !pPlayer->IsObserver() )
 	{
-		if( g_pGameRules->FCanTakeDamage( pPlayer, GetOwnerEntity() ) )
+		if( !pPlayer->InSameTeam( GetOwnerEntity() ) )  // FF Grenade Port: FCanTakeDamage->InSameTeam
 		{
 			float flDuration = 15.0f;
 			float flSpeed = 0.8f;

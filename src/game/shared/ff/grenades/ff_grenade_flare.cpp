@@ -146,7 +146,7 @@ void CFFGrenadeFlare::GrenadeThink(void)
 			if (!pPlayer || pPlayer->IsObserver() || !pTagger)
 				continue;
 
-			if (!g_pGameRules->FCanTakeDamage(pPlayer, GetOwnerEntity()))
+			if (pPlayer->InSameTeam(GetOwnerEntity()))  // FF Grenade Port: FCanTakeDamage->InSameTeam (flare skips same team)
 				continue;
 
 			pPlayer->SetRadioTagged(pTagger, gpGlobals->curtime, 15.0f, false);

@@ -356,7 +356,7 @@ float CFFGrenadeLaser::getLengthPercent()
 				continue;
 
 			// If pTarget can take damage from nails...
-			if ( !g_pGameRules->FCanTakeDamage( pEntity, ToTFPlayer( GetOwnerEntity() ) ) )
+			if ( pEntity->InSameTeam( GetOwnerEntity() ) )  // FF Grenade Port: FCanTakeDamage->InSameTeam (laser skips same team)
 				continue;
 
 			if (pEntity->IsPlayer())
@@ -496,7 +496,7 @@ float CFFGrenadeLaser::getLengthPercent()
 		if ( pTarget->IsPlayer() || bTargetIsValidBuilding )
 		{
 			// If pTarget can take damage from nails...
-			if ( g_pGameRules->FCanTakeDamage( pTarget, ToTFPlayer( GetOwnerEntity() ) ) )
+			if ( !pTarget->InSameTeam( GetOwnerEntity() ) )  // FF Grenade Port: FCanTakeDamage->InSameTeam
 			{
 				if (pTarget->IsPlayer() )
 				{

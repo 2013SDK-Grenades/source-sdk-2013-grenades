@@ -439,7 +439,7 @@ void CFFGrenadeSlowfield::UpdateOnRemove()
 			// inside the radius of the gren
 			if (flDistance < GetGrenadeRadius())
 			{
-				if( SLOWFIELD_FRIENDLYIGNORE && !g_pGameRules->FCanTakeDamage( pPlayer, GetOwnerEntity() ) )
+				if( SLOWFIELD_FRIENDLYIGNORE && pPlayer->InSameTeam( GetOwnerEntity() ) )  // FF Grenade Port: FCanTakeDamage->InSameTeam
 					continue;
 				
 				if( SLOWFIELD_SELFIGNORE && pPlayer == pSlower )

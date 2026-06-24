@@ -185,7 +185,11 @@ PRECACHE_WEAPON_REGISTER(ff_grenade_concussion);
 	//-----------------------------------------------------------------------------
 	void CFFGrenadeConcussion::Explode(trace_t *pTrace, int bitsDamageType)
 	{
-		EmitSoundShared(CONCUSSION_SOUND);
+		// FF Grenade Port: FF added CBaseEntity::EmitSoundShared() to its engine fork.
+		// Stock SDK has no such method. EmitSoundShared was EmitSound() with a
+		// CPASAttenuationFilter minus the local player (to avoid double-sound in MP).
+		// Plain EmitSound() is the correct stock equivalent.
+		EmitSound(CONCUSSION_SOUND);
 
 #ifdef GAME_DLL
 		CEffectData data;
@@ -250,7 +254,10 @@ PRECACHE_WEAPON_REGISTER(ff_grenade_concussion);
 			if ( pPlayer && pPlayer->IsObserver( ) && pPlayer->GetObserverMode() == OBS_MODE_IN_EYE )
 				spectators.AddToTail( pPlayer );
 		}
-#endif
+		// FF Grenade Port: CEntitySphereQuery, CTFPlayer, Concuss(), IsStaticBuilding()
+		// and SetAbsVelocity() on CTFPlayer are all server-only here. The block from the
+		// spectators setup through spectators.Purge()/UTIL_Remove is merged into one
+		// #ifdef GAME_DLL guard; inner guards below are now redundant but harmless.
   		CBaseEntity *pEntity = NULL;
 
 		for( CEntitySphereQuery sphere( GetAbsOrigin(), GetGrenadeRadius() ); ( pEntity = sphere.GetCurrentEntity() ) != NULL; sphere.NextEntity() )
@@ -275,7 +282,7 @@ PRECACHE_WEAPON_REGISTER(ff_grenade_concussion);
 
 #ifdef GAME_DLL			
 			// Concuss the player first
-			if (g_pGameRules->FCanTakeDamage(pPlayer, pConcOwner))
+			if (!pPlayer->InSameTeam(pConcOwner))  // FF Grenade Port: FCanTakeDamage->InSameTeam
 			{
 				QAngle angDirection;
 				VectorAngles(vecDisplacement, angDirection);
@@ -383,7 +390,6 @@ PRECACHE_WEAPON_REGISTER(ff_grenade_concussion);
 		}
 
 		// Now get rid of this
-#ifdef GAME_DLL
 		spectators.Purge();
 		UTIL_Remove(this);
 #endif
