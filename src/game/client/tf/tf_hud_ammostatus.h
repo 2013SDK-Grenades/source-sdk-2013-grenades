@@ -63,4 +63,41 @@ private:
 	vgui::ImagePanel				*m_pLowAmmoImage;
 };
 
+//-----------------------------------------------------------------------------
+// Purpose:  Displays grenade ammo counts (grenade1 and grenade2 slots).
+//           PF2C port — stripped CTFInventory dependency, uses GetAmmoCount directly.
+//-----------------------------------------------------------------------------
+class CTFHudGrenadeAmmo : public CHudElement, public vgui::EditablePanel
+{
+	DECLARE_CLASS_SIMPLE( CTFHudGrenadeAmmo, vgui::EditablePanel );
+
+public:
+
+	CTFHudGrenadeAmmo( const char *pElementName );
+
+	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
+	virtual void Reset();
+
+	virtual bool ShouldDraw( void );
+
+protected:
+
+	virtual void OnThink();
+
+private:
+	void UpdateGrenadesLabels( bool bGrenades1, bool bGrenades2 );
+
+private:
+
+	float						m_flNextThink;
+
+	int							m_nGrenades1;
+	int							m_nGrenades2;
+
+	CExLabel					*m_pGrenades1;
+	CExLabel					*m_pGrenades1Shadow;
+	CExLabel					*m_pGrenades2;
+	CExLabel					*m_pGrenades2Shadow;
+};
+
 #endif	// TF_HUD_AMMOSTATUS_H

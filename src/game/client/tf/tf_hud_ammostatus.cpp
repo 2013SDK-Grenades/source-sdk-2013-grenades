@@ -31,6 +31,7 @@
 #include "tf_hud_ammostatus.h"
 #include "tf_gamerules.h"
 #include "tf_logic_halloween_2014.h"
+#include "pf_cvars.h"			// PF2C port — CTFHudGrenadeAmmo needs pf_grenades
 
 using namespace vgui;
 
@@ -331,4 +332,133 @@ void CTFHudWeaponAmmo::OnThink()
 
 		m_flNextThink = gpGlobals->curtime + 0.1f;
 	}
+}
+
+//=============================================================================
+//
+// CTFHudGrenadeAmmo — PF2C port
+// Shows grenade1 / grenade2 counts in the HUD while pf_grenades is enabled.
+//
+//=============================================================================
+
+DECLARE_HUDELEMENT( CTFHudGrenadeAmmo );
+
+//-----------------------------------------------------------------------------
+CTFHudGrenadeAmmo::CTFHudGrenadeAmmo( const char *pElementName )
+	: CHudElement( pElementName ), BaseClass( NULL, "HudGrenadeAmmo" )
+{
+	Panel *pParent = g_pClientMode->GetViewport();
+	SetParent( pParent );
+
+	SetHiddenBits( HIDEHUD_PLAYERDEAD );
+
+	m_flNextThink = 0.0f;
+	m_nGrenades1 = 0;
+	m_nGrenades2 = 0;
+	m_pGrenades1 = NULL;
+	m_pGrenades1Shadow = NULL;
+	m_pGrenades2 = NULL;
+	m_pGrenades2Shadow = NULL;
+}
+
+//-----------------------------------------------------------------------------
+void CTFHudGrenadeAmmo::Reset()
+{
+	m_flNextThink = gpGlobals->curtime + 0.05f;
+}
+
+//-----------------------------------------------------------------------------
+void CTFHudGrenadeAmmo::ApplySchemeSettings( IScheme *pScheme )
+{
+	BaseClass::ApplySchemeSettings( pScheme );
+
+	LoadControlSettings( "resource/UI/HudAmmoGrenades.res" );
+
+	m_pGrenades1       = dynamic_cast<CExLabel*>( FindChildByName( "AmmoGrenades1" ) );
+	m_pGrenades1Shadow = dynamic_cast<CExLabel*>( FindChildByName( "AmmoGrenades1Shadow" ) );
+	m_pGrenades2       = dynamic_cast<CExLabel*>( FindChildByName( "AmmoGrenades2" ) );
+	m_pGrenades2Shadow = dynamic_cast<CExLabel*>( FindChildByName( "AmmoGrenades2Shadow" ) );
+
+	m_nGrenades1 = 0;
+	m_nGrenades2 = 0;
+	m_flNextThink = 0.0f;
+
+	UpdateGrenadesLabels( false, false );
+}
+
+//-----------------------------------------------------------------------------
+bool CTFHudGrenadeAmmo::ShouldDraw( void )
+{
+	C_TFPlayer *pPlayer = C_TFPlayer::GetLocalTFPlayer();
+
+	if ( !pPlayer || !pPlayer->IsAlive() )
+		return false;
+
+	if ( !pPlayer->GetActiveTFWeapon() )
+		return false;
+
+	return CHudElement::ShouldDraw();
+}
+
+//-----------------------------------------------------------------------------
+void CTFHudGrenadeAmmo::UpdateGrenadesLabels( bool bGrenades1, bool bGrenades2 )
+{
+	if ( m_pGrenades1 && m_pGrenades1Shadow )
+	{
+		if ( m_pGrenades1->IsVisible() != bGrenades1 )
+		{
+			m_pGrenades1->SetVisible( bGrenades1 );
+			m_pGrenades1Shadow->SetVisible( bGrenades1 );
+		}
+	}
+
+	if ( m_pGrenades2 && m_pGrenades2Shadow )
+	{
+		if ( m_pGrenades2->IsVisible() != bGrenades2 )
+		{
+			m_pGrenades2->SetVisible( bGrenades2 );
+			m_pGrenades2Shadow->SetVisible( bGrenades2 );
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+void CTFHudGrenadeAmmo::OnThink()
+{
+	if ( m_flNextThink >= gpGlobals->curtime )
+		return;
+
+	C_TFPlayer *pPlayer = C_TFPlayer::GetLocalTFPlayer();
+
+	if ( !pPlayer || !pf_grenades.GetBool() )
+	{
+		UpdateGrenadesLabels( false, false );
+		m_nGrenades1 = 0;
+		m_nGrenades2 = 0;
+	}
+	else
+	{
+		C_TFPlayerClass *pClass = pPlayer->GetPlayerClass();
+		if ( pClass )
+		{
+			TFPlayerClassData_t *pData = pClass->GetData();
+			if ( pData )
+			{
+				UpdateGrenadesLabels(
+					pData->m_aAmmoMax[TF_AMMO_GRENADES1] > 0,
+					pData->m_aAmmoMax[TF_AMMO_GRENADES2] > 0 );
+
+				m_nGrenades1 = pPlayer->GetAmmoCount( TF_AMMO_GRENADES1 );
+				m_nGrenades2 = pPlayer->GetAmmoCount( TF_AMMO_GRENADES2 );
+			}
+		}
+	}
+
+	hudlcd->SetGlobalStat( "(grenades1)", VarArgs( "%d", m_nGrenades1 ) );
+	hudlcd->SetGlobalStat( "(grenades2)", VarArgs( "%d", m_nGrenades2 ) );
+
+	SetDialogVariable( "Grenades1", m_nGrenades1 );
+	SetDialogVariable( "Grenades2", m_nGrenades2 );
+
+	m_flNextThink = gpGlobals->curtime + 0.1f;
 }

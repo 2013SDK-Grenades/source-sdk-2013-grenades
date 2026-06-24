@@ -320,6 +320,7 @@ $Project "Client (TF)"
 			$File	"tf\tf_hud_alert.cpp"
 			$File	"tf\tf_hud_ammostatus.cpp"
 			$File	"tf\tf_hud_ammostatus.h"
+			$File	"tf\tf_hud_smoke_bomb.cpp"			// PF2C port
 			$File	"tf\tf_hud_annotationspanel.cpp"
 			$File	"tf\tf_hud_annotationspanel.h"
 			$File	"tf\tf_hud_arena_capturepoint.cpp"
