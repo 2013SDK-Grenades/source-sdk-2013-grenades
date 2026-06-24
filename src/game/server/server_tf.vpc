@@ -412,6 +412,26 @@ $Project "Server (TF)"
 				$File	"$SRCDIR\game\shared\tf\tf_weapon_grapplinghook.h"
 				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_pipebomb.cpp"
 				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_pipebomb.h"
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_caltrop.cpp"		// PF2C port
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_caltrop.h"
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_concussion.cpp"	// PF2C port
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_concussion.h"
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_emp.cpp"			// PF2C port
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_emp.h"
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_gas.cpp"			// PF2C port
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_gas.h"
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_heal.cpp"			// PF2C port
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_heal.h"
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_mirv.cpp"			// PF2C port
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_mirv.h"
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_nail.cpp"			// PF2C port
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_nail.h"
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_napalm.cpp"		// PF2C port
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_napalm.h"
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_normal.cpp"		// PF2C port
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_normal.h"
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_smoke_bomb.cpp"	// PF2C port
+				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_smoke_bomb.h"
 				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenadelauncher.cpp"
 				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenadelauncher.h"
 				$File	"$SRCDIR\game\shared\tf\tf_weapon_invis.cpp"
@@ -468,6 +488,8 @@ $Project "Server (TF)"
 				$File	"$SRCDIR\game\shared\tf\tf_weapon_wrench.h"
 				$File	"$SRCDIR\game\shared\tf\tf_weaponbase.cpp"
 				$File	"$SRCDIR\game\shared\tf\tf_weaponbase.h"
+				$File	"$SRCDIR\game\shared\tf\tf_weaponbase_grenade.cpp"			// PF2C port
+				$File	"$SRCDIR\game\shared\tf\tf_weaponbase_grenade.h"
 				$File	"$SRCDIR\game\shared\tf\tf_weaponbase_grenadeproj.cpp"
 				$File	"$SRCDIR\game\shared\tf\tf_weaponbase_grenadeproj.h"
 				$File	"$SRCDIR\game\shared\tf\tf_weaponbase_merasmus_grenade.cpp"
