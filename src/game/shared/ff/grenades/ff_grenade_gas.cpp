@@ -55,7 +55,10 @@ public:
 	// 0000819: gas gren radius too large
 	virtual float GetGrenadeRadius() { return FFDEV_GASGRENRADIUS; }
 	virtual const char *GetBounceSound() { return "GasGrenade.Bounce"; }
+	// FF Grenade Port: server-only — see CFFGrenadeBase::Classify() comment.
+#ifdef GAME_DLL
 	virtual Class_T Classify( void ) { return (Class_T)CLASS_GREN_GAS; }
+#endif
 
 	virtual color32 GetColour() { color32 col = { 20, 168, 20, GREN_ALPHA_DEFAULT }; return col; }
 

@@ -646,6 +646,8 @@ $Project "Client (TF)"
 				// Client needs these for networking/prediction; server-only ff files excluded.
 				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_caltrop.h"
 				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_caltrop.cpp"
+				$File	"$SRCDIR\game\shared\tf\tf_weaponbase_grenade.h"
+				$File	"$SRCDIR\game\shared\tf\tf_weaponbase_grenade.cpp"
 				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_concussion.h"
 				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_concussion.cpp"
 				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenade_emp.h"

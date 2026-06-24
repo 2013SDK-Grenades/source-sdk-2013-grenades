@@ -57,7 +57,10 @@ public:
 	DECLARE_NETWORKCLASS();
 
 	virtual void Precache();
+	// FF Grenade Port: server-only — see CFFGrenadeBase::Classify() comment.
+#ifdef GAME_DLL
 	virtual Class_T Classify( void ) { return (Class_T)CLASS_GREN_CALTROP; }
+#endif
 
 	virtual float		GetShakeAmplitude( void ) { return 0.0f; }	// remove the shake
 

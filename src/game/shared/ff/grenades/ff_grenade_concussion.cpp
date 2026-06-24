@@ -128,7 +128,10 @@ public:
 	virtual float GetGrenadeDamage() { return 0.0f; }
 	virtual float GetGrenadeRadius() { return 280.0f; }
 	virtual const char *GetBounceSound() { return "ConcussionGrenade.Bounce"; }
+	// FF Grenade Port: server-only — see CFFGrenadeBase::Classify() comment.
+#ifdef GAME_DLL
 	virtual Class_T Classify( void ) { return (Class_T)CLASS_GREN_CONC; }
+#endif
 
 	virtual color32 GetColour() { color32 col = { 255, 255, 210, GREN_ALPHA_DEFAULT }; return col; }
 

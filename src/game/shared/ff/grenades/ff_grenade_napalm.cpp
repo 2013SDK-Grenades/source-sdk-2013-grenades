@@ -39,7 +39,10 @@ public:
 
 	virtual void		Precache();
 	virtual const char	*GetBounceSound() { return "NapalmGrenade.Bounce"; }
+	// FF Grenade Port: server-only — see CFFGrenadeBase::Classify() comment.
+#ifdef GAME_DLL
 	virtual Class_T		Classify() { return (Class_T)CLASS_GREN_NAPALM; }
+#endif
 	virtual void UpdateOnRemove( void );
 
 	float m_flLastBurnCheck;

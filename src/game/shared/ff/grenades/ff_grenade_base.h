@@ -81,12 +81,16 @@ public:
 	virtual void	Explode(trace_t *pTrace, int bitsDamageType);
 	void SetDetonateTimerLength(float timer);
 	
-	// FF Grenade Port: CLASS_GREN is a static const int (defined in ff_shareddefs.h),
-	// not a real Class_T enumerator. The cast silences any -Wconversion warning.
+	// FF Grenade Port: Classify() and GetGrenId() are server-only.
+	// The TF2 SDK's client-side c_baseentity.h defines Class_T but MSVC fails to
+	// resolve it when processing these shared headers through the client PCH, producing
+	// C3646. Wrapping in GAME_DLL sidesteps the issue entirely; the client falls back
+	// to CBaseEntity::Classify() (CLASS_NONE) which is fine -- the AI class system and
+	// grenade-type dispatch (EMP, nail pierce) are server-only.
+#ifdef GAME_DLL
 	virtual Class_T		Classify( void ) { return (Class_T)CLASS_GREN; }
-	// FF Grenade Port: return int (not Class_T) so callers comparing against
-	// CLASS_GREN_* constants (also int) don't get implicit-conversion warnings.
 	int		GetGrenId() { return (int)Classify(); }
+#endif
 	virtual color32 GetColour();
 
 	bool	m_fIsHandheld;

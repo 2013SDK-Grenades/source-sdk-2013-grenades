@@ -184,7 +184,10 @@ public:
 	virtual float GetGrenadeRadius()		{ return SLOWFIELD_RADIUS_OUTER; }
 	virtual float GetShakeAmplitude()		{ return 0.0f; }
 
-	virtual Class_T Classify( void ) { return (Class_T)CLASS_GREN_SLOWFIELD; } 
+	// FF Grenade Port: server-only — see CFFGrenadeBase::Classify() comment.
+#ifdef GAME_DLL
+	virtual Class_T Classify( void ) { return (Class_T)CLASS_GREN_SLOWFIELD; }
+#endif
 
 	virtual color32 GetColour() { color32 col = { 255, 225, 255, GREN_ALPHA_DEFAULT }; return col; }
 
