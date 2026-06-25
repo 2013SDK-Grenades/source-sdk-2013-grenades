@@ -41,7 +41,6 @@ public:
 	void InitAmmoPack( CTFPlayer *pPlayer, CTFWeaponBase *pWeapon, int nSkin, bool bEmpty, bool bIsSuicide, float flAmmoRatio = 0.5f );
 
 	virtual unsigned int PhysicsSolidMaskForEntity( void ) const;
-	virtual void Explode( CBaseEntity *pThrower );		// PF2C port: EMP grenade detonates this pack
 
 	int GiveAmmo( int iCount, int iAmmoType );
 

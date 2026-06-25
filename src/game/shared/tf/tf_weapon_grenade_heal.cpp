@@ -18,7 +18,6 @@
 #include "soundent.h"
 #include "KeyValues.h"
 #include "particle_parse.h"
-#include "tf_gamestats.h"
 #endif
 
 #define GRENADE_HEAL_TIMER	3.0f //Seconds
@@ -51,7 +50,7 @@ PRECACHE_WEAPON_REGISTER( tf_weapon_grenade_heal );
 BEGIN_DATADESC( CTFGrenadeHeal )
 END_DATADESC()
 
-//ConVar tf_grenade_heal_amount( "tf_grenade_heal_amount", "100", FCVAR_CHEAT, "Amount healed by the medic heal grenade.\n" );
+ConVar tf_grenade_heal_amount( "tf_grenade_heal_amount", "100", FCVAR_CHEAT, "Amount healed by the medic heal grenade.\n" );
 
 //-----------------------------------------------------------------------------
 // Purpose:
@@ -156,12 +155,9 @@ void CTFGrenadeHealProjectile::Detonate()
 		RemoveGrenade();
 		return;
 	}
-	
-	CTFPlayer* pThrower = ToTFPlayer(GetThrower());
-	float flRadius = m_DmgRadius;
-	float flHealAmount = m_flDamage;	// weapon script "Damage" field doubles as heal amount
 
-	CTakeDamageInfo info( this, GetThrower(), vec3_origin, GetAbsOrigin(), m_flDamage, DMG_GENERIC | DMG_PREVENT_PHYSICS_FORCE );
+	float flRadius = 180;
+	float flHealAmount = tf_grenade_heal_amount.GetFloat();
 
 	if ( tf_grenade_show_radius.GetBool() )
 	{
@@ -169,49 +165,17 @@ void CTFGrenadeHealProjectile::Detonate()
 	}
 
 	// Heal every friendly player in the radius for 100 health
-	CBaseEntity * pEntity = NULL;
-	for (CEntitySphereQuery sphere( GetAbsOrigin(), flRadius ); (pEntity = sphere.GetCurrentEntity()) != NULL; sphere.NextEntity())
+
+	CBaseEntity *pEntityList[100];
+	int nEntityCount = UTIL_EntitiesInSphere( pEntityList, 100, GetAbsOrigin(), flRadius, FL_CLIENT );
+	int iEntity;
+	for ( iEntity = 0; iEntity < nEntityCount; ++iEntity )
 	{
-		if (pEntity->m_takedamage == DAMAGE_NO)
-			continue;
+		CTFPlayer *pPlayer = ToTFPlayer( pEntityList[iEntity] );
 
-		// check for valid player
-		if (!pEntity->IsPlayer())
-			continue;
-
-		CTFPlayer *pPlayer = ToTFPlayer( pEntity );
-
-		if (!pPlayer)
-			continue;
-
-		if ( pPlayer->TeamID() == GetThrower()->TeamID() )
+		if ( pPlayer  )
 		{
-			pPlayer->m_Shared.RemoveCond(TF_COND_INFECTED);
-			pPlayer->m_Shared.RemoveCond(TF_COND_BURNING);
-			pPlayer->m_Shared.RemoveCond(TF_COND_NAPALM_BURNING);
-			pPlayer->m_Shared.RemoveCond(TF_COND_LEG_DAMAGED);
-			pPlayer->m_Shared.RemoveCond(TF_COND_TRANQUILIZED);
-
-			int iHealthNeeded = pPlayer->GetMaxHealth() - pPlayer->GetHealth();
-			int iHealthIncreased = min( iHealthNeeded, flHealAmount );
-			pPlayer->TakeHealth( iHealthIncreased, DMG_GENERIC );
-
-			CTF_GameStats.Event_PlayerHealedOther( pThrower, iHealthIncreased, false );
-			IGameEvent* event = gameeventmanager->CreateEvent( "player_healed" );
-			if ( event )
-			{
-				event->SetInt( "priority", 1 );
-				event->SetInt( "patient", pPlayer->GetUserID() );
-				event->SetInt( "healer", pThrower->GetUserID() );
-				event->SetInt( "amount", iHealthIncreased );
-
-				gameeventmanager->FireEvent( event );
-			}
-		}
-		else /* damage and infect enemies */
-		{
-			pPlayer->TakeDamage( info );
-			pPlayer->m_Shared.Infect( pThrower );	// PF2C port: applies TF_COND_INFECTED
+			pPlayer->TakeHealth( flHealAmount, DMG_GENERIC );
 		}
 	}
 

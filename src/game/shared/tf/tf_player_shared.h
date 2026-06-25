@@ -444,8 +444,6 @@ public:
 	void    MakeBleed( CTFPlayer *pPlayer, CTFWeaponBase *pWeapon, float flBleedingTime, int nBleedDmg = TF_BLEEDING_DMG, bool bPermanentBleeding = false, int nDmgType = TF_DMG_CUSTOM_BLEEDING );
 #ifdef GAME_DLL
 	void	StopBleed( CTFPlayer *pPlayer, CTFWeaponBase *pWeapon );
-	void	Concussion( void );	// PF2C port: Concussion grenade's TF_COND_DIZZY trigger
-	void	Infect( CTFPlayer *pAttacker );	// PF2C port: Gas grenade infection — applies TF_COND_INFECTED
 #endif // GAME_DLL
 
 	// Weapons.
@@ -749,7 +747,6 @@ private:
 
 	void OnAddZoomed( void );
 	void OnAddStealthed( void );
-	void OnAddSmokeBomb( void );	// PF2C port
 	void OnAddInvulnerable( void );
 	void OnAddTeleported( void );
 	void OnAddBurning( void );
@@ -827,7 +824,6 @@ private:
 	void OnRemoveZoomed( void );
 	void OnRemoveBurning( void );
 	void OnRemoveStealthed( void );
-	void OnRemoveSmokeBomb( void );	// PF2C port
 	void OnRemoveDisguised( void );
 	void OnRemoveDisguising( void );
 	void OnRemoveInvulnerable( void );
@@ -1119,11 +1115,6 @@ private:
 	CNetworkVar( float, m_flDuckTimer );
 
 	CNetworkVar( float, m_flStealthNoAttackExpire );
-public:
-	// PF2C port: Smoke Bomb grenade.
-	CNetworkVar( float, m_flSmokeBombExpire );
-	float			GetSmokeBombExpireTime() const	{ return m_flSmokeBombExpire; }
-private:
 	CNetworkVar( float, m_flStealthNextChangeTime );
 
 	CNetworkVar( float, m_flRuneCharge );
@@ -1199,12 +1190,6 @@ public:
 	CNetworkVar( float, m_flFirstPrimaryAttack );
 
 	CNetworkVar( float, m_flSpyTranqBuffDuration );
-
-	// Grenades (PF2C port).
-	CNetworkVar( float, m_flNextThrowTime );
-	CNetworkVar( float, m_flConcussionTime );		// TF_COND_DIZZY duration, drives ConcAngles()
-	CHandle< CTFPlayer >	m_hInfectionAttacker;	// PF2C port: who infected this player
-	float					m_flInfectionTime;		// PF2C port: when next infection tick fires
 
 private:
 

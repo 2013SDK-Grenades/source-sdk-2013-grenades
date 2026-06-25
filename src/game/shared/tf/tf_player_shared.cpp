@@ -8,9 +8,6 @@
 #include "tf_player_shared.h"
 #include "takedamageinfo.h"
 #include "tf_weaponbase.h"
-#include "tf_weaponbase_grenade.h"
-#include "tf_weapon_grenade_caltrop.h"
-#include "pf_cvars.h"
 #include "effect_dispatch_data.h"
 #include "tf_item.h"
 #include "entity_capture_flag.h"
@@ -119,11 +116,6 @@ ConVar tf_spy_invis_time( "tf_spy_invis_time", "1.0", FCVAR_DEVELOPMENTONLY | FC
 ConVar tf_spy_invis_unstealth_time( "tf_spy_invis_unstealth_time", "2.0", FCVAR_DEVELOPMENTONLY | FCVAR_REPLICATED, "Transition time in and out of spy invisibility", true, 0.1, true, 5.0 );
 
 ConVar tf_spy_max_cloaked_speed( "tf_spy_max_cloaked_speed", "999", FCVAR_DEVELOPMENTONLY | FCVAR_REPLICATED );	// no cap
-
-// PF2C port: Smoke Bomb grenade.
-ConVar tf_smoke_bomb_time( "tf_smoke_bomb_time", "10.0", FCVAR_DEVELOPMENTONLY | FCVAR_REPLICATED );
-ConVar tf_smoke_bomb_transition_time( "tf_smoke_bomb_transition_time", "0.0", FCVAR_DEVELOPMENTONLY | FCVAR_REPLICATED, "Transition time in of smoke bomb invisibility", true, 0.0, true, 5.0 );
-ConVar tf_smoke_bomb_transition_out_time( "tf_smoke_bomb_transition_out_time", "1.0", FCVAR_DEVELOPMENTONLY | FCVAR_REPLICATED, "Transition time out of smoke bomb invisibility", true, 0.0, true, 5.0 );
 ConVar tf_whip_speed_increase( "tf_whip_speed_increase", "105", FCVAR_DEVELOPMENTONLY | FCVAR_REPLICATED );
 ConVar tf_max_health_boost( "tf_max_health_boost", "1.5", FCVAR_DEVELOPMENTONLY | FCVAR_REPLICATED, "Max health factor that players can be boosted to by healers.", true, 1.0, false, 0 );
 ConVar tf_invuln_time( "tf_invuln_time", "1.0", FCVAR_DEVELOPMENTONLY | FCVAR_REPLICATED, "Time it takes for invulnerability to wear off." );
@@ -343,7 +335,6 @@ BEGIN_RECV_TABLE_NOBASE( CTFPlayerShared, DT_TFPlayerSharedLocal )
 	RecvPropInt( RECVINFO( m_nDesiredDisguiseTeam ) ),
 	RecvPropInt( RECVINFO( m_nDesiredDisguiseClass ) ),
 	RecvPropTime( RECVINFO( m_flStealthNoAttackExpire ) ),
-	RecvPropTime( RECVINFO( m_flSmokeBombExpire ) ),	// PF2C port
 	RecvPropTime( RECVINFO( m_flStealthNextChangeTime ) ),
 	RecvPropBool( RECVINFO( m_bLastDisguisedAsOwnTeam ) ),
 	RecvPropFloat( RECVINFO( m_flRageMeter ) ),
@@ -522,7 +513,6 @@ BEGIN_SEND_TABLE_NOBASE( CTFPlayerShared, DT_TFPlayerSharedLocal )
 	SendPropInt( SENDINFO( m_nDesiredDisguiseClass ), 4, SPROP_UNSIGNED ),
 	SendPropBool( SENDINFO( m_bLastDisguisedAsOwnTeam ) ),
 	SendPropTime( SENDINFO( m_flStealthNoAttackExpire ) ),
-	SendPropTime( SENDINFO( m_flSmokeBombExpire ) ),	// PF2C port
 	SendPropTime( SENDINFO( m_flStealthNextChangeTime ) ),
 	SendPropFloat( SENDINFO( m_flRageMeter ), 0, SPROP_NOSCALE, 0.0, 100.0 ),
 	SendPropBool( SENDINFO( m_bRageDraining ) ),
@@ -795,7 +785,6 @@ CTFPlayerShared::CTFPlayerShared()
 	m_nAirDucked = 0;
 	m_flDuckTimer = 0.0f;
 	m_flStealthNoAttackExpire = 0.0f;
-	m_flSmokeBombExpire = 0.0f;	// PF2C port
 	m_flStealthNextChangeTime = 0.0f;
 	m_iCritMult = 0;
 	m_flInvisibility = 0.0f;
@@ -1608,11 +1597,6 @@ void CTFPlayerShared::OnConditionAdded( ETFCond eCond )
 		OnAddStealthed();
 		break;
 
-	// PF2C port.
-	case TF_COND_SMOKE_BOMB:
-		OnAddSmokeBomb();
-		break;
-
 	case TF_COND_INVULNERABLE:
 	case TF_COND_INVULNERABLE_USER_BUFF:
 	case TF_COND_INVULNERABLE_CARD_EFFECT:
@@ -1895,20 +1879,6 @@ void CTFPlayerShared::OnConditionAdded( ETFCond eCond )
 		OnAddHalloweenHellHeal();
 		break;
 
-	// PF2C port: grenade-applied movement/status conditions.
-	case TF_COND_LEG_DAMAGED:
-#ifdef GAME_DLL
-	{
-		CTFWeaponBase *pWpn = m_pOuter->GetActiveTFWeapon();
-		if ( pWpn )
-		{
-			pWpn->AbortReload();
-		}
-	}
-#endif
-		m_pOuter->TeamFortress_SetSpeed();
-		break;
-
 
 	default:
 		break;
@@ -1975,11 +1945,6 @@ void CTFPlayerShared::OnConditionRemoved( ETFCond eCond )
 
 	case TF_COND_FEIGN_DEATH:
 		OnRemoveFeignDeath();
-		break;
-
-	// PF2C port.
-	case TF_COND_SMOKE_BOMB:
-		OnRemoveSmokeBomb();
 		break;
 
 	case TF_COND_STEALTHED:
@@ -2256,11 +2221,6 @@ void CTFPlayerShared::OnConditionRemoved( ETFCond eCond )
 
 	case TF_COND_HALLOWEEN_HELL_HEAL:
 		OnRemoveHalloweenHellHeal();
-		break;
-
-	// PF2C port.
-	case TF_COND_LEG_DAMAGED:
-		m_pOuter->TeamFortress_SetSpeed();
 		break;
 
 
@@ -3337,48 +3297,6 @@ void CTFPlayerShared::ConditionThink( void )
 		FireClientTauntParticleEffects();
 	}
 #endif // CLIENT_DLL
-
-	// PF2C port: tick down Concussion grenade dizzy duration and grenade-throw cooldown.
-	if ( InCond( TF_COND_DIZZY ) && m_flConcussionTime > 0 )
-	{
-		m_flConcussionTime -= gpGlobals->frametime;
-		if ( m_flConcussionTime < 0 )
-			m_flConcussionTime = 0;
-	}
-
-#ifdef GAME_DLL
-	// PF2C port: Gas grenade infection — deal periodic damage while TF_COND_INFECTED is active.
-	if ( InCond( TF_COND_INFECTED ) )
-	{
-		if ( !m_pOuter->IsAlive() )
-		{
-			RemoveCond( TF_COND_INFECTED );
-		}
-		else if ( gpGlobals->curtime >= m_flInfectionTime && m_pOuter->GetPlayerClass()->GetClassIndex() != TF_CLASS_MEDIC )
-		{
-			if ( m_hInfectionAttacker.Get() && m_hInfectionAttacker.Get()->GetTeamNumber() != m_pOuter->GetTeamNumber() )
-			{
-				// Attacker is still an enemy — credit the infection damage to them.
-				CTakeDamageInfo info( m_hInfectionAttacker, m_hInfectionAttacker, TF_INFECTION_DMG, DMG_PREVENT_PHYSICS_FORCE | DMG_INFECTION );
-				m_pOuter->TakeDamage( info );
-			}
-			else
-			{
-				// Attacker is gone or now a teammate (e.g. joined other team) — tick does neutral damage.
-				CTakeDamageInfo info( m_pOuter, m_pOuter, TF_INFECTION_DMG, DMG_PREVENT_PHYSICS_FORCE | DMG_INFECTION );
-				m_pOuter->TakeDamage( info );
-			}
-			m_flInfectionTime = gpGlobals->curtime + TF_INFECTION_FREQUENCY;
-		}
-	}
-#endif
-
-	if ( m_flNextThrowTime > 0.0f )
-	{
-		m_flNextThrowTime -= gpGlobals->frametime;
-		if ( m_flNextThrowTime < 0.0f )
-			m_flNextThrowTime = 0;
-	}
 }
 
 //-----------------------------------------------------------------------------
@@ -6930,42 +6848,6 @@ void CTFPlayerShared::StopBleed( CTFPlayer *pPlayer, CTFWeaponBase *pWeapon )
 		RemoveCond( TF_COND_BLEEDING );
 	}
 }
-
-// PF2C port: applies the Concussion grenade's dizzy/aim-wobble effect.
-void CTFPlayerShared::Concussion( void )
-{
-	if ( !pf_concuss_effect_disable.GetBool() && !InCond( TF_COND_INVULNERABLE ) )
-	{
-		m_flConcussionTime = TF_WEAPON_GRENADE_CONCUSSION_TIME;
-		AddCond( TF_COND_DIZZY, m_flConcussionTime );
-	}
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: Apply gas grenade infection (TF_COND_INFECTED) to this player.
-//          Medics are immune; ÜberCharged players are immune.
-//          If already infected, just refreshes the attacker handle.
-//          PF2C port — mirrors CTFPlayerShared::Infect() from pf2c-src.
-//-----------------------------------------------------------------------------
-void CTFPlayerShared::Infect( CTFPlayer *pAttacker )
-{
-	if ( !m_pOuter->IsAlive() )
-		return;
-
-	// Medics don't get infected.
-	if ( m_pOuter->IsPlayerClass( TF_CLASS_MEDIC ) )
-		return;
-
-	if ( InCond( TF_COND_INVULNERABLE ) )
-		return;
-
-	if ( !InCond( TF_COND_INFECTED ) )
-	{
-		AddCond( TF_COND_INFECTED, 14.0f );
-		m_flInfectionTime = gpGlobals->curtime;
-	}
-	m_hInfectionAttacker = pAttacker;
-}
 #endif // GAME_DLL
 
 
@@ -7158,39 +7040,6 @@ void CTFPlayerShared::OnAddStealthed( void )
 #ifdef GAME_DLL
 	m_flCloakStartTime = gpGlobals->curtime;
 #endif
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: PF2C port: Smoke Bomb grenade.
-//-----------------------------------------------------------------------------
-void CTFPlayerShared::OnAddSmokeBomb( void )
-{
-#ifdef CLIENT_DLL
-	m_pOuter->RemoveAllDecals();
-#endif
-
-	m_flInvisChangeCompleteTime = gpGlobals->curtime + tf_smoke_bomb_transition_time.GetFloat();
-	m_flSmokeBombExpire = gpGlobals->curtime + tf_smoke_bomb_time.GetFloat();
-
-	m_pOuter->TeamFortress_SetSpeed();
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: PF2C port: Smoke Bomb grenade.
-//-----------------------------------------------------------------------------
-void CTFPlayerShared::OnRemoveSmokeBomb( void )
-{
-	// Guard against being called when the condition isn't actually active.
-	if ( !InCond( TF_COND_SMOKE_BOMB ) )
-		return;
-#ifdef CLIENT_DLL
-	m_pOuter->EmitSound( "Player.Spy_UnCloak" );
-#endif
-
-	m_flInvisChangeCompleteTime = gpGlobals->curtime + tf_smoke_bomb_transition_out_time.GetFloat();
-	m_flStealthNoAttackExpire = gpGlobals->curtime + tf_smoke_bomb_transition_out_time.GetFloat();
-
-	m_pOuter->TeamFortress_SetSpeed();
 }
 
 //-----------------------------------------------------------------------------
@@ -8149,7 +7998,7 @@ void CTFPlayerShared::InvisibilityThink( void )
 	// Go invisible or appear.
 	if ( m_flInvisChangeCompleteTime > gpGlobals->curtime )
 	{
-		if ( IsStealthed() || InCond( TF_COND_SMOKE_BOMB ) )	// PF2C port
+		if ( IsStealthed() )
 		{
 			flTargetInvis = 1.0f - ( ( m_flInvisChangeCompleteTime - gpGlobals->curtime ) );
 		}
@@ -8160,7 +8009,7 @@ void CTFPlayerShared::InvisibilityThink( void )
 	}
 	else
 	{
-		if ( IsStealthed() || InCond( TF_COND_SMOKE_BOMB ) )	// PF2C port
+		if ( IsStealthed() )
 		{
 			flTargetInvis = 1.0f;
 			m_flLastNoMovementTime = -1.f;
@@ -11086,12 +10935,6 @@ float CTFPlayer::TeamFortress_CalculateMaxSpeed( bool bIgnoreSpecialAbility /*= 
 		}
 	}
 
-	// PF2C port: Caltrop grenade movement slow.
-	if ( m_Shared.InCond( TF_COND_LEG_DAMAGED ) )
-	{
-		maxfbspeed *= CALTROP_MOVEMENT_CHANGE;
-	}
-
 	// if we're in bonus time because a team has won, give the winners 110% speed and the losers 90% speed
 	if ( TFGameRules()->State_Get() == GR_STATE_TEAM_WIN )
 	{
@@ -11778,39 +11621,6 @@ void CTFPlayer::ItemPostFrame()
 	// cache buttons because some weapons' ItemPostFrame could change m_nButtons against other weapons
 	int nButtons = m_nButtons;
 
-	// PF2C port: grenade throw input. Detect IN_GRENADE1/IN_GRENADE2 presses and assign
-	// the corresponding grenade as the off-hand weapon so it gets pumped below.
-#ifdef GAME_DLL
-	if ( pf_grenades.GetBool() && !IsPrimed() && CanAttack() && ( GetActiveTFWeapon() && GetActiveTFWeapon()->GetTFWpnData().m_bCanThrowGrenade ) )
-	{
-		for ( int iGrenade = 0; iGrenade < TF_PLAYER_GRENADE_COUNT; iGrenade++ )
-		{
-			CDisablePredictionFiltering disabler;
-
-			if ( m_afButtonPressed & ( iGrenade == 0 ? IN_GRENADE1 : IN_GRENADE2 ) )
-			{
-				TFPlayerClassData_t *pData = m_PlayerClass.GetData();
-				CTFWeaponBaseGrenade *pGrenade = dynamic_cast<CTFWeaponBaseGrenade*>( Weapon_OwnsThisID( pData->m_aGrenades[iGrenade] ) );
-				if ( pGrenade && pGrenade->HasAmmo() && !( m_Shared.m_flNextThrowTime > gpGlobals->curtime ) && !m_Shared.InCond( TF_COND_ZOOMED ) && !m_Shared.InCond( TF_COND_AIMING ) )
-				{
-					SetOffHandWeapon( pGrenade );
-					break;
-				}
-				else
-				{
-					if ( m_flNextDenySound < gpGlobals->curtime )
-					{
-						CSingleUserRecipientFilter filter( this );
-						EmitSound( filter, entindex(), "Player.DenyWeaponSelection" );
-
-						m_flNextDenySound = gpGlobals->curtime + 0.5;
-					}
-				}
-			}
-		}
-	}
-#endif
-
 	if ( m_hOffHandWeapon.Get() && m_hOffHandWeapon->IsWeaponVisible() )
 	{
 		if ( gpGlobals->curtime < m_flNextAttack )
@@ -11885,30 +11695,6 @@ void CTFPlayer::HolsterOffHandWeapon( void )
 	{
 		m_hOffHandWeapon->Holster();
 	}
-}
-
-// PF2C port: holsters the off-hand grenade once its throw animation/state is done.
-void CTFPlayer::FinishThrowGrenade( void )
-{
-	CTFWeaponBaseGrenade *pWeapon = dynamic_cast<CTFWeaponBaseGrenade*>( m_hOffHandWeapon.Get() );
-	if ( pWeapon )
-	{
-		HolsterOffHandWeapon();
-		//SetOffHandWeapon(NULL);
-	}
-}
-
-// PF2C port: true if either of the player's grenades is currently primed.
-bool CTFPlayer::IsPrimed( void )
-{
-	TFPlayerClassData_t *pData = m_PlayerClass.GetData();
-	for ( int i = 0; i < TF_PLAYER_GRENADE_COUNT; i++ )
-	{
-		CTFWeaponBaseGrenade *pGrenade = dynamic_cast<CTFWeaponBaseGrenade*>( Weapon_OwnsThisID( pData->m_aGrenades[i] ) );
-		if ( pGrenade && pGrenade->GetTFWpnData().m_bGrenade && pGrenade->IsPrimed() )
-			return true;
-	}
-	return false;
 }
 
 //-----------------------------------------------------------------------------
@@ -12437,7 +12223,7 @@ bool CTFPlayer::CanAttack( int iCanAttackFlags )
 		return true;
 	}
 
-	if ( ( m_Shared.GetStealthNoAttackExpireTime() > gpGlobals->curtime && !m_Shared.InCond( TF_COND_STEALTHED_USER_BUFF ) ) || m_Shared.InCond( TF_COND_STEALTHED ) || m_Shared.InCond( TF_COND_SMOKE_BOMB ) )
+	if ( ( m_Shared.GetStealthNoAttackExpireTime() > gpGlobals->curtime && !m_Shared.InCond( TF_COND_STEALTHED_USER_BUFF ) ) || m_Shared.InCond( TF_COND_STEALTHED ) )
 	{
 		if ( !( iCanAttackFlags & TF_CAN_ATTACK_FLAG_GRAPPLINGHOOK ) )
 		{
