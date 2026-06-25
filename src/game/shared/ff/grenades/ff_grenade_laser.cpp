@@ -32,6 +32,8 @@
 // FF Grenade Port: CFFPlayer -> CTFPlayer, since ff_player.cpp isn't being ported.
 #ifdef GAME_DLL
 	#include "tf_player.h"
+#else
+	#include "c_tf_player.h"	// brings in #define CTFPlayer C_TFPlayer and ToTFPlayer()
 #endif
 
 #define GRENADE_BEAM_SPRITE			"sprites/plasma.spr"

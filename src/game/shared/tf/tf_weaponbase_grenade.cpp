@@ -291,7 +291,11 @@ void CTFWeaponBaseGrenade::ItemPostFrame()
 		// tell our player that we're all done with the grenade throw.
 		if ( IsEffectActive(EF_NODRAW) )
 		{
+#ifdef GAME_DLL
+			// FF Grenade Port: FinishThrowGrenade() is a server-side CTFPlayer method;
+			// C_TFPlayer has no equivalent. Client just falls through to the return.
 			pPlayer->FinishThrowGrenade();
+#endif
 			return;
 		}
 
@@ -332,7 +336,8 @@ bool CTFWeaponBaseGrenade::ShouldDraw( void )
 			return false;
 
 		// Don't draw primed grenades for local player in first person players
-		if ( !(ToPlayer(GetOwner())->ShouldDrawThisPlayer()) )
+		// FF Grenade Port: ToPlayer() is not declared client-side; ToBasePlayer() is the shared equivalent.
+		if ( !(ToBasePlayer(GetOwner())->ShouldDrawThisPlayer()) )
 			return false;
 	}
 
