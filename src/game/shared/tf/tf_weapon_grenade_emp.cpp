@@ -153,8 +153,6 @@ void CTFGrenadeEmpProjectile::Detonate()
 	// Explosion effect on client
 	//SendDispatchEffect();
 
-	CTFWeaponInfo pWeaponInfo = GetTFWpnData();
-
 	float flRadius = m_DmgRadius;
 	float flDamage = m_flDamage;
 	
@@ -192,7 +190,7 @@ void CTFGrenadeEmpProjectile::Detonate()
 			EMPBeam( pEntity );
 			if (tf_emp_explode_ammo.GetBool())
 			{
-				// CTFAmmoPack::Explode not in SDK — just remove the pack.
+				pAmmo->Explode( GetThrower() );
 				UTIL_Remove( pAmmo );
 			}
 			else

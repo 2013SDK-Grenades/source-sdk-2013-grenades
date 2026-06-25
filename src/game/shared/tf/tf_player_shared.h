@@ -445,6 +445,7 @@ public:
 #ifdef GAME_DLL
 	void	StopBleed( CTFPlayer *pPlayer, CTFWeaponBase *pWeapon );
 	void	Concussion( void );	// PF2C port: Concussion grenade's TF_COND_DIZZY trigger
+	void	Infect( CTFPlayer *pAttacker );	// PF2C port: Gas grenade infection — applies TF_COND_INFECTED
 #endif // GAME_DLL
 
 	// Weapons.
@@ -1202,6 +1203,8 @@ public:
 	// Grenades (PF2C port).
 	CNetworkVar( float, m_flNextThrowTime );
 	CNetworkVar( float, m_flConcussionTime );		// TF_COND_DIZZY duration, drives ConcAngles()
+	CHandle< CTFPlayer >	m_hInfectionAttacker;	// PF2C port: who infected this player
+	float					m_flInfectionTime;		// PF2C port: when next infection tick fires
 
 private:
 

@@ -3346,6 +3346,33 @@ void CTFPlayerShared::ConditionThink( void )
 			m_flConcussionTime = 0;
 	}
 
+#ifdef GAME_DLL
+	// PF2C port: Gas grenade infection — deal periodic damage while TF_COND_INFECTED is active.
+	if ( InCond( TF_COND_INFECTED ) )
+	{
+		if ( !m_pOuter->IsAlive() )
+		{
+			RemoveCond( TF_COND_INFECTED );
+		}
+		else if ( gpGlobals->curtime >= m_flInfectionTime && m_pOuter->GetPlayerClass()->GetClassIndex() != TF_CLASS_MEDIC )
+		{
+			if ( m_hInfectionAttacker.Get() && m_hInfectionAttacker.Get()->GetTeamNumber() != m_pOuter->GetTeamNumber() )
+			{
+				// Attacker is still an enemy — credit the infection damage to them.
+				CTakeDamageInfo info( m_hInfectionAttacker, m_hInfectionAttacker, TF_INFECTION_DMG, DMG_PREVENT_PHYSICS_FORCE | DMG_INFECTION );
+				m_pOuter->TakeDamage( info );
+			}
+			else
+			{
+				// Attacker is gone or now a teammate (e.g. joined other team) — tick does neutral damage.
+				CTakeDamageInfo info( m_pOuter, m_pOuter, TF_INFECTION_DMG, DMG_PREVENT_PHYSICS_FORCE | DMG_INFECTION );
+				m_pOuter->TakeDamage( info );
+			}
+			m_flInfectionTime = gpGlobals->curtime + TF_INFECTION_FREQUENCY;
+		}
+	}
+#endif
+
 	if ( m_flNextThrowTime > 0.0f )
 	{
 		m_flNextThrowTime -= gpGlobals->frametime;
@@ -6912,6 +6939,32 @@ void CTFPlayerShared::Concussion( void )
 		m_flConcussionTime = TF_WEAPON_GRENADE_CONCUSSION_TIME;
 		AddCond( TF_COND_DIZZY, m_flConcussionTime );
 	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Apply gas grenade infection (TF_COND_INFECTED) to this player.
+//          Medics are immune; ÜberCharged players are immune.
+//          If already infected, just refreshes the attacker handle.
+//          PF2C port — mirrors CTFPlayerShared::Infect() from pf2c-src.
+//-----------------------------------------------------------------------------
+void CTFPlayerShared::Infect( CTFPlayer *pAttacker )
+{
+	if ( !m_pOuter->IsAlive() )
+		return;
+
+	// Medics don't get infected.
+	if ( m_pOuter->IsPlayerClass( TF_CLASS_MEDIC ) )
+		return;
+
+	if ( InCond( TF_COND_INVULNERABLE ) )
+		return;
+
+	if ( !InCond( TF_COND_INFECTED ) )
+	{
+		AddCond( TF_COND_INFECTED, 14.0f );
+		m_flInfectionTime = gpGlobals->curtime;
+	}
+	m_hInfectionAttacker = pAttacker;
 }
 #endif // GAME_DLL
 

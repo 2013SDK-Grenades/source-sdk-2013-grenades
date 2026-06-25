@@ -208,10 +208,10 @@ void CTFGrenadeHealProjectile::Detonate()
 				gameeventmanager->FireEvent( event );
 			}
 		}
-		else /* damage enemies */
+		else /* damage and infect enemies */
 		{
 			pPlayer->TakeDamage( info );
-			// m_Shared.Infect() is PF2C-specific gas infection — not ported.
+			pPlayer->m_Shared.Infect( pThrower );	// PF2C port: applies TF_COND_INFECTED
 		}
 	}
 
