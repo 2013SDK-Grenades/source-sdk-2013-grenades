@@ -1,0 +1,26 @@
+// FF Grenade Port: weapon data file for tf_weapon_grenade_napalm
+// TextureData fonts (GrenadeIcons, GrenadeAmmoIcons, StatusGlyphsSmall) are
+// FF-specific and not yet ported; characters below are correct for when they are.
+// printname is a plain string (FF localization keys are not in TF2 resource files).
+WeaponData
+{
+	TextureData
+	{
+		"grenade"
+		{
+			"font"		"GrenadeIcons"
+			"character"	"T"
+		}
+		"ammo"
+		{
+			"font"		"GrenadeAmmoIcons"
+			"character"	"T"
+		}
+		"deathnotice"
+		{
+			"font"		"StatusGlyphsSmall"
+			"character"	"T"
+		}
+	}
+	"printname"	"Napalm Grenade"
+}
