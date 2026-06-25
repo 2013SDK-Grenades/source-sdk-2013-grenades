@@ -383,7 +383,7 @@ const char *GetAmmoName( int iAmmoType );
 #define TF_WEAPON_GRENADE_FRICTION						0.6f
 #define TF_WEAPON_GRENADE_GRAVITY						0.81f
 #define TF_WEAPON_GRENADE_INITPRIME						0.8f
-#define TF_WEAPON_GRENADE_CONCUSSION_TIME				15.0f
+#define TF_WEAPON_GRENADE_CONCUSSION_TIME				5.0f
 #define TF_WEAPON_GRENADE_MIRV_BOMB_COUNT				4
 #define TF_WEAPON_GRENADE_CALTROP_TIME					8.0f
 
@@ -397,6 +397,8 @@ const char *GetAmmoName( int iAmmoType );
 #define TF_WEAPON_FLAMETHROWER_ROCKET_INTERVAL			0.8f
 
 #define TF_WEAPON_ZOOM_FOV								20
+
+#define TF_HALLUCINATION_RADIUS							256
 
 //
 // NOTE: Inserting to most or all of the enums in this file will BREAK DEMOS -
@@ -515,14 +517,6 @@ enum ETFWeaponType
 	TF_WEAPON_GRENADE_JAR_GAS,
 	TF_WEAPON_FLAME_BALL,
 
-	// FF Grenade Port: FF's flare/laser/slowfield grenades have no stock TF2 equivalent
-	// (unlike the other 8 grenade types, which reused existing TF_WEAPON_GRENADE_* values
-	// above). Appended here, not inserted near the other TF_WEAPON_GRENADE_* entries above,
-	// per this enum's own "ADD NEW WEAPONS HERE" convention just below -- inserting in the
-	// middle would shift every subsequent value's underlying integer.
-	TF_WEAPON_GRENADE_FLARE,
-	TF_WEAPON_GRENADE_LASER,
-	TF_WEAPON_GRENADE_SLOWFIELD,
 
 	//
 	// ADD NEW WEAPONS HERE TO AVOID BREAKING DEMOS
@@ -833,6 +827,17 @@ enum ETFCond
 		//
 	// ADD NEW ITEMS HERE TO AVOID BREAKING DEMOS
 	//
+	//PF2 conditions
+	//
+
+	TF_COND_TRANQUILIZED					 = 131,
+	TF_COND_SMOKE_BOMB						 = 132,
+	TF_COND_INFECTED						 = 133,
+	TF_COND_HALLUCINATING					 = 134,
+	TF_COND_NAPALM_BURNING					 = 135,
+	TF_COND_BUILDING_DETPACK				 = 136,
+	TF_COND_DIZZY							 = 137,	// Concussion grenade screen-shake/aim-wobble
+	TF_COND_LEG_DAMAGED						 = 138,	// Caltrop grenade movement-speed slow
 
 	// ******** Keep this block last! ********
 	// Keep experimental conditions below and graduate out of it before shipping
@@ -1174,6 +1179,9 @@ extern const char *g_pszHintMessages[];
 #define DMG_IGNITE								(DMG_PLASMA)
 #define DMG_USEDISTANCEMOD						(DMG_SLOWBURN)		// NEED TO REMOVE CALTROPS
 #define DMG_NOCLOSEDISTANCEMOD					(DMG_POISON)
+#define DMG_INFECTION							(DMG_PHYSGUN)		// PF2
+#define TF_INFECTION_FREQUENCY					2.0f				// PF2C port
+#define TF_INFECTION_DMG						8					// PF2C port
 #define DMG_FROM_OTHER_SAPPER					(DMG_IGNITE)		// USED TO DAMAGE SAPPERS ON MATCHED TELEPORTERS
 #define DMG_MELEE								(DMG_BLAST_SURFACE)
 #define DMG_DONT_COUNT_DAMAGE_TOWARDS_CRIT_RATE	(DMG_DISSOLVE)		// DON'T USE THIS FOR EXPLOSION DAMAGE YOU WILL MAKE BRANDON SAD AND KYLE SADDER
@@ -1190,6 +1198,7 @@ enum ETFDmgCustom
 	TF_DMG_CUSTOM_HEADSHOT,
 	TF_DMG_CUSTOM_BACKSTAB,
 	TF_DMG_CUSTOM_BURNING,
+	TF_DMG_CUSTOM_NAPALM_BURNING,
 	TF_DMG_WRENCH_FIX,
 	TF_DMG_CUSTOM_MINIGUN,
 	TF_DMG_CUSTOM_SUICIDE,
