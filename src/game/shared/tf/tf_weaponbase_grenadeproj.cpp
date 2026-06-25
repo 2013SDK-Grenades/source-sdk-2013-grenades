@@ -920,6 +920,7 @@ bool CTFWeaponBaseGrenadeProj::RadiusHit( const Vector &vecSrcIn, CBaseEntity *p
 // Purpose: PF2C port -- debug overlay showing grenade blast radius.
 //-----------------------------------------------------------------------------
 // PF2C port: ConVar for DrawRadius debug overlay -- server-only since DrawRadius is #ifdef GAME_DLL.
+ConVar tf_grenade_show_radius( "tf_grenade_show_radius", "0", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY, "Show grenade blast radius as a debug overlay." );
 static ConVar tf_grenade_show_radius_time( "tf_grenade_show_radius_time", "5.0", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY, "Time to show grenade radius" );
 
 void CTFWeaponBaseGrenadeProj::DrawRadius( float flRadius )
