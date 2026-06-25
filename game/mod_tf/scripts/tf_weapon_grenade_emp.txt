@@ -1,9 +1,14 @@
 // FF Grenade Port: weapon data file for tf_weapon_grenade_emp
-// TextureData fonts (GrenadeIcons, GrenadeAmmoIcons, StatusGlyphsSmall) are
-// FF-specific and not yet ported; characters below are correct for when they are.
-// printname is a plain string (FF localization keys are not in TF2 resource files).
+// WeaponType "secondary" puts this in slot 1 for testability.
+// GrenadeIcons/GrenadeAmmoIcons fonts are FF-specific and not yet ported.
 WeaponData
 {
+	"printname"		"EMP Grenade"
+	"WeaponType"	"secondary"
+	"Grenade"		"1"
+	"PrimerTime"	"3.0"
+	"DamageRadius"	"150"
+
 	TextureData
 	{
 		"grenade"
@@ -22,5 +27,4 @@ WeaponData
 			"character"	"."
 		}
 	}
-	"printname"	"EMP Grenade"
 }
