@@ -495,6 +495,6 @@ void CTFAmmoPack::Explode( CBaseEntity *pThrower )
 	SetAbsVelocity( vec3_origin );
 	SetNextThink( gpGlobals->curtime );
 
-	if ( GetShakeAmplitude() )
-		UTIL_ScreenShake( GetAbsOrigin(), GetShakeAmplitude(), 150.0, 1.0, GetShakeRadius(), SHAKE_START );
+	// CTFAmmoPack doesn't inherit shake properties; use fixed values matching a small explosion.
+	UTIL_ScreenShake( GetAbsOrigin(), 25.0f, 150.0f, 1.0f, 256.0f, SHAKE_START );
 }
