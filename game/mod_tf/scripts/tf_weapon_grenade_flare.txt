@@ -1,11 +1,13 @@
-// FF Grenade Port: weapon data file for tf_weapon_grenade_flare
-// WeaponType "secondary" puts this in slot 1 for testability.
-// GrenadeIcons/GrenadeAmmoIcons fonts are FF-specific and not yet ported.
+// FF Grenade Port: weapon data for tf_weapon_grenade_flare
+// slot 4 = grenade1 slot (3) or grenade2 slot (4), avoids primary/secondary/melee (0/1/2).
+// WeaponType "grenade" = TF_WPN_TYPE_GRENADE (animation table selection only).
+// GrenadeIcons / GrenadeAmmoIcons fonts are FF-specific, not yet ported.
 WeaponData
 {
 	"printname"		"Flare Grenade"
-	"WeaponType"	"secondary"
+	"WeaponType"	"grenade"
 	"Grenade"		"1"
+	"slot"			"4"
 	"PrimerTime"	"3.0"
 	"DamageRadius"	"150"
 

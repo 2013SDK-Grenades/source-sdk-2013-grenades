@@ -2282,22 +2282,21 @@ void CTFPlayer::PreThink()
 	}
 
 	// FF Grenade Port: When the player first presses +grenade1 or +grenade2, find the
-	// grenade weapon in their inventory and switch to it.  Deploy() will prime it, and
-	// ItemPostFrame() handles cook-while-held / throw-on-release from that point on.
-	// We detect the rising edge (button not held last tick, held this tick) so that
-	// repeated presses after the grenade is already active don't re-deploy it.
-	bool bGrenBtn = ( m_nButtons & ( IN_GRENADE1 | IN_GRENADE2 ) ) != 0;
-	bool bGrenBtnLast = ( m_afButtonLast & ( IN_GRENADE1 | IN_GRENADE2 ) ) != 0;
-	if ( bGrenBtn && !bGrenBtnLast && IsAlive() )
+	// matching grenade weapon and switch to it.  Deploy() primes it, ItemPostFrame()
+	// handles cook-while-held / throw-on-release from that point on.
+	// Grenade1 weapons are in slot 3; grenade2 weapons are in slot 4 (set in weapon scripts).
 	{
-		// Find a grenade weapon — walk all slots looking for CTFWeaponBaseGrenade.
-		for ( int i = 0; i < MAX_WEAPONS; ++i )
+		bool bGren1Pressed = ( m_nButtons & IN_GRENADE1 ) && !( m_afButtonLast & IN_GRENADE1 );
+		bool bGren2Pressed = ( m_nButtons & IN_GRENADE2 ) && !( m_afButtonLast & IN_GRENADE2 );
+
+		if ( ( bGren1Pressed || bGren2Pressed ) && IsAlive() )
 		{
-			CTFWeaponBaseGrenade *pGren = dynamic_cast<CTFWeaponBaseGrenade *>( GetWeapon( i ) );
-			if ( pGren && GetActiveWeapon() != pGren )
+			int iTargetSlot = bGren1Pressed ? 3 : 4;
+			CBaseCombatWeapon *pGren = Weapon_GetSlot( iTargetSlot );
+			CTFWeaponBaseGrenade *pTFGren = dynamic_cast<CTFWeaponBaseGrenade *>( pGren );
+			if ( pTFGren && GetActiveWeapon() != pTFGren )
 			{
-				Weapon_Switch( pGren );
-				break;
+				Weapon_Switch( pTFGren );
 			}
 		}
 	}
@@ -4279,10 +4278,75 @@ void CTFPlayer::GiveDefaultItems()
 	m_Shared.RemoveCond( TF_COND_DEFENSEBUFF_NO_CRIT_BLOCK );
 	m_Shared.RemoveCond( TF_COND_DEFENSEBUFF_HIGH );
 
-	// FF Grenade Port: give all classes a napalm grenade for testing.
-	// The grenade is placed in a free weapon slot; +grenade1/2 auto-equips it.
-	// TODO: replace with per-class grenade assignments once gameplay is confirmed working.
-	GiveNamedItem( "tf_weapon_grenade_napalm" );
+	// FF Grenade Port: give class-specific grenades, bypassing the econ item schema
+	// (GiveNamedItem fails for our weapons because they have no defindex in items_game.txt).
+	// Direct path: CreateEntityByName -> DispatchSpawn -> Weapon_Equip.
+	// Grenade assignments match ff_playerclass_*.txt from the FF asset repository.
+	// Scout has no primary grenade in FF (caltrop is commented out there too).
+	{
+		const char *pszGren1 = NULL;	// grenade1 / primary grenade slot
+		const char *pszGren2 = NULL;	// grenade2 / secondary grenade slot
+
+		switch ( GetPlayerClass()->GetClassIndex() )
+		{
+		case TF_CLASS_SCOUT:
+			// FF: no primary grenade; secondary = concussion
+			pszGren2 = "tf_weapon_grenade_concussion";
+			break;
+		case TF_CLASS_SNIPER:
+			pszGren1 = "tf_weapon_grenade_normal";
+			pszGren2 = "tf_weapon_grenade_flare";
+			break;
+		case TF_CLASS_SOLDIER:
+			pszGren1 = "tf_weapon_grenade_normal";
+			pszGren2 = "tf_weapon_grenade_laser";
+			break;
+		case TF_CLASS_DEMOMAN:
+			pszGren1 = "tf_weapon_grenade_normal";
+			pszGren2 = "tf_weapon_grenade_mirv";
+			break;
+		case TF_CLASS_MEDIC:
+			pszGren1 = "tf_weapon_grenade_normal";
+			pszGren2 = "tf_weapon_grenade_concussion";
+			break;
+		case TF_CLASS_HEAVYWEAPONS:
+			pszGren1 = "tf_weapon_grenade_normal";
+			pszGren2 = "tf_weapon_grenade_slowfield";
+			break;
+		case TF_CLASS_PYRO:
+			pszGren1 = "tf_weapon_grenade_normal";
+			pszGren2 = "tf_weapon_grenade_napalm";
+			break;
+		case TF_CLASS_SPY:
+			pszGren1 = "tf_weapon_grenade_normal";
+			pszGren2 = "tf_weapon_grenade_gas";
+			break;
+		case TF_CLASS_ENGINEER:
+			pszGren1 = "tf_weapon_grenade_normal";
+			pszGren2 = "tf_weapon_grenade_emp";
+			break;
+		}
+
+		// Lambda-style helper: create the entity directly, bypass econ schema entirely
+		auto GiveGrenadeWeapon = [this]( const char *pszClass ) -> CBaseCombatWeapon*
+		{
+			CBaseEntity *pEnt = CreateEntityByName( pszClass );
+			if ( !pEnt )
+				return NULL;
+			pEnt->SetAbsOrigin( GetAbsOrigin() );
+			pEnt->AddSpawnFlags( SF_NORESPAWN );
+			DispatchSpawn( pEnt );
+			if ( pEnt->IsMarkedForDeletion() )
+				return NULL;
+			CBaseCombatWeapon *pWep = dynamic_cast<CBaseCombatWeapon*>( pEnt );
+			if ( pWep )
+				Weapon_Equip( pWep );
+			return pWep;
+		};
+
+		if ( pszGren1 ) GiveGrenadeWeapon( pszGren1 );
+		if ( pszGren2 ) GiveGrenadeWeapon( pszGren2 );
+	}
 }
 
 //-----------------------------------------------------------------------------
