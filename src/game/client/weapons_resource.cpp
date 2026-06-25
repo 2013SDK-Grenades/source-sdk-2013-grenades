@@ -20,7 +20,8 @@ WeaponsResource gWR;
 
 void FreeHudTextureList( CUtlDict< CHudTexture *, int >& list );
 
-static CHudTexture *FindHudTextureInDict( CUtlDict< CHudTexture *, int >& list, const char *psz )
+// FF Grenade Port: was 'static'; made non-static so ff_grenade_parse.cpp can link to it.
+CHudTexture *FindHudTextureInDict( CUtlDict< CHudTexture *, int >& list, const char *psz )
 {
 	int idx = list.Find( psz );
 	if ( idx == list.InvalidIndex() )

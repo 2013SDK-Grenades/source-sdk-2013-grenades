@@ -1524,3 +1524,81 @@ void DrawBeamQuadratic( const Vector &start, const Vector &control, const Vector
 
 	beamDraw.End();
 }
+
+// FF Grenade Port: DrawSpriteRotated() is used by C_FFGrenadeBase::DrawModel() to render
+// the grenade's glow sprite. FF added this function to its fork of beamdraw.cpp.
+// Ported verbatim from ff-src/mp/src/game/client/beamdraw.cpp.
+void DrawSpriteRotated(const Vector& vecOrigin, float flWidth, float flHeight, color32 color, float rotation)
+{
+	unsigned char pColor[4] = { color.r, color.g, color.b, color.a };
+
+	// Generate half-widths
+	flWidth *= 0.5f;
+	flHeight *= 0.5f;
+
+	float flSin = sin(rotation);
+	float flCos = cos(rotation);
+
+	// Compute direction vectors for the sprite
+	Vector fwd, right(flCos, flSin, 0), up(flSin, flCos, 0);
+	VectorSubtract(CurrentViewOrigin(), vecOrigin, fwd);
+	float flDist = VectorNormalize(fwd);
+	if (flDist >= 1e-3)
+	{
+		QAngle angView = CurrentViewAngles() + QAngle(0.0f, 0.0f, anglemod(rotation));
+		Vector vecUp;
+		AngleVectors(angView, NULL, NULL, &vecUp);
+
+		CrossProduct(vecUp, fwd, right);
+		flDist = VectorNormalize(right);
+		if (flDist >= 1e-3)
+		{
+			CrossProduct(fwd, right, up);
+		}
+		else
+		{
+			// fwd == g_vecVUp: it's right above or below us in screen space
+			CrossProduct(fwd, CurrentViewRight(), up);
+			VectorNormalize(up);
+			CrossProduct(up, fwd, right);
+		}
+	}
+
+	CMeshBuilder meshBuilder;
+	Vector point;
+	CMatRenderContextPtr pMatRenderContext(g_pMaterialSystem);
+	IMesh* pMesh = pMatRenderContext->GetDynamicMesh();
+
+	meshBuilder.Begin(pMesh, MATERIAL_QUADS, 1);
+
+	meshBuilder.Color4ubv(pColor);
+	meshBuilder.TexCoord2f(0, 0, 1);
+	VectorMA(vecOrigin, -flHeight, up, point);
+	VectorMA(point, -flWidth, right, point);
+	meshBuilder.Position3fv(point.Base());
+	meshBuilder.AdvanceVertex();
+
+	meshBuilder.Color4ubv(pColor);
+	meshBuilder.TexCoord2f(0, 0, 0);
+	VectorMA(vecOrigin, flHeight, up, point);
+	VectorMA(point, -flWidth, right, point);
+	meshBuilder.Position3fv(point.Base());
+	meshBuilder.AdvanceVertex();
+
+	meshBuilder.Color4ubv(pColor);
+	meshBuilder.TexCoord2f(0, 1, 0);
+	VectorMA(vecOrigin, flHeight, up, point);
+	VectorMA(point, flWidth, right, point);
+	meshBuilder.Position3fv(point.Base());
+	meshBuilder.AdvanceVertex();
+
+	meshBuilder.Color4ubv(pColor);
+	meshBuilder.TexCoord2f(0, 1, 1);
+	VectorMA(vecOrigin, -flHeight, up, point);
+	VectorMA(point, flWidth, right, point);
+	meshBuilder.Position3fv(point.Base());
+	meshBuilder.AdvanceVertex();
+
+	meshBuilder.End();
+	pMesh->Draw();
+}
