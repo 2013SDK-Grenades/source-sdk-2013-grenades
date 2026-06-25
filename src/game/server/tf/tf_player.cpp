@@ -47,6 +47,7 @@
 #include "tf_weapon_bottle.h"
 #include "tf_weapon_sword.h"
 #include "tf_weapon_grenade_pipebomb.h"
+#include "tf_weaponbase_grenade.h"		// FF Grenade Port: for grenade button auto-equip in PreThink
 #include "tf_weapon_buff_item.h"
 #include "tf_weapon_flamethrower.h"
 #include "tf_weapon_laser_pointer.h"
@@ -2280,6 +2281,27 @@ void CTFPlayer::PreThink()
 		}
 	}
 
+	// FF Grenade Port: When the player first presses +grenade1 or +grenade2, find the
+	// grenade weapon in their inventory and switch to it.  Deploy() will prime it, and
+	// ItemPostFrame() handles cook-while-held / throw-on-release from that point on.
+	// We detect the rising edge (button not held last tick, held this tick) so that
+	// repeated presses after the grenade is already active don't re-deploy it.
+	bool bGrenBtn = ( m_nButtons & ( IN_GRENADE1 | IN_GRENADE2 ) ) != 0;
+	bool bGrenBtnLast = ( m_afButtonLast & ( IN_GRENADE1 | IN_GRENADE2 ) ) != 0;
+	if ( bGrenBtn && !bGrenBtnLast && IsAlive() )
+	{
+		// Find a grenade weapon — walk all slots looking for CTFWeaponBaseGrenade.
+		for ( int i = 0; i < MAX_WEAPONS; ++i )
+		{
+			CTFWeaponBaseGrenade *pGren = dynamic_cast<CTFWeaponBaseGrenade *>( GetWeapon( i ) );
+			if ( pGren && GetActiveWeapon() != pGren )
+			{
+				Weapon_Switch( pGren );
+				break;
+			}
+		}
+	}
+
 }
 
 ConVar mp_idledealmethod( "mp_idledealmethod", "1", FCVAR_GAMEDLL, "Deals with Idle Players. 1 = Sends them into Spectator mode then kicks them if they're still idle, 2 = Kicks them out of the game;" );
@@ -4256,6 +4278,11 @@ void CTFPlayer::GiveDefaultItems()
 	m_Shared.RemoveCond( TF_COND_NOHEALINGDAMAGEBUFF );
 	m_Shared.RemoveCond( TF_COND_DEFENSEBUFF_NO_CRIT_BLOCK );
 	m_Shared.RemoveCond( TF_COND_DEFENSEBUFF_HIGH );
+
+	// FF Grenade Port: give all classes a napalm grenade for testing.
+	// The grenade is placed in a free weapon slot; +grenade1/2 auto-equips it.
+	// TODO: replace with per-class grenade assignments once gameplay is confirmed working.
+	GiveNamedItem( "tf_weapon_grenade_napalm" );
 }
 
 //-----------------------------------------------------------------------------
