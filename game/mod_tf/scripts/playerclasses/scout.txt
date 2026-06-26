@@ -7,10 +7,12 @@ PlayerClass
 	"name"			"scout"
 	"model"			"models/player/scout.mdl"
 	"model_hwm"		"models/player/hwm/scout.mdl"
+	"model_bot"		"models/bots/scout/bot_scout.mdl"
+	"model_hands"	"models/weapons/c_models/c_scout_arms.mdl"
 	"localize_name"	"TF_Class_Name_Scout"
-	"speed_max"		"450"
-	"health_armor_max"		"75"
-	"armor_max"		"25"
+	"speed_max"		"400"
+	"health_armor_max"		"90"
+	"armor_max"		"50"
 	"armortype"		"1"
 	"health_max"		"125"
 
@@ -20,21 +22,26 @@ PlayerClass
 
 	// Weapons.
 	"weapon1"		"TF_WEAPON_BAT"
-	"weapon2"		"TF_WEAPON_SHOTGUN_SCOUT"
-	"weapon3"		"TF_WEAPON_NAILGUN"
+	"weapon2"		"TF_WEAPON_PISTOL_SCOUT"
+	"weapon3"		"TF_WEAPON_SCATTERGUN"
+
+	//Thirdperson
+	"cameraoffset_forward"	"85"
+	"cameraoffset_right"	"25"
+	"cameraoffset_up"	"0"
 
 	AmmoMax
 	{
-		"tf_ammo_primary"	"200"
-		"tf_ammo_secondary"	"32"
-		"tf_ammo_metal"		"100"
+		"tf_ammo_primary"	"32"
+		"tf_ammo_secondary"	"36"
+		"tf_ammo_metal"		"200"
 		"tf_ammo_grenades1"	"3"
-		"tf_ammo_grenades2"	"3"	
-	}	
+		"tf_ammo_grenades2"	"3"
+	}		
 
 	// Death Sounds
-	"sound_death"				"Player.Death"
-	"sound_crit_death"				"TFPlayer.CritDeath"
-	"sound_melee_death"			"Player.MeleeDeath"
-	"sound_explosion_death"			"Player.ExplosionDeath"		
+	"sound_death"				"Scout.Death"
+	"sound_crit_death"				"Scout.CritDeath"
+	"sound_melee_death"			"Scout.MeleeDeath"
+	"sound_explosion_death"			"Scout.ExplosionDeath"	
 }
