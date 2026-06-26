@@ -1176,6 +1176,10 @@ private:
 
 	CNetworkVar( float, m_flNextNoiseMakerTime );
 
+	// FF Grenade Port: cooldown timer preventing back-to-back grenade throws.
+	// Networked so prediction can suppress the input client-side.
+	CNetworkVar( float, m_flNextThrowTime );
+
 	float m_flCurrentTauntTurnSpeed;
 #ifdef CLIENT_DLL
 	const WheelEffect_t *m_pWheelEffect;

@@ -384,6 +384,7 @@ BEGIN_RECV_TABLE_NOBASE( CTFPlayerShared, DT_TFPlayerShared )
 	RecvPropEHandle( RECVINFO( m_hCarriedObject ) ),
 	RecvPropBool( RECVINFO( m_bCarryingObject ) ),
 	RecvPropFloat( RECVINFO( m_flNextNoiseMakerTime ) ),
+	RecvPropFloat( RECVINFO( m_flNextThrowTime ) ),		// FF Grenade Port
 	RecvPropInt( RECVINFO( m_iSpawnRoomTouchCount ) ),
 	RecvPropInt( RECVINFO( m_iKillCountSinceLastDeploy ) ),
 	RecvPropFloat( RECVINFO( m_flFirstPrimaryAttack ) ),
@@ -561,6 +562,7 @@ BEGIN_SEND_TABLE_NOBASE( CTFPlayerShared, DT_TFPlayerShared )
 	SendPropEHandle( SENDINFO( m_hCarriedObject ) ),
 	SendPropBool( SENDINFO( m_bCarryingObject ) ),
 	SendPropFloat( SENDINFO( m_flNextNoiseMakerTime ) ),
+	SendPropFloat( SENDINFO( m_flNextThrowTime ) ),		// FF Grenade Port
 	SendPropInt( SENDINFO( m_iSpawnRoomTouchCount ) ),
 	SendPropInt( SENDINFO( m_iKillCountSinceLastDeploy ) ),
 	SendPropFloat( SENDINFO( m_flFirstPrimaryAttack ) ),
@@ -840,6 +842,7 @@ CTFPlayerShared::CTFPlayerShared()
 	m_iOldKillStreakWepSlot = 0;
 
 	m_flNextNoiseMakerTime = 0;
+	m_flNextThrowTime = 0;		// FF Grenade Port
 	m_iSpawnRoomTouchCount = 0;
 
 	m_iKillCountSinceLastDeploy = 0;
@@ -11620,6 +11623,50 @@ void CTFPlayer::ItemPostFrame()
 
 	// cache buttons because some weapons' ItemPostFrame could change m_nButtons against other weapons
 	int nButtons = m_nButtons;
+
+	// FF Grenade Port: detect IN_GRENADE1 / IN_GRENADE2 button presses (rising edge via
+	// m_afButtonPressed) and route the corresponding grenade weapon to the off-hand path.
+	// The off-hand weapon's ItemPostFrame() then handles prime-while-held / throw-on-release.
+	// Mirrors PF2C's approach exactly; adapted to use ff_grenades ConVar and FF class data.
+#ifdef GAME_DLL
+	{
+		static ConVar ff_grenades( "ff_grenades", "1", FCVAR_NOTIFY,
+			"FF Grenade Port: enable grenade button input (1=on, 0=off)." );
+
+		TFPlayerClassData_t *pData = m_PlayerClass.GetData();
+		CTFWeaponBase *pActive = GetActiveTFWeapon();
+		bool bCanThrow = pActive ? pActive->GetTFWpnData().m_bCanThrowGrenade : true;
+
+		if ( ff_grenades.GetBool() && !IsPrimed() && CanAttack() && bCanThrow && pData )
+		{
+			for ( int iGrenade = 0; iGrenade < TF_PLAYER_GRENADE_COUNT; iGrenade++ )
+			{
+				if ( m_afButtonPressed & ( iGrenade == 0 ? IN_GRENADE1 : IN_GRENADE2 ) )
+				{
+					CTFWeaponBaseGrenade *pGrenade = dynamic_cast<CTFWeaponBaseGrenade *>(
+						Weapon_OwnsThisID( pData->m_aGrenades[iGrenade] ) );
+
+					if ( pGrenade && !( m_Shared.m_flNextThrowTime > gpGlobals->curtime ) )
+					{
+						SetOffHandWeapon( pGrenade );
+						break;
+					}
+					else if ( !pGrenade || m_Shared.m_flNextThrowTime > gpGlobals->curtime )
+					{
+						// No grenade or on cooldown — play deny sound
+						if ( m_flNextDenySound < gpGlobals->curtime )
+						{
+							CSingleUserRecipientFilter filter( this );
+							EmitSound( filter, entindex(), "Player.DenyWeaponSelection" );
+							m_flNextDenySound = gpGlobals->curtime + 0.5f;
+						}
+					}
+					break;
+				}
+			}
+		}
+	}
+#endif
 
 	if ( m_hOffHandWeapon.Get() && m_hOffHandWeapon->IsWeaponVisible() )
 	{

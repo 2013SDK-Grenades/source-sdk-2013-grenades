@@ -1,15 +1,16 @@
 // FF Grenade Port: weapon data for tf_weapon_grenade_concussion
-// slot 4 = grenade1 slot (3) or grenade2 slot (4), avoids primary/secondary/melee (0/1/2).
-// WeaponType "grenade" = TF_WPN_TYPE_GRENADE (animation table selection only).
-// GrenadeIcons / GrenadeAmmoIcons fonts are FF-specific, not yet ported.
+// slot is intentionally unset (defaults to 0) - grenades are given/managed
+// via ManageGrenades() and activated via the off-hand weapon path, not weapon slots.
+// primary_ammo ties into tf_ammo_grenades1/2 set in playerclass scripts.
 WeaponData
 {
-	"printname"		"Concussion Grenade"
-	"WeaponType"	"grenade"
-	"Grenade"		"1"
-	"slot"			"4"
-	"PrimerTime"	"3.0"
-	"DamageRadius"	"150"
+	"printname"			"Concussion Grenade"
+	"WeaponType"		"grenade"
+	"Grenade"			"1"
+	"CanThrowGrenade"	"1"
+	"PrimerTime"		"3.0"
+	"DamageRadius"		"150"
+	"primary_ammo"		"TF_AMMO_GRENADES2"
 
 	TextureData
 	{

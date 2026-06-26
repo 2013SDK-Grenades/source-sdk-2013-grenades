@@ -26,6 +26,7 @@ CTFWeaponInfo::CTFWeaponInfo()
 	m_WeaponData[1].Init();
 
 	m_bGrenade = false;
+	m_bCanThrowGrenade = true;	// FF Grenade Port: default true (all weapons allow grenades)
 	m_flDamageRadius = 0.0f;
 	m_flPrimerTime = 0.0f;
 	m_bSuppressGrenTimer = false;
@@ -168,6 +169,7 @@ void CTFWeaponInfo::Parse( KeyValues *pKeyValuesData, const char *szWeaponName )
 
 	// Grenade data.
 	m_bGrenade				= ( pKeyValuesData->GetInt( "Grenade", 0 ) != 0 );
+	m_bCanThrowGrenade		= ( pKeyValuesData->GetInt( "CanThrowGrenade", 1 ) != 0 );	// FF Grenade Port: default 1
 	m_flDamageRadius		= pKeyValuesData->GetFloat( "DamageRadius", 0.0f );
 	m_flPrimerTime			= pKeyValuesData->GetFloat( "PrimerTime", 0.0f );
 	m_bSuppressGrenTimer	= ( pKeyValuesData->GetInt( "PlayGrenTimer", 1 ) <= 0 );

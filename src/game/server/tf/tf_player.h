@@ -753,6 +753,7 @@ public:
 	void				ManageRegularWeapons( TFPlayerClassData_t *pData );
 	void				ManageRegularWeaponsLegacy( TFPlayerClassData_t *pData );	// Older, pre-inventory method of managing regular weapons
 	void				ManageBuilderWeapons( TFPlayerClassData_t *pData );
+	void				ManageGrenades( TFPlayerClassData_t *pData );	// FF Grenade Port
 	virtual CBaseEntity	*GiveNamedItem( const char *szName, int iSubType = 0, const CEconItemView *pScriptItem = NULL, bool bForce = false );
 	void				PostInventoryApplication( void );
 	bool				ItemIsAllowed( CEconItemView *pItem );
@@ -1245,6 +1246,9 @@ private:
 
 	float					m_flHealthBuffTime;
 	int						m_iHealthBefore;
+
+	// FF Grenade Port: throttle deny-sound when grenade button pressed with no grenade.
+	float					m_flNextDenySound;
 
 	float					m_flNextRegenerateTime;
 	float					m_flNextChangeClassTime;

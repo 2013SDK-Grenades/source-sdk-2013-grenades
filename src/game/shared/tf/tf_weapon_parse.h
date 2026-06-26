@@ -78,6 +78,9 @@ public:
 	
 	// Grenade.
 	bool	m_bGrenade;
+	// FF Grenade Port: active weapon allows grenade-button input to reach off-hand
+	// grenade. Defaults to true so all stock TF2 weapons allow grenades.
+	bool	m_bCanThrowGrenade;
 	float	m_flDamageRadius;
 	float	m_flPrimerTime;
 	bool	m_bLowerWeapon;
