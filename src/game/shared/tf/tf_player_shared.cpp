@@ -34,6 +34,11 @@
 #include "tf_weapon_rocketpack.h"
 #include <functional>
 
+// FF Grenade Port: CTFWeaponBaseGrenade needed for IsPrimed() and SetOffHandWeapon path.
+#ifdef GAME_DLL
+#include "tf_weaponbase_grenade.h"
+#endif
+
 // Client specific.
 #ifdef CLIENT_DLL
 #include "c_baseviewmodel.h"
@@ -11743,6 +11748,28 @@ void CTFPlayer::HolsterOffHandWeapon( void )
 		m_hOffHandWeapon->Holster();
 	}
 }
+
+//-----------------------------------------------------------------------------
+// FF Grenade Port: returns true if any grenade the player owns is currently primed.
+// Called in ItemPostFrame to gate whether a new grenade can be activated.
+// Mirrors PF2C's implementation in pf2c-src/game/shared/tf/tf_player_shared.cpp.
+//-----------------------------------------------------------------------------
+#ifdef GAME_DLL
+bool CTFPlayer::IsPrimed( void )
+{
+	TFPlayerClassData_t *pData = m_PlayerClass.GetData();
+	if ( !pData )
+		return false;
+	for ( int i = 0; i < TF_PLAYER_GRENADE_COUNT; i++ )
+	{
+		CTFWeaponBaseGrenade *pGrenade = dynamic_cast<CTFWeaponBaseGrenade *>(
+			Weapon_OwnsThisID( pData->m_aGrenades[i] ) );
+		if ( pGrenade && pGrenade->GetTFWpnData().m_bGrenade && pGrenade->IsPrimed() )
+			return true;
+	}
+	return false;
+}
+#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: Return true if we should record our last weapon when switching between the two specified weapons

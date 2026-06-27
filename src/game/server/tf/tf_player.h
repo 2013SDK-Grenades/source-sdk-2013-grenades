@@ -618,6 +618,7 @@ public:
 	// game/shared/hl2mp/weapon_frag.cpp (SwitchToNextBestWeapon after a thrown weapon
 	// empties), which is the closest real, working hand-grenade weapon in this codebase.
 	void FinishThrowGrenade( void );
+	bool IsPrimed( void );					// FF Grenade Port: true if any owned grenade is primed
 
 	void SetCustomModel( const char *pszModel );
 	void SetCustomModelWithClassAnimations( const char *pszModel );
