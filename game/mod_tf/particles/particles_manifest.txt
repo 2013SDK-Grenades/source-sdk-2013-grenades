@@ -1,0 +1,44 @@
+// PF2C grenade port — particle manifest.
+// Source loads ALL particles_manifest.txt files it finds across search paths,
+// so this file adds our PCFs on top of TF2's without replacing anything.
+particles_manifest
+{
+	// Grenade pulse / trail (nadepulse_red/blue, fuse spark)
+	"file"		"!particles/grenades.pcf"
+
+	// Concussion warp screen effect
+	"file"		"!particles/conc_warp.pcf"
+
+	// Concussion stars head effect
+	"file"		"!particles/conc_stars.pcf"
+
+	// Nail grenade jet trails
+	"file"		"!particles/nailgrenadejet.pcf"
+
+	// Napalm explosion flames
+	"file"		"!particles/napalm_explosion.pcf"
+
+	// Napalm fire fuse spark
+	"file"		"!particles/fuse_napalmspark.pcf"
+
+	// Generic fuse spark (shared by several grenades)
+	"file"		"!particles/fuse_spark.pcf"
+
+	// EMP shockwave / arc
+	"file"		"!particles/emp_shockwave.pcf"
+
+	// Heal grenade glow
+	"file"		"!particles/heal_grenade.pcf"
+
+	// Heal ticker on healed players
+	"file"		"!particles/heal_ticker.pcf"
+
+	// Gas grenade smoke cloud
+	"file"		"!particles/spy_gasgrenade.pcf"
+
+	// Smoke bomb disappear effect
+	"file"		"!particles/smoke_disappear.pcf"
+
+	// Gas grenade infection (skull effect on infected players)
+	"file"		"!particles/gas_poison.pcf"
+}
