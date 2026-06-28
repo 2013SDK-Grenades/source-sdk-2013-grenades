@@ -1,0 +1,14 @@
+// FF Grenade Port: STUB — heal grenade is not yet implemented.
+// Medic's grenade2 slot references this but medic has 0 grenade ammo,
+// so this weapon is never actually given or thrown. Exists to silence
+// any "Error reading weapon data file" console noise if the name is looked up.
+WeaponData
+{
+	"printname"			"Heal Grenade"
+	"WeaponType"		"grenade"
+	"Grenade"			"1"
+	"CanThrowGrenade"	"1"
+	"PrimerTime"		"3.0"
+	"DamageRadius"		"150"
+	"primary_ammo"		"TF_AMMO_GRENADES2"
+}
