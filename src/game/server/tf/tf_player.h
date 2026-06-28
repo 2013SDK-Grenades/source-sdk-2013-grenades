@@ -755,6 +755,7 @@ public:
 	void				ManageRegularWeaponsLegacy( TFPlayerClassData_t *pData );	// Older, pre-inventory method of managing regular weapons
 	void				ManageBuilderWeapons( TFPlayerClassData_t *pData );
 	void				ManageGrenades( TFPlayerClassData_t *pData );	// FF Grenade Port
+	void				HandleGrenadeInput( void );					// FF Grenade Port
 	virtual CBaseEntity	*GiveNamedItem( const char *szName, int iSubType = 0, const CEconItemView *pScriptItem = NULL, bool bForce = false );
 	void				PostInventoryApplication( void );
 	bool				ItemIsAllowed( CEconItemView *pItem );

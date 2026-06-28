@@ -4265,6 +4265,122 @@ void CTFPlayer::GiveDefaultItems()
 }
 
 //-----------------------------------------------------------------------------
+// FF Grenade Port: give / refresh class-specific grenade weapons on spawn.
+// Uses CBasePlayer::GiveNamedItem (not CTFPlayer::GiveNamedItem) to bypass the
+// econ item schema — our grenade weapons have no defindex in items_game.txt.
+// Mirrors ManageBuilderWeapons pattern; called from GiveDefaultItems().
+//-----------------------------------------------------------------------------
+void CTFPlayer::ManageGrenades( TFPlayerClassData_t *pData )
+{
+	// Count non-grenade weapons already in the array; grenades are appended after them.
+	int iWeaponCount = 0;
+	for ( int i = 0; i < MAX_WEAPONS; ++i )
+	{
+		CBaseCombatWeapon *pWep = GetWeapon( i );
+		if ( pWep && !dynamic_cast<CTFWeaponBaseGrenade *>( pWep ) )
+			iWeaponCount++;
+	}
+
+	for ( int iGrenade = 0; iGrenade < TF_PLAYER_GRENADE_COUNT; ++iGrenade )
+	{
+		int iWeaponID = pData->m_aGrenades[ iGrenade ];
+		if ( iWeaponID == TF_WEAPON_NONE || iWeaponID == TF_WEAPON_BUILDER )
+			continue;
+
+		char szWeaponName[ 256 ];
+		Q_strcpy( szWeaponName, WeaponIdToAlias( iWeaponID ) );
+		Q_strlower( szWeaponName );
+
+		CTFWeaponBase *pGrenade = (CTFWeaponBase *)GetWeapon( iWeaponCount + iGrenade );
+
+		// Wrong type in this slot (class changed) — remove it.
+		if ( pGrenade && pGrenade->GetWeaponID() != iWeaponID )
+		{
+			Weapon_Detach( pGrenade );
+			GetViewModel( pGrenade->m_nViewModelIndex, false )->SetWeaponModel( NULL, NULL );
+			UTIL_Remove( pGrenade );
+			pGrenade = NULL;
+		}
+
+		pGrenade = (CTFWeaponBase *)Weapon_OwnsThisID( iWeaponID );
+
+		if ( pGrenade )
+		{
+			// Already owned — just refresh team and ammo.
+			pGrenade->ChangeTeam( GetTeamNumber() );
+			pGrenade->GiveDefaultAmmo();
+			if ( !m_bRegenerating )
+				pGrenade->WeaponReset();
+		}
+		else
+		{
+			// Not owned yet — create it bypassing the econ schema.
+			pGrenade = (CTFWeaponBase *)CBasePlayer::GiveNamedItem( szWeaponName );
+			if ( pGrenade )
+				pGrenade->DefaultTouch( this );
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+// FF Grenade Port: handle +grenade1 / +grenade2 button presses.
+// Called from ItemPostFrame in tf_player_shared.cpp via a thin #ifdef GAME_DLL
+// stub so the heavy grenade headers stay out of the client translation unit.
+//-----------------------------------------------------------------------------
+void CTFPlayer::HandleGrenadeInput( void )
+{
+	static ConVar ff_grenades( "ff_grenades", "1", FCVAR_NOTIFY,
+		"FF Grenade Port: enable grenade button input (1=on, 0=off)." );
+
+	TFPlayerClassData_t *pData = m_PlayerClass.GetData();
+	CTFWeaponBase *pActive = GetActiveTFWeapon();
+	bool bCanThrow = pActive ? pActive->GetTFWpnData().m_bCanThrowGrenade : true;
+
+	if ( ff_grenades.GetBool() && !IsPrimed() && CanAttack() && bCanThrow && pData )
+	{
+		for ( int iGrenade = 0; iGrenade < TF_PLAYER_GRENADE_COUNT; iGrenade++ )
+		{
+			if ( m_afButtonPressed & ( iGrenade == 0 ? IN_GRENADE1 : IN_GRENADE2 ) )
+			{
+				CTFWeaponBaseGrenade *pGrenade = dynamic_cast<CTFWeaponBaseGrenade *>(
+					Weapon_OwnsThisID( pData->m_aGrenades[iGrenade] ) );
+
+				if ( pGrenade && !( m_Shared.m_flNextThrowTime > gpGlobals->curtime ) )
+				{
+					SetOffHandWeapon( pGrenade );
+				}
+				else if ( m_flNextDenySound < gpGlobals->curtime )
+				{
+					CSingleUserRecipientFilter filter( this );
+					EmitSound( filter, entindex(), "Player.DenyWeaponSelection" );
+					m_flNextDenySound = gpGlobals->curtime + 0.5f;
+				}
+				break;
+			}
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+// FF Grenade Port: true if any grenade the player owns is currently primed.
+// Gates HandleGrenadeInput so a second grenade can't be armed mid-throw.
+//-----------------------------------------------------------------------------
+bool CTFPlayer::IsPrimed( void )
+{
+	TFPlayerClassData_t *pData = m_PlayerClass.GetData();
+	if ( !pData )
+		return false;
+	for ( int i = 0; i < TF_PLAYER_GRENADE_COUNT; i++ )
+	{
+		CTFWeaponBaseGrenade *pGrenade = dynamic_cast<CTFWeaponBaseGrenade *>(
+			Weapon_OwnsThisID( pData->m_aGrenades[i] ) );
+		if ( pGrenade && pGrenade->GetTFWpnData().m_bGrenade && pGrenade->IsPrimed() )
+			return true;
+	}
+	return false;
+}
+
+//-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
 void CTFPlayer::ManageBuilderWeapons( TFPlayerClassData_t *pData )

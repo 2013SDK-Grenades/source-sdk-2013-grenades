@@ -34,11 +34,6 @@
 #include "tf_weapon_rocketpack.h"
 #include <functional>
 
-// FF Grenade Port: CTFWeaponBaseGrenade needed for IsPrimed() and SetOffHandWeapon path.
-#ifdef GAME_DLL
-#include "tf_weaponbase_grenade.h"
-#endif
-
 // Client specific.
 #ifdef CLIENT_DLL
 #include "c_baseviewmodel.h"
@@ -11629,48 +11624,11 @@ void CTFPlayer::ItemPostFrame()
 	// cache buttons because some weapons' ItemPostFrame could change m_nButtons against other weapons
 	int nButtons = m_nButtons;
 
-	// FF Grenade Port: detect IN_GRENADE1 / IN_GRENADE2 button presses (rising edge via
-	// m_afButtonPressed) and route the corresponding grenade weapon to the off-hand path.
-	// The off-hand weapon's ItemPostFrame() then handles prime-while-held / throw-on-release.
-	// Mirrors PF2C's approach exactly; adapted to use ff_grenades ConVar and FF class data.
+	// FF Grenade Port: detect IN_GRENADE1/2 and route to the off-hand path.
+	// Implementation lives in tf_player.cpp (server-only) to avoid blowing the
+	// client compiler's heap budget for this already-large translation unit.
 #ifdef GAME_DLL
-	{
-		static ConVar ff_grenades( "ff_grenades", "1", FCVAR_NOTIFY,
-			"FF Grenade Port: enable grenade button input (1=on, 0=off)." );
-
-		TFPlayerClassData_t *pData = m_PlayerClass.GetData();
-		CTFWeaponBase *pActive = GetActiveTFWeapon();
-		bool bCanThrow = pActive ? pActive->GetTFWpnData().m_bCanThrowGrenade : true;
-
-		if ( ff_grenades.GetBool() && !IsPrimed() && CanAttack() && bCanThrow && pData )
-		{
-			for ( int iGrenade = 0; iGrenade < TF_PLAYER_GRENADE_COUNT; iGrenade++ )
-			{
-				if ( m_afButtonPressed & ( iGrenade == 0 ? IN_GRENADE1 : IN_GRENADE2 ) )
-				{
-					CTFWeaponBaseGrenade *pGrenade = dynamic_cast<CTFWeaponBaseGrenade *>(
-						Weapon_OwnsThisID( pData->m_aGrenades[iGrenade] ) );
-
-					if ( pGrenade && !( m_Shared.m_flNextThrowTime > gpGlobals->curtime ) )
-					{
-						SetOffHandWeapon( pGrenade );
-						break;
-					}
-					else if ( !pGrenade || m_Shared.m_flNextThrowTime > gpGlobals->curtime )
-					{
-						// No grenade or on cooldown — play deny sound
-						if ( m_flNextDenySound < gpGlobals->curtime )
-						{
-							CSingleUserRecipientFilter filter( this );
-							EmitSound( filter, entindex(), "Player.DenyWeaponSelection" );
-							m_flNextDenySound = gpGlobals->curtime + 0.5f;
-						}
-					}
-					break;
-				}
-			}
-		}
-	}
+	HandleGrenadeInput();
 #endif
 
 	if ( m_hOffHandWeapon.Get() && m_hOffHandWeapon->IsWeaponVisible() )
@@ -11748,28 +11706,6 @@ void CTFPlayer::HolsterOffHandWeapon( void )
 		m_hOffHandWeapon->Holster();
 	}
 }
-
-//-----------------------------------------------------------------------------
-// FF Grenade Port: returns true if any grenade the player owns is currently primed.
-// Called in ItemPostFrame to gate whether a new grenade can be activated.
-// Mirrors PF2C's implementation in pf2c-src/game/shared/tf/tf_player_shared.cpp.
-//-----------------------------------------------------------------------------
-#ifdef GAME_DLL
-bool CTFPlayer::IsPrimed( void )
-{
-	TFPlayerClassData_t *pData = m_PlayerClass.GetData();
-	if ( !pData )
-		return false;
-	for ( int i = 0; i < TF_PLAYER_GRENADE_COUNT; i++ )
-	{
-		CTFWeaponBaseGrenade *pGrenade = dynamic_cast<CTFWeaponBaseGrenade *>(
-			Weapon_OwnsThisID( pData->m_aGrenades[i] ) );
-		if ( pGrenade && pGrenade->GetTFWpnData().m_bGrenade && pGrenade->IsPrimed() )
-			return true;
-	}
-	return false;
-}
-#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: Return true if we should record our last weapon when switching between the two specified weapons
