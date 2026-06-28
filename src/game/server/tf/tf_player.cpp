@@ -20924,6 +20924,19 @@ void CTFPlayer::SetRadioTagged( CTFPlayer *pWhoTaggedMe, float flStartTime, floa
 //-----------------------------------------------------------------------------
 void CTFPlayer::FinishThrowGrenade( void )
 {
+	// FF Grenade Port: grenades run as off-hand weapons, not as the active weapon.
+	// When the grenade finishes, remove it from the off-hand slot and leave the
+	// active weapon untouched.  The old SwitchToNextBestWeapon path was wrong here
+	// because pActiveWeapon is the player's REAL weapon (rocket launcher etc.),
+	// not the grenade, so it would switch away from the real weapon incorrectly.
+	if ( m_hOffHandWeapon.Get() && dynamic_cast<CTFWeaponBaseGrenade *>( m_hOffHandWeapon.Get() ) )
+	{
+		HolsterOffHandWeapon();
+		m_Shared.m_flNextThrowTime = gpGlobals->curtime + 0.5f;	// short cooldown between throws
+		return;
+	}
+
+	// Fallback: original behavior if grenade was somehow the active weapon.
 	CBaseCombatWeapon *pActiveWeapon = GetActiveWeapon();
 	if ( pActiveWeapon )
 		SwitchToNextBestWeapon( pActiveWeapon );

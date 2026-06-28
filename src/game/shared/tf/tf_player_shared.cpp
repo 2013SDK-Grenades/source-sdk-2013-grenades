@@ -11698,12 +11698,13 @@ void CTFPlayer::SetOffHandWeapon( CTFWeaponBase *pWeapon )
 	}
 }
 
-// Set to NULL at the end of the holster?
+// Set to NULL at the end of the holster so ItemPostFrame stops pumping this weapon.
 void CTFPlayer::HolsterOffHandWeapon( void )
 {
 	if ( m_hOffHandWeapon.Get() )
 	{
 		m_hOffHandWeapon->Holster();
+		m_hOffHandWeapon = NULL;	// FF Grenade Port: clear handle so off-hand pump stops
 	}
 }
 

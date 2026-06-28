@@ -18,6 +18,7 @@ PlayerClass
 
 	// Grenades.
 	"grenade1"		"TF_WEAPON_GRENADE_NORMAL"
+	"grenade2"		"TF_WEAPON_GRENADE_GAS"
 
 	// Weapons.
 	"weapon1"		"TF_WEAPON_KNIFE"
@@ -39,8 +40,8 @@ PlayerClass
 		"tf_ammo_primary"	"20"		
 		"tf_ammo_secondary"	"24"
 		"tf_ammo_metal"		"100"
-		"tf_ammo_grenades1"	"0"
-		"tf_ammo_grenades2"	"1"
+		"tf_ammo_grenades1"		"4"
+		"tf_ammo_grenades2"		"2"
 		"fc_ammo_grenades1"	"1"
 		"fc_ammo_grenades2"	"1"
 	}
