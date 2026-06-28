@@ -1,0 +1,9 @@
+// FF Grenade Port: ff_slowfieldoutline1 was not present in ff-assets.
+// Using ff_trail as a stand-in until the original is found.
+"Sprite"
+{
+	"$spriteorientation" "vp_parallel"
+	"$spriteorigin" "[0.50 0.50]"
+	"$basetexture" "sprites/ff_trail"
+	"$spriterendermode" 5
+}
