@@ -39,6 +39,7 @@ class CTFProjectile_Nail : public CTFBaseProjectile
 public:
 	static CTFBaseProjectile *Create( const Vector &vecOrigin, const QAngle &vecAngles, CTFWeaponBaseGun *pLauncher = NULL, CBaseEntity *pOwner = NULL, CBaseEntity *pScorer = NULL, bool bCritical = false );
 
+	virtual unsigned int PhysicsSolidMaskForEntity( void ) const { return BaseClass::PhysicsSolidMaskForEntity() | CONTENTS_REDTEAM | CONTENTS_BLUETEAM; }
 	virtual const char *GetProjectileModelName( void ) { return "models/weapons/w_models/w_nail.mdl"; }
 };
 

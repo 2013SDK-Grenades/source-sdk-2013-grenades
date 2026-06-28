@@ -17,7 +17,9 @@
 // CTF GrenadePack defines.
 //
 
-#define TF_GRENADEPACK_MODEL			"models/items/grenade_pack.mdl"
+// PF2C's grenade_pack.mdl doesn't ship with the public assets.
+// Using TF2's small ammo pack as a placeholder until a dedicated model is made.
+#define TF_GRENADEPACK_MODEL			"models/items/ammopack_small.mdl"
 #define TF_GRENADEPACK_PICKUP_SOUND		"GrenadePack.Touch"
 #define TF_GRENADEPACK_GRENADES1		4
 #define TF_GRENADEPACK_GRENADES2		4
