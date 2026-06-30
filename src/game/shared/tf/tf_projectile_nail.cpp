@@ -151,8 +151,9 @@ DECLARE_CLIENT_EFFECT( SYRINGE_DISPATCH_EFFECT, ClientsideProjectileSyringeCallb
 //
 //=============================================================================
 #define NAIL_MODEL				"models/weapons/w_models/w_nail.mdl"
-#define NAIL_DISPATCH_EFFECT	"ClientProjectile_Syringe"		// reuse syringe effect as placeholder
+#define NAIL_DISPATCH_EFFECT	"ClientProjectile_Nail"
 #define NAIL_VELOCITY			2000.0f							// fast nail
+#define NAIL_GRAVITY			0.001f							// matches CTFProjectile_Nail::GetGravity default
 
 #ifdef GAME_DLL
 LINK_ENTITY_TO_CLASS( tf_projectile_nail, CTFProjectile_Nail );
@@ -164,6 +165,30 @@ void PrecacheNail( void *pUser )
 	g_sModelIndexNail = modelinfo->GetModelIndex( NAIL_MODEL );
 }
 PRECACHE_REGISTER_FN( PrecacheNail );
+#endif
+
+#ifdef CLIENT_DLL
+//-----------------------------------------------------------------------------
+// Purpose: Dedicated client dispatch callback for nail projectiles.
+//          Uses NAIL_GRAVITY (near-zero) so the visual trajectory matches the
+//          server hitscan instead of falling like a syringe (SYRINGE_GRAVITY = 0.3).
+//-----------------------------------------------------------------------------
+void ClientsideProjectileNailCallback( const CEffectData &data )
+{
+	C_TFPlayer *pPlayer = dynamic_cast<C_TFPlayer*>( ClientEntityList().GetBaseEntityFromHandle( data.m_hEntity ) );
+	if ( pPlayer )
+	{
+		C_LocalTempEntity *pNail = ClientsideProjectileCallback( data, NAIL_GRAVITY );
+		if ( pNail )
+		{
+			pNail->m_nSkin = ( pPlayer->GetTeamNumber() == TF_TEAM_RED ) ? 0 : 1;
+			pNail->AddEffects( EF_NOSHADOW );
+			pNail->flags |= FTENT_USEFASTCOLLISIONS;
+		}
+	}
+}
+
+DECLARE_CLIENT_EFFECT( NAIL_DISPATCH_EFFECT, ClientsideProjectileNailCallback );
 #endif
 
 CTFBaseProjectile *CTFProjectile_Nail::Create(
