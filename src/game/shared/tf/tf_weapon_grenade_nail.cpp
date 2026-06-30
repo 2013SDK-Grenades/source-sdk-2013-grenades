@@ -158,6 +158,8 @@ void CTFGrenadeNailProjectile::BounceSound( void )
 //-----------------------------------------------------------------------------
 void CTFGrenadeNailProjectile::Detonate()
 {
+	Msg( "[NAIL DEBUG] Detonate() called. ShouldNotDetonate=%s\n", ShouldNotDetonate() ? "true" : "false" );
+
 	if ( ShouldNotDetonate() )
 	{
 		RemoveGrenade();
@@ -183,6 +185,8 @@ int CTFGrenadeNailProjectile::OnTakeDamage( const CTakeDamageInfo &info )
 
 void CTFGrenadeNailProjectile::StartEmittingNails( void )
 {
+	Msg( "[NAIL DEBUG] StartEmittingNails() called.\n" );
+
 	// 0.4 seconds later, emit nails
 	IPhysicsObject *pPhysicsObject = VPhysicsGetObject();
 
@@ -224,6 +228,11 @@ void CTFGrenadeNailProjectile::EmitNails( void )
 
 	float flDamage = m_flDamage;
 
+	Msg( "[NAIL DEBUG] EmitNails fired. BurstsLeft=%d Thrower=%s Damage=%.1f\n",
+		m_iNumNailBurstsLeft,
+		GetThrower() ? "VALID" : "NULL",
+		flDamage );
+
 	if ( m_iNumNailBurstsLeft < 0 )
 	{
 		BaseClass::Detonate();
@@ -240,10 +249,10 @@ void CTFGrenadeNailProjectile::EmitNails( void )
 
 		QAngle angNail( random->RandomFloat( -3, 3 ), m_flNailAngle, 0 );
 
-		// Emit a nail
-		// CTFProjectile_Nail::Create takes (origin, angles, launcher=CTFWeaponBaseGun*, owner).
-		// Pass NULL for launcher since we are a projectile, not a gun.
-		CTFBaseProjectile *pNail = CTFProjectile_Nail::Create( GetAbsOrigin(), angNail, NULL, GetThrower() );	
+		// Emit a nail — CTFProjectile_Nail is a real networked entity now (PF2C-accurate),
+		// not the dispatch-effect fake projectile this fork's CTFBaseProjectile::Create() makes.
+		CTFProjectile_Nail *pNail = CTFProjectile_Nail::Create( GetAbsOrigin(), angNail, GetThrower() );
+		Msg( "[NAIL DEBUG] Create() returned %s\n", pNail ? "VALID" : "NULL" );
 		if ( pNail )
 		{
 			pNail->SetWeaponID(GetWeaponID());

@@ -147,62 +147,135 @@ DECLARE_CLIENT_EFFECT( SYRINGE_DISPATCH_EFFECT, ClientsideProjectileSyringeCallb
 //=============================================================================
 //
 // CTFProjectile_Nail — PF2C port
-// Fired by the Nail Grenade when it detonates.  Uses w_nail.mdl from PF2C assets.
+//
+// PF2C's real implementation does NOT use this fork's CTFBaseProjectile::Create()
+// dispatch-effect system. That system unconditionally hides the server entity
+// (EF_NODRAW) and substitutes a clientside temp entity, which is only correct
+// for projectiles fired directly from a gun (the temp-entity visual logic
+// relocates to the firing player's weapon muzzle). Nails are emitted in
+// mid-air by a grenade, so that relocation silently teleported every nail's
+// visual entity onto the thrower's gun model, and the server entity's
+// DAMAGE_NO/EF_NODRAW state combined with the dispatch path's expectations
+// meant no real collision was happening either.
+//
+// Fix: CTFProjectile_Nail is a real, normally-drawn networked entity with its
+// own datatable (matching PF2C's DT_TFProjectile_Nail), spawned directly via
+// CBaseEntity::Create + manual Spawn() — exactly as PF2C does it.
 //
 //=============================================================================
 #define NAIL_MODEL				"models/weapons/w_models/w_nail.mdl"
-#define NAIL_DISPATCH_EFFECT	"ClientProjectile_Nail"
-#define NAIL_VELOCITY			2000.0f							// fast nail
-#define NAIL_GRAVITY			0.001f							// matches CTFProjectile_Nail::GetGravity default
+
+IMPLEMENT_NETWORKCLASS_ALIASED( TFProjectile_Nail, DT_TFProjectile_Nail )
+
+BEGIN_NETWORK_TABLE( CTFProjectile_Nail, DT_TFProjectile_Nail )
+END_NETWORK_TABLE()
+
+CTFProjectile_Nail::CTFProjectile_Nail()
+{
+}
+
+CTFProjectile_Nail::~CTFProjectile_Nail()
+{
+#ifdef CLIENT_DLL
+	ParticleProp()->StopEmission();
+#endif
+}
 
 #ifdef GAME_DLL
+
 LINK_ENTITY_TO_CLASS( tf_projectile_nail, CTFProjectile_Nail );
 PRECACHE_REGISTER( tf_projectile_nail );
 
-static short g_sModelIndexNail;
+short g_sModelIndexNail;
 void PrecacheNail( void *pUser )
 {
 	g_sModelIndexNail = modelinfo->GetModelIndex( NAIL_MODEL );
 }
 PRECACHE_REGISTER_FN( PrecacheNail );
-#endif
 
-#ifdef CLIENT_DLL
 //-----------------------------------------------------------------------------
-// Purpose: Dedicated client dispatch callback for nail projectiles.
-//          Uses NAIL_GRAVITY (near-zero) so the visual trajectory matches the
-//          server hitscan instead of falling like a syringe (SYRINGE_GRAVITY = 0.3).
+// Purpose: Spawns the nail as a real, visible, solid networked entity —
+//          mirrors CTFBaseProjectile::Spawn() but skips AddEffects(EF_NODRAW),
+//          since this entity is meant to actually be seen.
 //-----------------------------------------------------------------------------
-void ClientsideProjectileNailCallback( const CEffectData &data )
+void CTFProjectile_Nail::Spawn( void )
 {
-	C_TFPlayer *pPlayer = dynamic_cast<C_TFPlayer*>( ClientEntityList().GetBaseEntityFromHandle( data.m_hEntity ) );
-	if ( pPlayer )
+	Precache();
+
+	SetModel( GetProjectileModelName() );
+
+	SetSolid( SOLID_BBOX );
+	SetMoveType( MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_CUSTOM );
+	AddEFlags( EFL_NO_WATER_VELOCITY_CHANGE );
+
+	UTIL_SetSize( this, -Vector( 1.0f, 1.0f, 1.0f ), Vector( 1.0f, 1.0f, 1.0f ) );
+
+	SetGravity( GetGravity() );
+	m_takedamage = DAMAGE_NO;
+	SetDamage( 25.0f );
+
+	SetCollisionGroup( COLLISION_GROUP_PROJECTILE );
+
+	SetTouch( &CTFProjectile_Nail::ProjectileTouch );
+	SetThink( &CTFProjectile_Nail::FlyThink );
+	SetNextThink( gpGlobals->curtime );
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Creates the nail entity directly — does NOT go through
+//          CTFBaseProjectile::Create(), which always hides the entity and
+//          dispatches a clientside fake instead. This entity is real and
+//          networked, so it just needs normal spawn + velocity setup.
+//-----------------------------------------------------------------------------
+CTFProjectile_Nail *CTFProjectile_Nail::Create( const Vector &vecOrigin, const QAngle &vecAngles, CBaseEntity *pOwner /*= NULL*/, CBaseEntity *pScorer /*= NULL*/, bool bCritical /*= false*/ )
+{
+	CTFProjectile_Nail *pNail = static_cast<CTFProjectile_Nail*>( CBaseEntity::Create( "tf_projectile_nail", vecOrigin, vecAngles, pOwner ) );
+	if ( !pNail )
+		return NULL;
+
+	pNail->SetOwnerEntity( pOwner );
+	pNail->SetScorer( pScorer );
+	pNail->Spawn();
+
+	Vector vecForward;
+	AngleVectors( vecAngles, &vecForward );
+	pNail->SetAbsVelocity( vecForward * CTFProjectile_Nail::GetInitialVelocity() );
+
+	if ( pOwner )
 	{
-		C_LocalTempEntity *pNail = ClientsideProjectileCallback( data, NAIL_GRAVITY );
-		if ( pNail )
-		{
-			pNail->m_nSkin = ( pPlayer->GetTeamNumber() == TF_TEAM_RED ) ? 0 : 1;
-			pNail->AddEffects( EF_NOSHADOW );
-			pNail->flags |= FTENT_USEFASTCOLLISIONS;
-		}
+		pNail->ChangeTeam( pOwner->GetTeamNumber() );
+	}
+
+	if ( bCritical )
+	{
+		pNail->SetCritical( true );
+	}
+
+	return pNail;
+}
+
+#else // CLIENT_DLL
+
+//-----------------------------------------------------------------------------
+// Purpose: Attaches a nail-trail particle to the real, visible nail entity.
+//          Called every frame the entity is alive and not dormant — matches
+//          PF2C's CreateTrails() pattern, reusing the medic nailtrail particles
+//          already shipped (the grenade-specific nailgrenadejet.pcf adds the
+//          jet effect on the grenade itself; this is the per-nail trail).
+//-----------------------------------------------------------------------------
+void CTFProjectile_Nail::CreateTrails( void )
+{
+	if ( IsDormant() )
+		return;
+
+	if ( GetTeamNumber() == TF_TEAM_BLUE )
+	{
+		ParticleProp()->Create( IsCritical() ? "nailtrails_medic_blue_crit" : "nailtrails_medic_blue", PATTACH_ABSORIGIN_FOLLOW );
+	}
+	else
+	{
+		ParticleProp()->Create( IsCritical() ? "nailtrails_medic_red_crit" : "nailtrails_medic_red", PATTACH_ABSORIGIN_FOLLOW );
 	}
 }
 
-DECLARE_CLIENT_EFFECT( NAIL_DISPATCH_EFFECT, ClientsideProjectileNailCallback );
 #endif
-
-CTFBaseProjectile *CTFProjectile_Nail::Create(
-	const Vector &vecOrigin,
-	const QAngle &vecAngles,
-	CTFWeaponBaseGun *pLauncher /*= NULL*/,
-	CBaseEntity *pOwner /*= NULL*/,
-	CBaseEntity *pScorer /*= NULL*/,
-	bool bCritical /*= false*/
-)
-{
-#ifdef GAME_DLL
-	return CTFBaseProjectile::Create( "tf_projectile_nail", vecOrigin, vecAngles, pOwner, NAIL_VELOCITY, g_sModelIndexNail, NAIL_DISPATCH_EFFECT, pScorer, bCritical );
-#else
-	return NULL;
-#endif
-}
