@@ -195,10 +195,32 @@
 		"pitch"	"PITCH_NORM"
 		"wave"	"grenades/gas/gas_explode.wav"
 	}
-	"GasGrenade.bounce"
+	"GasGrenade.Bounce"
 	{
 		"channel"	"CHAN_WEAPON"
 		"volume"	"1.0"
 		"CompatibilityAttenuation"	"0.8"
 		"wave"	"grenades/bounce.wav"
+	}
+
+//----------------
+// FF Grenade Port: EMP Grenade — no sound entries existed in FF's original
+// game_sounds_ff_grenades.txt. Reusing the generic bounce sound and EMP zap-style
+// explosion sound (from the existing FF zap/electric sound set if present, otherwise
+// generic explode) as placeholders until proper EMP sounds are sourced.
+//----------------
+	"EmpGrenade.Bounce"
+	{
+		"channel"	"CHAN_WEAPON"
+		"volume"	"1.0"
+		"CompatibilityAttenuation"	"0.8"
+		"wave"	"grenades/bounce.wav"
+	}
+	"EmpGrenade.Explode"
+	{
+		"channel"	"CHAN_WEAPON"
+		"volume"	"1.0"
+		"CompatibilityAttenuation"	"0.6"
+		"pitch"	"PITCH_NORM"
+		"wave"	"grenades/gas/gas_explode.wav"
 	}
