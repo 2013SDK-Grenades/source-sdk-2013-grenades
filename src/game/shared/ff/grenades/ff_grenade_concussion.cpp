@@ -232,6 +232,8 @@ PRECACHE_WEAPON_REGISTER(ff_grenade_concussion);
 		}
 		else
 		{
+			// Grenade detonated in air — use upward normal so te->Explosion doesn't null-deref.
+			Vector vecUp( 0, 0, 1 );
 			CPASFilter filter( vecAbsOrigin );
 			te->Explosion( filter, -1.0, // don't apply cl_interp delay
 				&vecAbsOrigin, 
@@ -240,7 +242,8 @@ PRECACHE_WEAPON_REGISTER(ff_grenade_concussion);
 				0, 
 				TE_EXPLFLAG_NOSOUND | TE_EXPLFLAG_NODLIGHTS | TE_EXPLFLAG_NOPARTICLES | TE_EXPLFLAG_NOFIREBALL | TE_EXPLFLAG_NOFIREBALLSMOKE, 
 				GetGrenadeRadius(), 
-				CONC_RAGDOLL_PUSH);
+				CONC_RAGDOLL_PUSH,
+				&vecUp );
 		}
 
 		// nb. Do not move this 32 units above the ground!

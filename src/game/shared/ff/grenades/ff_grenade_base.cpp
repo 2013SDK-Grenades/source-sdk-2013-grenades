@@ -511,6 +511,8 @@ LINK_ENTITY_TO_CLASS(grenade_ff_base, CFFGrenadeBase);
 			}
 			else
 			{
+				// Grenade detonated in air — use upward normal so te->Explosion doesn't null-deref.
+				Vector vecUp( 0, 0, 1 );
 				CPASFilter filter( vecAbsOrigin );
 				te->Explosion( filter, -1.0, // don't apply cl_interp delay
 					&vecAbsOrigin, 
@@ -519,7 +521,8 @@ LINK_ENTITY_TO_CLASS(grenade_ff_base, CFFGrenadeBase);
 					25, 
 					TE_EXPLFLAG_NONE, 
 					m_DmgRadius, 
-					m_flDamage );
+					m_flDamage,
+					&vecUp );
 
 				// Trace hit nothing so do custom scorch mark finding
 				FF_DecalTrace( this, FF_DECALTRACE_TRACE_DIST, "Scorch" );

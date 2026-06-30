@@ -155,6 +155,8 @@ PRECACHE_WEAPON_REGISTER( ff_grenade_emp );
 			}
 			else
 			{
+				// Grenade detonated in air — use upward normal so te->Explosion doesn't null-deref.
+				Vector vecUp( 0, 0, 1 );
 				CPASFilter filter( vecOrigin );
 
 				te->Explosion( filter, -1.0, // don't apply cl_interp delay
@@ -164,7 +166,8 @@ PRECACHE_WEAPON_REGISTER( ff_grenade_emp );
 					25,
 					TE_EXPLFLAG_NONE,
 					m_DmgRadius,
-					m_flDamage );
+					m_flDamage,
+					&vecUp );
 
 				// Trace hit nothing so do custom scorch mark finding
 				FF_DecalTrace( pEntity, FF_DECALTRACE_TRACE_DIST, "Scorch" );
