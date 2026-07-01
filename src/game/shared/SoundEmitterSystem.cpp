@@ -314,6 +314,15 @@ public:
 		}
 #endif
 
+		// FF Grenade Port: layer our grenade sound script on top of stock TF2 sounds.
+		// Using AddSoundOverrides (not game_sounds_manifest.txt) because a loose manifest
+		// file REPLACES the VPK-packed manifest entirely, silencing every stock weapon sound.
+		// AddSoundOverrides is additive — the same mechanism TF2 uses for MVM level sounds.
+		if ( filesystem->FileExists( "scripts/game_sounds_ff_grenades.txt", "GAME" ) )
+		{
+			soundemitterbase->AddSoundOverrides( "scripts/game_sounds_ff_grenades.txt" );
+		}
+
 #if !defined( CLIENT_DLL )
 		for ( int i=soundemitterbase->First(); i != soundemitterbase->InvalidIndex(); i=soundemitterbase->Next( i ) )
 		{

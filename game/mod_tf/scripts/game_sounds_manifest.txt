@@ -1,9 +1,0 @@
-// FF Grenade Port: loose-file game_sounds_manifest.txt.
-// TF2's stock manifest is packed inside the VPKs and isn't visible to this repo,
-// so we cannot directly append to it. This loose file, when present in
-// mod_tf/scripts/, is read by the engine in addition to (not instead of) the VPK
-// manifest, and registers our FF grenade sound script for precache and lookup.
-game_sounds_manifest
-{
-	"precache_file"	"scripts/game_sounds_ff_grenades.txt"
-}
