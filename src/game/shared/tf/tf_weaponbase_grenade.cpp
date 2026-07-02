@@ -81,16 +81,21 @@ void CTFWeaponBaseGrenade::Spawn( void )
 //-----------------------------------------------------------------------------
 const char *CTFWeaponBaseGrenade::GetViewModel( int iViewModel ) const
 {
-	return "";
+	// FF Grenade Port: return the player's hands model so the animation system
+	// has valid sequences and doesn't spam Bad pstudiohdr. Stays hidden via
+	// ShouldDraw() so the player never sees it.
+	CTFPlayer *pPlayer = ToTFPlayer( GetOwner() );
+	if ( pPlayer && pPlayer->GetPlayerClass() )
+		return pPlayer->GetPlayerClass()->GetData()->m_szHandModel;
+	return BaseClass::GetViewModel( iViewModel );
 }
 
-//-----------------------------------------------------------------------------
-// FF Grenade Port: suppress all viewmodel animation calls — there's no model to
-// animate, and SelectWeightedSequence on an empty model spams Bad pstudiohdr.
-//-----------------------------------------------------------------------------
 bool CTFWeaponBaseGrenade::SendWeaponAnim( int iActivity )
 {
-	return true;
+	// FF Grenade Port: return false so ItemPostFrame's throw path takes the
+	// fallback: !SendWeaponAnim(ACT_VM_PRIMARYATTACK) -> Throw() immediately.
+	// Returning true (previous error) prevented Throw() from ever being called.
+	return false;
 }
 
 //-----------------------------------------------------------------------------
@@ -308,11 +313,20 @@ void CTFWeaponBaseGrenade::ItemPostFrame()
 	{
 		// Once we've finished being holstered, we'll be hidden. When that happens,
 		// tell our player that we're all done with the grenade throw.
+#ifdef GAME_DLL
+		// FF Grenade Port: for off-hand grenades the EF_NODRAW path below never fires
+		// because normal throws don't set EF_NODRAW on the weapon entity — only the
+		// exploding-in-hand case does. Instead detect off-hand mode directly:
+		// if we're not the active weapon, we must be off-hand, so clean up now.
+		if ( pPlayer->GetActiveWeapon() != this )
+		{
+			pPlayer->FinishThrowGrenade();
+			return;
+		}
+#endif
 		if ( IsEffectActive(EF_NODRAW) )
 		{
 #ifdef GAME_DLL
-			// FF Grenade Port: FinishThrowGrenade() is a server-side CTFPlayer method;
-			// C_TFPlayer has no equivalent. Client just falls through to the return.
 			pPlayer->FinishThrowGrenade();
 #endif
 			return;
