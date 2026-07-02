@@ -1,0 +1,98 @@
+// PF2C grenade port — mod_textures.txt
+// Registers grenade kill icon sprite sheet entries from PF2C's d_images.vtf.
+// The engine merges this with TF2's own mod_textures.txt from the VPK,
+// so we only need to list the entries we are adding.
+//
+// Coordinates reference HUD/d_images sprite sheet (copied from PF2C).
+// These are referenced by tf_hud_deathnotice.cpp's grenade icon remap table.
+"TextureData"
+{
+		"d_normal_projectile"
+		{
+				"file"	"HUD/d_images"		
+				"x"		"192"
+				"y"		"64"
+				"width"		"64"
+				"height"	"32"
+		}
+		"d_napalm_projectile"
+		{
+				"file"	"HUD/d_images"		
+				"x"		"192"
+				"y"		"96"
+				"width"		"64"
+				"height"	"32"
+		}
+		"d_napalm_fire"
+		{
+				"file"	"HUD/d_images"		
+				"x"		"192"
+				"y"		"96"
+				"width"		"64"
+				"height"	"32"
+		}
+		"d_nail_projectile"
+		{
+				"file"	"HUD/d_images"		
+				"x"		"192"
+				"y"		"128"
+				"width"		"64"
+				"height"	"32"
+		}
+		"d_nail"
+		{
+				"file"	"HUD/d_images"		
+				"x"		"192"
+				"y"		"160"
+				"width"		"96"
+				"height"	"32"
+		}
+		"d_caltrop_projectile"
+		{
+				"file"	"HUD/d_images"		
+				"x"		"192"
+				"y"		"192"
+				"width"		"64"
+				"height"	"32"
+		}
+		"d_emp_projectile"
+		{
+				"file"	"HUD/d_images"		
+				"x"		"192"
+				"y"		"256"
+				"width"		"64"
+				"height"	"32"
+		}
+		"d_mirv_projectile"
+		{
+				"file"	"HUD/d_images"		
+				"x"		"192"
+				"y"		"288"
+				"width"		"64"
+				"height"	"32"
+		}
+		"d_mirv_bomb"
+		{
+				"file"	"HUD/d_images"		
+				"x"		"192"
+				"y"		"288"
+				"width"		"64"
+				"height"	"32"
+		}
+		"d_gas_projectile"
+		{
+				"file"	"HUD/d_images"		
+				"x"		"192"
+				"y"		"320"
+				"width"		"64"
+				"height"	"32"
+		}
+		"d_heal_projectile"
+		{
+				"file"	"HUD/d_images"		
+				"x"		"192"
+				"y"		"352"
+				"width"		"64"
+				"height"	"32"
+		}
+}

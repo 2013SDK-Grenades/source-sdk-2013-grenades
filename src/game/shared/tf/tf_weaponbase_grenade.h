@@ -43,6 +43,9 @@ public:
 
 	virtual void			WeaponReset(void);
 
+	// PF2C port: grenades are never selectable via number keys — only via +grenade1/+grenade2.
+	virtual bool			VisibleInWeaponSelection( void ) { return false; }
+
 	void					Throw( void );
 
 	bool					ShouldDetonate( void );
