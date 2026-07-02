@@ -256,10 +256,11 @@ void CTFGrenadeNailProjectile::EmitNails( void )
 
 		QAngle angNail( random->RandomFloat( -3, 3 ), m_flNailAngle, 0 );
 
+
 		// Emit a nail — CTFProjectile_Nail is a real networked entity now (PF2C-accurate),
 		// not the dispatch-effect fake projectile this fork's CTFBaseProjectile::Create() makes.
-		CTFProjectile_Nail *pNail = CTFProjectile_Nail::Create( GetAbsOrigin(), angNail, GetThrower() );
-			if ( pNail )
+		CTFProjectile_Nail* pNail = CTFProjectile_Nail::Create(GetAbsOrigin(), angNail, this, GetThrower());
+			if (pNail)
 		{
 			pNail->SetWeaponID(GetWeaponID());
 			pNail->SetDamage( flDamage );
