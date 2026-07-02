@@ -226,8 +226,19 @@ void CTFGrenadeNailProjectile::EmitNails( void )
 
 	// PF2C port: use Secondary_Damage from weapon script for per-nail damage (10),
 	// not the grenade's base explosion damage (120).
-	const CTFWeaponInfo *pInfo = GetTFWeaponInfo( GetWeaponID() );
-	float flDamage = pInfo ? (float)pInfo->GetWeaponData( TF_WEAPON_SECONDARY_MODE ).m_nDamage : 10.0f;
+	// GetTFWeaponInfo() is client-only (defined in tf_fx_explosions.cpp), so use
+	// the server-safe LookupWeaponInfoSlot / GetFileWeaponInfoFromHandle path instead.
+	float flDamage = 10.0f;	// fallback matches weapon script Secondary_Damage
+	{
+		const char *pszAlias = WeaponIdToAlias( GetWeaponID() );
+		if ( pszAlias )
+		{
+			WEAPON_FILE_INFO_HANDLE hInfo = LookupWeaponInfoSlot( pszAlias );
+			const CTFWeaponInfo *pInfo = static_cast<const CTFWeaponInfo*>( GetFileWeaponInfoFromHandle( hInfo ) );
+			if ( pInfo )
+				flDamage = (float)pInfo->GetWeaponData( TF_WEAPON_SECONDARY_MODE ).m_nDamage;
+		}
+	}
 
 	if ( m_iNumNailBurstsLeft < 0 )
 	{
