@@ -1626,6 +1626,17 @@ void CBasePlayer::CalcPlayerView( Vector& eyeOrigin, QAngle& eyeAngles, float& f
 
 	CalcViewRoll( eyeAngles );
 
+#ifdef TF_DLL
+	// PF2C port: apply Concussion grenade aim-wobble when TF_COND_DIZZY is active.
+	{
+		CTFPlayer *tfPlayer = ToTFPlayer( this );
+		if ( tfPlayer && tfPlayer->m_Shared.InCond( TF_COND_DIZZY ) )
+		{
+			VectorAdd( eyeAngles, ConcAngles(), eyeAngles );
+		}
+	}
+#endif
+
 	// Apply punch angle
 	VectorAdd( eyeAngles, m_Local.m_vecPunchAngle, eyeAngles );
 

@@ -158,7 +158,6 @@ void CTFGrenadeNailProjectile::BounceSound( void )
 //-----------------------------------------------------------------------------
 void CTFGrenadeNailProjectile::Detonate()
 {
-	Msg( "[NAIL DEBUG] Detonate() called. ShouldNotDetonate=%s\n", ShouldNotDetonate() ? "true" : "false" );
 
 	if ( ShouldNotDetonate() )
 	{
@@ -185,7 +184,6 @@ int CTFGrenadeNailProjectile::OnTakeDamage( const CTakeDamageInfo &info )
 
 void CTFGrenadeNailProjectile::StartEmittingNails( void )
 {
-	Msg( "[NAIL DEBUG] StartEmittingNails() called.\n" );
 
 	// 0.4 seconds later, emit nails
 	IPhysicsObject *pPhysicsObject = VPhysicsGetObject();
@@ -226,12 +224,10 @@ void CTFGrenadeNailProjectile::EmitNails( void )
 {
 	m_iNumNailBurstsLeft--;
 
-	float flDamage = m_flDamage;
-
-	Msg( "[NAIL DEBUG] EmitNails fired. BurstsLeft=%d Thrower=%s Damage=%.1f\n",
-		m_iNumNailBurstsLeft,
-		GetThrower() ? "VALID" : "NULL",
-		flDamage );
+	// PF2C port: use Secondary_Damage from weapon script for per-nail damage (10),
+	// not the grenade's base explosion damage (120).
+	const CTFWeaponInfo *pInfo = GetTFWeaponInfo( GetWeaponID() );
+	float flDamage = pInfo ? (float)pInfo->GetWeaponData( TF_WEAPON_SECONDARY_MODE ).m_nDamage : 10.0f;
 
 	if ( m_iNumNailBurstsLeft < 0 )
 	{
@@ -252,8 +248,7 @@ void CTFGrenadeNailProjectile::EmitNails( void )
 		// Emit a nail — CTFProjectile_Nail is a real networked entity now (PF2C-accurate),
 		// not the dispatch-effect fake projectile this fork's CTFBaseProjectile::Create() makes.
 		CTFProjectile_Nail *pNail = CTFProjectile_Nail::Create( GetAbsOrigin(), angNail, GetThrower() );
-		Msg( "[NAIL DEBUG] Create() returned %s\n", pNail ? "VALID" : "NULL" );
-		if ( pNail )
+			if ( pNail )
 		{
 			pNail->SetWeaponID(GetWeaponID());
 			pNail->SetDamage( flDamage );

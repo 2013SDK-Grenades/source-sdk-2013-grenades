@@ -11,6 +11,7 @@
 #include "tf_team.h"
 #include "engine/IEngineSound.h"
 #include "entity_grenadepack.h"
+#include "pf/pf_cvars.h"		// PF2C port — pf_grenadepack_respawn_time
 
 //=============================================================================
 //
@@ -39,8 +40,7 @@ void CGrenadePack::Spawn( void )
 
 	BaseClass::Spawn();
 
-	// Grenades have been removed, so remove ourself.
-	UTIL_Remove(this);
+	// PF2C port: grenade packs are now functional. Original stub called UTIL_Remove(this) here.
 }
 
 //-----------------------------------------------------------------------------
@@ -58,6 +58,16 @@ void CGrenadePack::Precache( void )
 const char *CGrenadePack::GetDefaultPowerupModel( void )
 {
 	return TF_GRENADEPACK_MODEL;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Respawn delay driven by pf_grenadepack_respawn_time ConVar.
+//          CTFPowerup::Respawn() handles the full respawn cycle automatically
+//          once we override this.  PF2C port.
+//-----------------------------------------------------------------------------
+float CGrenadePack::GetRespawnDelay( void )
+{
+	return pf_grenadepack_respawn_time.GetFloat();
 }
 
 //-----------------------------------------------------------------------------

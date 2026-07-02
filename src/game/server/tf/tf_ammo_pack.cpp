@@ -11,6 +11,7 @@
 #include "tf_gamerules.h"
 #include "explode.h"
 #include "tf_gamestats.h"
+#include "pf/pf_cvars.h"		// PF2C port — pf_grenades for ammo pack grenade fallback
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -394,6 +395,22 @@ void CTFAmmoPack::PackTouch( CBaseEntity *pOther )
 	{
 		int iMaxGrenades1 = pPlayer->GetMaxAmmo( TF_AMMO_GRENADES1 );
 		iAmmoTaken += pPlayer->GiveAmmo( ceil(iMaxGrenades1 * m_flAmmoRatio), TF_AMMO_GRENADES1 );
+	}
+
+	// PF2C port: if pf_grenades is enabled and no item_grenadepack exists on this map,
+	// ammo kits act as grenade resupply fallback (project brief requirement).
+	if ( pf_grenades.GetBool() && !pPlayer->IsPlayerClass( TF_CLASS_ENGINEER ) )
+	{
+		bool bMapHasGrenadePacks = ( gEntList.FindEntityByClassname( NULL, "item_grenadepack" ) != NULL );
+		if ( !bMapHasGrenadePacks )
+		{
+			int iMaxGrenades1 = pPlayer->GetMaxAmmo( TF_AMMO_GRENADES1 );
+			int iMaxGrenades2 = pPlayer->GetMaxAmmo( TF_AMMO_GRENADES2 );
+			if ( iMaxGrenades1 > 0 )
+				iAmmoTaken += pPlayer->GiveAmmo( ceil( iMaxGrenades1 * m_flAmmoRatio ), TF_AMMO_GRENADES1 );
+			if ( iMaxGrenades2 > 0 )
+				iAmmoTaken += pPlayer->GiveAmmo( ceil( iMaxGrenades2 * m_flAmmoRatio ), TF_AMMO_GRENADES2 );
+		}
 	}
 
 	if ( m_PackType == AP_HALLOWEEN )

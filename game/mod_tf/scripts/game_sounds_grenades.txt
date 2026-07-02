@@ -223,3 +223,15 @@
 	"soundlevel"	"SNDLVL_74dB"
 	"wave"			"weapons/grenade_beep.wav"
 }
+// ---------------------------------------------------------------------------
+// Grenade pack pickup sound — Appendix C fix.
+// Placeholder using grenade_throw.wav until a proper pickup sound is sourced.
+// ---------------------------------------------------------------------------
+"GrenadePack.Touch"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"pitch"			"100"
+	"soundlevel"	"SNDLVL_NORM"
+	"wave"			"weapons/grenade_throw.wav"
+}

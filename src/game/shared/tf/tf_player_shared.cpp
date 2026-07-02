@@ -11894,7 +11894,7 @@ void CTFPlayer::FinishThrowGrenade( void )
 	if ( pWeapon )
 	{
 		HolsterOffHandWeapon();
-		//SetOffHandWeapon(NULL);
+		SetOffHandWeapon( NULL );	// PF2C port: clear handle after holster to prevent stale-ptr crash on class change
 	}
 }
 

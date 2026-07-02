@@ -389,6 +389,10 @@ void CTFHudGrenadeAmmo::ApplySchemeSettings( IScheme *pScheme )
 //-----------------------------------------------------------------------------
 bool CTFHudGrenadeAmmo::ShouldDraw( void )
 {
+	// PF2C port: hide entirely when grenades are globally disabled.
+	if ( !pf_grenades.GetBool() )
+		return false;
+
 	C_TFPlayer *pPlayer = C_TFPlayer::GetLocalTFPlayer();
 
 	if ( !pPlayer || !pPlayer->IsAlive() )

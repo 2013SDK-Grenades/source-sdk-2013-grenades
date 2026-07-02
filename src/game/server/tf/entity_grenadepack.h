@@ -27,6 +27,7 @@ public:
 	bool	MyTouch( CBasePlayer *pPlayer );
 
 	virtual const char *GetDefaultPowerupModel( void );
+	virtual float GetRespawnDelay( void );		// PF2C port — driven by pf_grenadepack_respawn_time
 };
 
 #endif // ENTITY_GRENADEPACK_H
