@@ -34,7 +34,8 @@ public:
 	CTFWeaponBaseGrenade();
 
 	virtual void			Spawn();
-	// FF Grenade Port: grenades are off-hand weapons with no viewmodel.
+	// FF Grenade Port: grenades are never selectable via number keys.
+	virtual bool			VisibleInWeaponSelection( void ) { return false; }
 	virtual const char *	GetViewModel( int iViewModel = 0 ) const;
 	virtual bool			SendWeaponAnim( int iActivity );
 	virtual void			Precache();

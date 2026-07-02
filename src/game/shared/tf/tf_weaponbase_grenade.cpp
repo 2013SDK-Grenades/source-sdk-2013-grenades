@@ -86,7 +86,7 @@ const char *CTFWeaponBaseGrenade::GetViewModel( int iViewModel ) const
 	// ShouldDraw() so the player never sees it.
 	CTFPlayer *pPlayer = ToTFPlayer( GetOwner() );
 	if ( pPlayer && pPlayer->GetPlayerClass() )
-		return pPlayer->GetPlayerClass()->GetData()->m_szHandModel;
+		return pPlayer->GetPlayerClass()->GetData()->m_szHandModelName;
 	return BaseClass::GetViewModel( iViewModel );
 }
 
