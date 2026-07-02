@@ -597,6 +597,13 @@ $Project "Client (TF)"
 				$File	"$SRCDIR\game\shared\tf\tf_weapon_grenadelauncher.h"
 			}
 
+			$Folder	"FF Grenade FX"
+			{
+				$File	"$SRCDIR\game\client\ff\fx\ff_fx_conc_emitter.cpp"
+				$File	"$SRCDIR\game\client\ff\fx\ff_fx_empzap.cpp"
+				$File	"$SRCDIR\game\client\ff\fx\ff_fx_slowfield.cpp"
+			}
+
 			$Folder	"FF Grenades"
 			{
 				// FF Grenade Port: FF include directories are now in the project-level

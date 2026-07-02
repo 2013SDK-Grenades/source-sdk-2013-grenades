@@ -75,6 +75,25 @@ void CTFWeaponBaseGrenade::Spawn( void )
 }
 
 //-----------------------------------------------------------------------------
+// FF Grenade Port: grenades run as off-hand weapons and never show a first-person
+// viewmodel. Return empty string so PrecacheModel doesn't try to load a null path
+// and GetSequenceLinearMotion doesn't fire with a null studio header.
+//-----------------------------------------------------------------------------
+const char *CTFWeaponBaseGrenade::GetViewModel( int iViewModel ) const
+{
+	return "";
+}
+
+//-----------------------------------------------------------------------------
+// FF Grenade Port: suppress all viewmodel animation calls — there's no model to
+// animate, and SelectWeightedSequence on an empty model spams Bad pstudiohdr.
+//-----------------------------------------------------------------------------
+bool CTFWeaponBaseGrenade::SendWeaponAnim( int iActivity )
+{
+	return true;
+}
+
+//-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
 void CTFWeaponBaseGrenade::Precache()

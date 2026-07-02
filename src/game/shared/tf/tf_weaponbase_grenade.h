@@ -34,6 +34,9 @@ public:
 	CTFWeaponBaseGrenade();
 
 	virtual void			Spawn();
+	// FF Grenade Port: grenades are off-hand weapons with no viewmodel.
+	virtual const char *	GetViewModel( int iViewModel = 0 ) const;
+	virtual bool			SendWeaponAnim( int iActivity );
 	virtual void			Precache();
 
 	bool					Deploy( void );
