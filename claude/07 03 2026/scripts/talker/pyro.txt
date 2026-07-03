@@ -728,3 +728,15 @@ Rule PlayerPositivePyro
 //--------------------------------------------------------------------------------------------------------------
 // End Competitive Mode VO
 //--------------------------------------------------------------------------------------------------------------
+
+// CUSTOM VOICELINES
+
+Response PlayerSniperCalloutPyro
+{
+	speak "vo/pyro_calloutsniper.mp3"
+}
+Rule PlayerSniperCalloutPyro
+{
+	criteria ConceptPlayerSniperCallout IsPyro
+	Response PlayerSniperCalloutPyro
+}	

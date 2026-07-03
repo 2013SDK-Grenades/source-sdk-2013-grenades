@@ -1,0 +1,22 @@
+maporder_ep2
+{
+	ep2_outland_01 "1"
+	ep2_outland_01a "2"
+	ep2_outland_02 "3"
+	ep2_outland_02_p2 "4"
+	ep2_outland_03 "5"
+	ep2_outland_04 "6"
+	ep2_outland_05 "7"
+	ep2_outland_06 "8"
+	ep2_outland_06a "9"
+	ep2_outland_07 "10"
+	ep2_outland_08 "11"
+	ep2_outland_09 "12"
+	ep2_outland_10 "13"
+	ep2_outland_10a "14"
+	ep2_outland_11 "15"
+	ep2_outland_11a "16"
+	ep2_outland_11b "17"
+	ep2_outland_12 "18"
+	ep2_outland_12a "19"
+}

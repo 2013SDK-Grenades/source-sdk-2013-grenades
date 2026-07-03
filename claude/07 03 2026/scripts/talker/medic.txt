@@ -1398,12 +1398,23 @@ Rule CartMovingStoppedOffenseMedic
 	ApplyContext "SaidCartMovingStoppedO:1:20"
 	Response CartMovingStoppedOffenseMedic                                                       
 }
+
 //--------------------------------------------------------------------------------------------------------------
 // END OF Auto Speech Cart
 //--------------------------------------------------------------------------------------------------------------
 
 
+// CUSTOM LINES 
 
+Response PlayerSniperCalloutMedic
+{
+	scene "scenes/Player/Medic/low/4183.vcd" 
+}
+Rule PlayerSniperCalloutMedic
+{
+	criteria ConceptPlayerSniperCallout IsMedic
+	Response PlayerSniperCalloutMedic
+}
 
 
 

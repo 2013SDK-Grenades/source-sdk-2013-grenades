@@ -1,0 +1,18 @@
+maporder_ep1
+{
+	ep1_citadel_00 "1"
+	ep1_citadel_01 "2"
+	ep1_citadel_02 "3"
+	ep1_citadel_02b "4"
+	ep1_citadel_03 "5"
+	ep1_citadel_04 "6"
+	ep1_c17_00 "7"
+	ep1_c17_00a "8"
+	ep1_c17_01 "9"
+	ep1_c17_01a "10"
+	ep1_c17_02 "11"
+	ep1_c17_02a "12"
+	ep1_c17_02b "13"
+	ep1_c17_05 "14"
+	ep1_c17_06 "15"
+}

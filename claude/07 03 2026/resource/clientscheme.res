@@ -1390,60 +1390,74 @@ Scheme
 				"antialias" "1"
 			}
 		}
-		"CloseCaption"
+		"CloseCaption_Normal"
 		{
 			"1"
 			{
-				"name"		"Tahoma"
-				"tall"		"8"
+				"name"		"Tahoma" [!$OSX]
+				"name"		"Verdana" [$OSX]
+				"tall"		"15" [$DECK]
+				"tall"		"12"
 				"weight"	"500"
-				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
+				"antialias"	"1"
+				"enable"	"1"
 			}
 		}
 		"CloseCaption_Italic"
 		{
 			"1"
 			{
-				"name"		"Tahoma"
-				"tall"		"8"
+				"name"		"Tahoma" [!$OSX]
+				"name"		"Verdana Italic" [$OSX]
+				"tall"		"15" [$DECK]
+				"tall"		"12"
 				"weight"	"500"
 				"italic"	"1"
-				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
+				"antialias"	"1"
+				"enable"	"1"
 			}
 		}
 		"CloseCaption_Bold"
 		{
 			"1"
 			{
-				"name"		"Tahoma"
-				"tall"		"8"
+				"name"		"Tahoma" [!$OSX]
+				"name"		"Verdana Bold" [$OSX]
+				"tall"		"15" [$DECK]
+				"tall"		"12"
 				"weight"	"900"
-				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
+				"antialias"	"1"
+				"enable"	"1"
 			}
 		}
 		"CloseCaption_BoldItalic"
 		{
 			"1"
 			{
-				"name"		"Tahoma"
-				"tall"		"8"
+				"name"		"Tahoma" [!$OSX]
+				"name"		"Verdana Bold Italic" [$OSX]
+				"tall"		"15" [$DECK]
+				"tall"		"12"
 				"weight"	"900"
 				"italic"	"1"
-				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
+				"antialias"	"1"
+				"enable"	"1"
 			}
 		}
 		"CloseCaption_Small"
 		{
 			"1"
 			{
-				"name"		"Tahoma"
-				"tall"		"16"
-				"tall_hidef"	"24"
+				"name"		"Tahoma" [!$OSX]
+				"name"		"Verdana" [$OSX]
+				"tall"		"15" [$DECK]
+				"tall"		"12"
 				"weight"	"900"
 				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
+				"antialias"	"1"
+				"enable"	"1"
 			}
 		}
-
 		// this is the symbol font
 		"Marlett"
 		{
@@ -2872,6 +2886,43 @@ Scheme
 				"tall"		"18"
 				"tall_hidef"	"24"
 				"tall_lodef"	"20"
+				"weight"	"500"
+				"additive"	"0"
+				"antialias" "1"
+			}
+		}
+		
+		"PDumpVerySmall"
+		{
+			"1"
+			{
+				"name"		"TF2 Secondary"
+				"tall"		"14"
+				"tall_lodef"	"16"
+				"weight"	"500"
+				"additive"	"0"
+				"antialias" 	"1"
+			}
+		}
+		"PDumpSmall"
+		{
+			"1"
+			{
+				"name"		"TF2"
+				"tall"		"16"
+				"tall_lodef"		"20"
+				"weight"	"500"
+				"additive"	"0"
+				"antialias" "1"
+			}
+		}
+		"PDump"
+		{
+			"1"
+			{
+				"name"		"TF2"
+				"tall"		"20"
+				"tall_hidef"	"32"
 				"weight"	"500"
 				"additive"	"0"
 				"antialias" "1"

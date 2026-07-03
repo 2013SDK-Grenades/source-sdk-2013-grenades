@@ -24,10 +24,11 @@
 		"tall"			"24"
 		"visible"		"1"
 		"enabled"		"1"
+		"paintbackground"	"0"
 		"image"			"../hud/color_panel_brown"
 		"scaleImage"	"1"	
-		"teambg_2"		"../hud/color_panel_red"	// Reversed, due to showing killer's name
-		"teambg_3"		"../hud/color_panel_blu"	// Reversed, due to showing killer's name
+		"teambg_2"		"../hud/color_panel_red_more_opaque"	// Reversed, due to showing killer's name
+		"teambg_3"		"../hud/color_panel_blu_more_opaque"	// Reversed, due to showing killer's name
 		
 		"src_corner_height"		"23"				// pixels inside the image
 		"src_corner_width"		"23"
@@ -39,6 +40,7 @@
 	{	
 		"ControlName"	"CExLabel"
 		"fieldName"		"CalloutLabel"
+		"FgColor"		"0 0 0 0"
 		"font"			"HudFontSmall"
 		"xpos"			"0"
 		"ypos"			"0"

@@ -1,0 +1,76 @@
+// Shotgun
+
+WeaponData
+{
+	// Weapon data is loaded by both the Game and Client DLLs.
+	"printname"	"#HL2_Shotgun"
+	"viewmodel"				"models/weapons/v_shotgun.mdl"
+	"playermodel"			"models/weapons/w_shotgun.mdl"
+	"ITEM_FLAG_NOITEMPICKUP" 	"1"
+
+	"anim_prefix"			"shotgun"
+	"bucket"				"0"
+	"bucket_position"		"0"
+
+	"clip_size"				"6"
+	"primary_ammo"			"TF_AMMO_PRIMARY"
+	"secondary_ammo"		"None"
+
+	"weight"				"4"
+	"item_flags"			"0"
+//TF2
+	"Damage"			"8"
+	
+	"HasTeamSkins_Viewmodel"			"1"
+	"HasTeamSkins_Worldmodel"	"1"
+
+	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
+	SoundData
+	{
+
+		"empty"				"HL2_Weapon_Shotgun.Empty"
+		"reload"			"HL2_Weapon_Shotgun.Reload"
+		"special1"			"HL2_Weapon_Shotgun.Special1"
+		"single_shot"		"HL2_Weapon_Shotgun.Single"
+		"double_shot"		"HL2_Weapon_Shotgun.Double"
+		// NPC WEAPON SOUNDS
+		"reload_npc"		"HL2_Weapon_Shotgun.NPC_Reload"
+		"single_shot_npc"	"HL2_Weapon_Shotgun.NPC_Single"
+	}
+
+	// Weapon Sprite data is loaded by the Client DLL.
+	TextureData
+	{
+		"weapon"
+		{
+				"font"		"WeaponIcons"
+				"character"	"b"
+		}
+		"weapon_s"
+		{	
+				"font"		"WeaponIconsSelected"
+				"character"	"b"
+		}
+		"ammo"
+		{
+				"font"		"WeaponIcons"
+				"character"	"s"
+		}
+		"crosshair"
+		{
+				"file"		"sprites/crosshairs"
+				"x"		"0"
+				"y"		"0"
+				"width"		"32"
+				"height"	"32"
+		}
+		"autoaim"
+		{
+				"file"		"sprites/crosshairs"
+				"x"		"0"
+				"y"		"48"
+				"width"		"24"
+				"height"	"24"
+		}
+	}
+}

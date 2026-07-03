@@ -1,0 +1,40 @@
+//
+// Team Fortress - Renegade Player Class (Also known as John Freeman)
+//
+PlayerClass
+{
+	// Attributes.
+	"name"			"john"
+	"model"			"models/player/john/john_freeman.mdl"
+	"model_hands"	"models/weapons/c_models/c_renegade_arms.mdl"
+	"localize_name"	"TF_Class_Name_John"
+	"speed_max"		"350"
+	// This is 115% sprint speed
+	"health_max"		"150"
+	"health_armor_max"		"100"
+	"armor_max"		"100"
+	"armortype"		"2"
+	
+	//primary weapons
+	"weapon1"		"HL2MP_WEAPON_SHOTGUN"
+	"weapon2"		"HL2MP_WEAPON_PISTOL"
+	"weapon3"		"HL2MP_WEAPON_CROWBAR"
+
+
+	//Thirdperson
+	"cameraoffset_forward"	"85"
+	"cameraoffset_right"	"30"
+	"cameraoffset_up"	"15"
+
+	AmmoMax
+	{
+		"tf_ammo_primary"	"300"
+		"tf_ammo_secondary"	"200"
+		"tf_ammo_metal"		"100"
+		"tf_ammo_grenades1"	"3"
+		"tf_ammo_grenades2"	"3"
+		"tf_ammo_grenades3"	"2"
+		"fc_ammo_grenades1"	"6"
+		"fc_ammo_grenades2"	"1"
+	}	
+}

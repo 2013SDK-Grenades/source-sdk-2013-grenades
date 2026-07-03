@@ -59,11 +59,12 @@
 		"zpos"			"50"
 		"wide"			"350" [$WIN32]
 		"wide"			"600" [$X360]
-		"tall"			"35"
+		"tall"			"70"
 		"autoResize"	"0"
 		"pinCorner"		"0"
 		"visible"		"0"
 		"enabled"		"1"
+		"centerwrap"	"1"
 	}
 	"MapType" [$WIN32]
 	{
@@ -73,7 +74,7 @@
 		"labelText"		"%maptype%"
 		"textAlignment"	"center"
 		"xpos"			"5"
-		"ypos"			"117"
+		"ypos"			"152"
 		"zpos"			"50"
 		"wide"			"350"
 		"tall"			"35"

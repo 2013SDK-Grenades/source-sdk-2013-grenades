@@ -1,0 +1,120 @@
+// If the model is missing, it will not show up in the menu
+Vehicles
+{
+	"Airboat"
+	{
+		"classname"	"prop_vehicle_airboat"
+		"model"		"models/airboat.mdl"
+		"vehiclescript"	"scripts/vehicles/airboat.txt"
+	}
+	"2 Seat Jeep"
+	{
+		"classname"	"prop_vehicle_jeep"
+		"model"		"models/vehicles/buggy_p2.mdl"
+		"vehiclescript"	"scripts/vehicles/jeep_test.txt"
+	}
+	"Airboat With Gun"
+	{
+		"classname"	"prop_vehicle_airboat"
+		"model"		"models/airboat.mdl"
+		"vehiclescript"	"scripts/vehicles/airboat.txt"
+		"enablegun"	"1"
+	}
+	"2 Seat Jeep With Gun"
+	{
+		"classname"	"prop_vehicle_jeep"
+		"model"		"models/vehicles/buggy_p2.mdl"
+		"vehiclescript"	"scripts/vehicles/jeep_test.txt"
+		"enablegun"	"1"
+	}
+	"Jalopy"
+	{
+		"classname"	"prop_vehicle_jeep"
+		"model"		"models/vehicle.mdl"
+		"vehiclescript"	"scripts/vehicles/jalopy.txt"
+	}
+	"2 Seat Jeep Barrel Launcher"
+	{
+		"classname"	"prop_vehicle_jeep"
+		"model"		"models/vehicles/buggy_p2.mdl"
+		"vehiclescript"	"scripts/vehicles/jeep_test.txt"
+		"enablegun"	"1"
+		"TurretType" "3"
+		"AmmoType" "models/props_c17/oildrum001_explosive.mdl"
+	}
+	"2 Seat Passenger Rockets"
+	{
+		"classname"	"prop_vehicle_jeep"
+		"model"		"models/vehicles/buggy_p2.mdl"
+		"vehiclescript"	"scripts/vehicles/jeep_test.txt"
+		"enablegun"	"1"
+		"TurretType" "2"
+		"TurretSeat" "1"
+	}
+	"2 Seat Passenger AR2"
+	{
+		"classname"	"prop_vehicle_jeep"
+		"model"		"models/vehicles/buggy_p2.mdl"
+		"vehiclescript"	"scripts/vehicles/jeep_test.txt"
+		"enablegun"	"1"
+		"TurretSeat" "1"
+		"AmmoType" "AR2"
+		"TurretSound" "Weapon_AR2.Single"
+		"TurretAttackRate" "0.1"
+	}
+	
+	"8 Seat Truck"
+	{
+		"classname"	"prop_vehicle_jeep"
+		"model"		"models/vehicles/8seattruck.mdl"
+		"vehiclescript"	"scripts/vehicles/truck.txt"
+	}
+	
+	"7 Seat Van"
+	{
+		"classname"	"prop_vehicle_jeep"
+		"model"		"models/vehicles/7seatvan.mdl"
+		"vehiclescript"	"scripts/vehicles/van.txt"
+	}
+	
+	"EZ2 4x4 Truck"
+	{
+		"classname"	"prop_vehicle_jeep"
+		"model"		"models/vehicles/ez2_4x4truck.mdl"
+		"vehiclescript"	"scripts/vehicles/ez2_car.txt"
+	}
+	
+	"EZ2 84 Sedan"
+	{
+		"classname"	"prop_vehicle_jeep"
+		"model"		"models/vehicles/ez2_84sedan.mdl"
+		"vehiclescript"	"scripts/vehicles/ez2_car.txt"
+	}
+	
+	"EZ2 95 Sedan"
+	{
+		"classname"	"prop_vehicle_jeep"
+		"model"		"models/vehicles/ez2_95sedan.mdl"
+		"vehiclescript"	"scripts/vehicles/ez2_car.txt"
+	}
+	
+	"EZ2 Truck"
+	{
+		"classname"	"prop_vehicle_jeep"
+		"model"		"models/vehicles/ez2_truck.mdl"
+		"vehiclescript"	"scripts/vehicles/ez2_car.txt"
+	}
+	
+	"APC"
+	{
+		"classname"	"prop_vehicle_drivable_apc"
+		"model"		"models/vehicles/combine_apc.mdl"
+		"vehiclescript"	"scripts/vehicles/drivable_apc.txt"
+	}
+	"Forklift"
+	{
+		"classname"	"prop_vehicle_jeep"
+		"model"		"models/vehicles/cstrike_forklift.mdl"
+		"vehiclescript"	"scripts/vehicles/cstrike_forklift.txt"
+	}
+}

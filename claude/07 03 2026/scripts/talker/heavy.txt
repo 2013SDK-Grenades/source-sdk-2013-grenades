@@ -1880,3 +1880,17 @@ Rule PlayerMatchWinCompHeavy
 //--------------------------------------------------------------------------------------------------------------
 // End Competitive Mode VO
 //--------------------------------------------------------------------------------------------------------------
+
+
+// CUSTOM VOICELINES
+
+Response PlayerSniperCalloutHeavy
+{
+	scene "scenes/Player/Heavy/low/3972.vcd" 
+}
+Rule PlayerSniperCalloutHeavy
+{
+	criteria ConceptPlayerSniperCallout IsHeavy
+	Response PlayerSniperCalloutHeavy
+}
+

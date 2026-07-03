@@ -419,7 +419,7 @@
 		"visible"		"1"
 		"enabled"		"1"
 		"tabPosition"		"0"
-		"labelText"		"#TF_PublishFile_BrowseDesc"
+		"labelText"		"#FC_PublishFile_BrowseDesc"
 		"textAlignment"		"center"
 		"dulltext"		"0"
 		"brighttext"		"0"

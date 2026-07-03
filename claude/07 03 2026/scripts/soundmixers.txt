@@ -28,12 +28,7 @@
 //							directory or .wav	classname																Causes  Duck to  Ducker
 //	group name				name substring		substring	chan			sndlvl_min	sndlvl_max	priority Is Ducked	Ducking	Percent	 Threshold
 //  ---------				------------------	---------	-----------		----------	----------	-------- --------	-------	-------	 ---------
-	
-	"MVM_All"				"mvm/"				""			""				""			""			"50"		"0"		"0"		"100"	"40"
 
-	"QuestAlert"			"ui/quest"			""			""				""			""			"65"		"0"		"1"		"100"	"40"
-	"QuestPauling"			"vo/pauling/"		""			""				""			""			"65"		"0"		"1"		"100"	"40"
-	
 	"bullethit"				"impact_bullet"		""			""				""			""			"50"		"0"		"0"		"100"	"40"
 	"bulletmiss"			"nearmiss"			""			""				""			""			"50"		"0"		"0"		"100"	"40"
 	"Explosions"			"explo"				""			""				"120"		""			"50"		"0"		"1"		"100"	"40"
@@ -51,8 +46,8 @@
 	"NPC_Looping"			""					"NPC"		"CHAN_STATIC"	""			""			"50"		"0"		"0"		"100"	"40"
 	"NPC"					""					"NPC"		""				""			""			"50"		"0"		"0"		"100"	"40"
 	
-	//"AHELI_WEAPON"			"aheli_weapon"		""			""				"140"		""			"50"		"0"		"1"		"100"	"40"
-	//"GUNSHIP_WEAPON"		"gunship_weapon"	""			""				"140"		""			"50"		"0"		"1"		"100"	"40"
+	"AHELI_WEAPON"			"aheli_weapon"		""			""				"140"		""			"50"		"0"		"1"		"100"	"40"
+	"GUNSHIP_WEAPON"		"gunship_weapon"	""			""				"140"		""			"50"		"0"		"1"		"100"	"40"
 	"STRIDER_WEAPON"		"strider_weapon"	""			""				"140"		""			"50"		"0"		"1"		"100"	"40"
 
 	"Ambient_Alarms"		"ambient/alarms"	""			""				""			""			"20"		"1"		"0"		"60"	"40"
@@ -73,7 +68,6 @@
 	"Vehicles"				"vehicles/"			""			""				""			""			"20"		"1"		"0"		"68"	"40"
 	"Vehicles_Looping"		"vehicles/"			""			"CHAN_STATIC"	""			""			"20"		"1"		"0"		"68"	"40"
 
-	"MainMenuMusic"			"ui/gamestartup"	""			""				""			""			"50"		"0"		"0"		"100"	"40"
 	"UI"					"common/"			""			""				""			""			"50"		"0"		"0"		"100"	"40"
 	"UI"					"ui/"				""			""				""			""			"50"		"0"		"0"		"100"	"40"
 
@@ -91,6 +85,16 @@
 	"Loud"					""					""			""				"91"		"100"		"50"		"0"		"0"		"100"	"40"
 	"VeryLoud"				""					""			""				"101"		"149"		"50"		"0"		"0"		"100"	"40"
 	"SuperLoud"				""					""			""				"150"		""			"50"		"0"		"0"		"100"	"40"
+	"Commentary"			"commentary/"		""			""				""			""			"50"		"0"		"0"		"100"	"40"
+	
+//	TF2
+	//"Physgun"				"weapons/phys"		""			""				""			""			"50"		"0"		"0"		"100"	"40"
+
+	//"Zombies"				"zombie"			"NPC"		""				""			""			"50"		"0"		"0"		"100"   "40"
+
+	"Footsteps"				"footstep"			""			""				""			""			"20"		"0"		"0"		"100"	"40"
+	"Footsteps"				"_step"				""			""				""			""			"20"		"0"		"0"		"100"	"40"
+	"Footsteps"				"foot"				""			""				""			""			"20"		"0"		"0"		"100"	"40"	
 
 	"FreezeCam"				"/freeze_cam"		""			""				""			""			"65"		"0"		"1"		"100"	"40"
 	"WinSounds"				"misc/your_team"	""			""				""			""			"65"		"0"		"0"		"100"	"40"
@@ -107,12 +111,16 @@
 	"SoldierTaunts"			"vo/taunts/soldier"		""			""				""			""			"65"		"0"		"0"		"100"	"40"
 	"SpyTaunts"				"vo/taunts/spy"		""			""				""			""			"65"		"0"		"0"		"100"	"40"
 	"Tf_music"				"misc/tf"			""			""				""			""			"65"		"0"		"0"		"100"	"40"
-	"BuffBanner"			"weapons/buff_banner_horn"			""			""				""			""			"65"		"0"		"0"		"100"	"40"
+	//"BuffBanner"			"weapons/buff_banner_horn"			""			""				""			""			"65"		"0"		"0"		"100"	"40"
 	
 	"Doors"					"doors/generic"		""			""				""			""			"65"		"0"		"0"		"100"	"40"
 	"PlayerAnimations"			"player/taunt"		""			""				""			""			"65"		"0"		"0"		"100"	"40"
 	
-	
+	//"MVM_All"				"mvm/"				""			""				""			""			"50"		"0"		"0"		"100"	"40"
+
+	//"QuestAlert"			"ui/quest"			""			""				""			""			"65"		"0"		"1"		"100"	"40"
+	//"QuestPauling"			"vo/pauling/"		""			""				""			""			"65"		"0"		"1"		"100"	"40"	
+//	End TF2
 	
 	"All"					""			""			""				""			""			"50"		"0"		"0"		"100"	"40"
 
@@ -147,9 +155,7 @@
 	"bullethit"				"0.67"
 	
 	"Music"					"0.81"
-	"MainMenuMusic"			"0.3"
 	
-
 	"All"					"0.72"
 }
 
@@ -158,7 +164,7 @@
 {
 //	group name			mix value
 //  --------			---------
-	"MVM_All"    			"1.0"
+	"MVM_All"    		"1.0"
 	"Explosions"		"1.0"
 	"Physics"			"0.7"
 	"Ambient"			"0.7"
@@ -202,7 +208,7 @@
 //	group name			mix value
 //  --------			---------
 
-	"MVM_All"    			"1.0"
+	"MVM_All"    		"1.0"
 	"NPC_Voice"			"1.0"
 	"Dialog"			"1.0"			
 	"Alyx_Dialog"		"1.0"

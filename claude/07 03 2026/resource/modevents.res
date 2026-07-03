@@ -27,6 +27,36 @@
 
 "ModEvents"
 {
+	"game_opened"
+	{
+		"player"	"short"		// entindex of the player
+	}
+	"bomb_beep"
+	{
+		"entindex"	"long"		// c4 entity
+	}
+	"show_annotation_ping"
+	{
+		"worldPosX" "float"
+		"worldPosY" "float"
+		"worldPosZ" "float"
+		"worldNormalX" "float"
+		"worldNormalY" "float"
+		"worldNormalZ" "float"
+		"id" "long"
+		"text"		"string"	// name (unlocalized)
+		"lifetime"	"float"
+		"visibilityBitfield"	"long" // bitfield of the players that can see this
+		"follow_entindex"	"long" // if this is set, follow this entity
+		"show_distance"		"bool"
+		"play_sound"		"string"
+		"show_effect"		"bool"
+		"color"		"string"
+	}
+	"teamplay_changelevel"
+	{
+		"mapname" "string"
+	}
 	"intro_finish"
 	{
 		"player"	"short"		// entindex of the player
@@ -50,11 +80,17 @@
 		"victim_entindex"	"long"
 		"inflictor_entindex"	"long"	// ent index of inflictor (a sentry, for example)
 		"attacker"	"short"	 	// user ID who killed
+		"npc_attacker"	"short"		// NPC entindex who killed
+		"attacker_name"	"string"	// classname who killed
+		"attacker_team"	"short"		// killer's team
 		"weapon"	"string" 	// weapon name killer used
 		"weaponid"	"short"		// ID of weapon killer used
 		"damagebits"	"long"		// bits of type of damage
 		"customkill"	"short"		// type of custom kill
 		"assister"	"short"		// user ID of assister
+		"npc_assister"	"short"		// NPC entindex of assister
+		"assister_name"	"string"	// classname of assister
+		"assister_team"	"short"		// assister's team
 		"weapon_logclassname"	"string" 	// weapon name that should be printed on the log
 		"stun_flags"	"short"	// victim's stun flags at the moment of death
 		"death_flags"	"short" //death flags.
@@ -81,6 +117,41 @@
 	//	"first_blood"	"bool"		// was this a first blood kill
 	//	"feign_death"	"bool"	// the victim is feign death
 	}
+
+	"npc_death"
+	{ 
+		"victim"	"short"		// NPC entindex who died
+		"victim_name"	"string"	// NPC classname who died
+		"victim_team"	"short"		// NPC victim's team
+		"npc_victim"	"short"   	// NPC entindex who died				
+		"attacker"	"short"	 	// user ID who killed
+		"npc_attacker"	"short"		// NPC entindex who killed
+		"attacker_name"	"string"	// classname who killed
+		"attacker_team"	"short"		// killer's team
+		"weapon"	"string" 	// weapon name killer used 
+		"weaponid"	"short"		// ID of weapon killer used
+		"damagebits"	"long"		// bits of type of damage
+		"customkill"	"short"		// type of custom kill
+		"assister"	"short"		// user ID of assister
+		"npc_assister"	"short"		// NPC entindex of assister
+		"assister_name"	"string"	// classname of assister
+		"assister_team"	"short"		// assister's team
+		"weapon_logclassname"	"string" 	// weapon name that should be printed on the log
+		"custom_death_flags"	"short"		// Custom death flags, for notify action in TF weapons
+		"kill_streak_total" 	"short"	// Kill streak count (level)
+		"kill_streak_wep" 	"short"	// Kill streak for killing weapon
+		"kill_streak_assist" "short"	// Kill streak for assister count
+		"kill_streak_victim" "short"	// Victims kill streak
+        "ducks_streaked"	"short" // Duck streak increment from this kill
+		"duck_streak_total"	"short" // Duck streak count for attacker
+		"duck_streak_assist"	"short" // Duck streak count for assister
+		"duck_streak_victim"	"short" // (former) duck streak count for victim
+		"rocket_jump"		"bool"		// was the victim rocket jumping
+
+		"weapon_def_index"	"long"		// item def index of weapon killer used
+		"crit_type"	"short"		// Crit type of kill.  0: None 1: Mini 2: Full
+	}
+
 
 	"tf_map_time_remaining"
 	{
@@ -1058,6 +1129,10 @@
 	{
 		"userid"	"short"   	// user ID who died				
 		"victim_entindex"	"long"
+		"victim"	"short"		// NPC entindex who died
+		"victim_name"	"string"	// NPC classname who died
+		"victim_team"	"short"		// NPC victim's team
+		"npc_victim"	"short"   	// NPC entindex who died	
 		"inflictor_entindex"	"long"	// ent index of inflictor (a sentry, for example)
 		"attacker"	"short"	 	// user ID who killed
 		"weapon"	"string" 	// weapon name killer used 
@@ -1077,6 +1152,10 @@
 	{
 		"userid"	"short"   	// user ID who died				
 		"victim_entindex"	"long"
+		"victim"	"short"		// NPC entindex who died
+		"victim_name"	"string"	// NPC classname who died
+		"victim_team"	"short"		// NPC victim's team
+		"npc_victim"	"short"   	// NPC entindex who died	
 		"inflictor_entindex"	"long"	// ent index of inflictor (a sentry, for example)
 		"attacker"	"short"	 	// user ID who killed
 		"weapon"	"string" 	// weapon name killer used 
@@ -1095,6 +1174,9 @@
 	{
 		"userid"	"short"   	// user ID who died				
 		"victim_entindex"	"long"
+		"victim_name"	"string"	// NPC classname who died
+		"victim_team"	"short"		// NPC victim's team
+		"npc_victim"	"short"   	// NPC entindex who died	
 		"inflictor_entindex"	"long"	// ent index of inflictor (a sentry, for example)
 		"attacker"	"short"	 	// user ID who killed
 		"weapon"	"string" 	// weapon name killer used 
@@ -1785,7 +1867,7 @@
 	}
 	"special_score"
 	{
-		"player"	"byte"   	// index of the scorer
+		"player"	"short"   	// index of the scorer
 	}
 
 	"team_leader_killed"
@@ -2003,6 +2085,126 @@
 		"attacker"	"short"
 		"victim"	"short"
 		"assister"	"short"
+	}
+
+	"lf_checkpoint_reached"
+	{
+		"player"	"short"
+	}
+
+	"coop_win_panel"		
+	{
+		"panel_style"	"byte"		// for client to determine layout		
+		"winning_team"	"byte"		// team who won
+		"winreason"	"byte"		// the reason the team won
+		"customlose_reason" "string"	// Custom lose reason set by fc_logic_coop
+		"customlose_details" "string"	// Custom lose details set by fc_logic_coop
+	}
+
+	"npc_healed"
+	{
+		"patient"	"short"
+		"healer"	"short"
+		"amount"	"short"
+	}
+
+	"npc_buff"
+	{
+		"entindex"		"short"   	// entindex of the NPC the buff is being applied to
+		"buff_owner"	"short"		// user ID of the player with the banner
+		"buff_type"		"byte"		// type of buff
+	}
+	"bomb_beginplant"
+	{
+		"userid"	"short"		// player who is planting the bomb
+		"site"		"short"		// bombsite index
+	}
+
+	"bomb_abortplant"
+	{
+		"userid"	"short"		// player who is planting the bomb
+		"site"		"short"		// bombsite index
+	}
+
+	"bomb_planted"
+	{
+		"userid"	"short"		// player who planted the bomb
+		"site"		"short"		// bombsite index
+		"posx"		"short"		// position x
+		"posy"		"short"		// position y
+	}
+	
+	"bomb_defused"
+	{
+		"userid"	"short"		// player who defused the bomb
+		"site"		"short"		// bombsite index
+	}
+	
+	"bomb_exploded"
+	{
+		"userid"	"short"		// player who planted the bomb
+		"site"		"short"		// bombsite index
+	}
+	
+	"bomb_dropped"
+	{
+		"userid"	"short"		// player who dropped the bomb
+	}
+	
+	"bomb_pickup"
+	{
+		"userid"	"short"		// player who picked up the bomb
+	}
+
+	"bomb_begindefuse"
+	{
+		"userid"	"short"		// player who is defusing
+		"haskit"	"bool"
+	}
+
+	"bomb_abortdefuse"
+	{
+		"userid"	"short"		// player who was defusing
+	}
+
+	"hostage_follows"
+	{
+		"userid"	"short"		// player who touched the hostage
+		"hostage"	"short"		// hostage entity index
+	}
+	
+	"hostage_hurt"
+	{
+		"userid"	"short"		// player who hurt the hostage
+		"hostage"	"short"		// hostage entity index
+	}
+	
+	"hostage_killed"
+	{
+		"userid"	"short"		// player who killed the hostage
+		"hostage"	"short"		// hostage entity index
+	}
+	
+	"hostage_rescued"
+	{
+		"userid"	"short"		// player who rescued the hostage
+		"hostage"	"short"		// hostage entity index
+		"site"		"short"		// rescue site index
+	}
+
+	"hostage_stops_following"
+	{
+		"userid"	"short"		// player who rescued the hostage
+		"hostage"	"short"		// hostage entity index
+	}
+
+	"hostage_rescued_all"
+	{
+	}
+
+	"hostage_call_for_help"
+	{
+		"hostage"	"short"		// hostage entity index
 	}
 }
 

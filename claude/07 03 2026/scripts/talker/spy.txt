@@ -1362,3 +1362,15 @@ Rule PlayerMatchWinCompSpy
 //--------------------------------------------------------------------------------------------------------------
 // End Competitive Mode VO
 //--------------------------------------------------------------------------------------------------------------
+
+// CUSTOM VOICELINES
+
+Response PlayerSniperCalloutSpy
+{
+	speak "vo/spy_calloutsniper.mp3"
+}
+Rule PlayerSniperCalloutDemoman
+{
+	criteria ConceptPlayerSniperCallout IsSpy
+	Response PlayerSniperCalloutSpy
+}	

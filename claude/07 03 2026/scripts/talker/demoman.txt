@@ -1436,3 +1436,15 @@ Rule PlayerMatchWinCompDemoman
 //--------------------------------------------------------------------------------------------------------------
 // End Competitive Mode VO
 //--------------------------------------------------------------------------------------------------------------
+
+// CUSTOM VOICELINES
+
+Response PlayerSniperCalloutDemoman
+{
+	speak "vo/demoman_calloutsniper.mp3"
+}
+Rule PlayerSniperCalloutDemoman
+{
+	criteria ConceptPlayerSniperCallout IsDemoman
+	Response PlayerSniperCalloutDemoman
+}	

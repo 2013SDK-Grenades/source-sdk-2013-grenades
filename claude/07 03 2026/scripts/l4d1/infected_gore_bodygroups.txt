@@ -1,0 +1,157 @@
+// Alright so this is some scary shit. The gore system from Fortress Zombies but adapated to FC's L4D infected 
+"gore_bodygroups"
+{
+    "models/infected/common_police_male01.mdl"
+    {
+        "leftarm_bodygroup" "1"
+        "rightarm_bodygroup" "1"
+        "head_bodygroup" "0"
+
+        "variant_0_leftarm" "4"
+        "variant_0_rightarm" "3"
+        "variant_0_head" "4"
+    }
+	"models/infected/common_male_pilot.mdl"
+    {
+        "leftarm_bodygroup" "1"
+        "rightarm_bodygroup" "1"
+        "head_bodygroup" "0"
+
+        "variant_0_leftarm" "3"
+        "variant_0_rightarm" "2"
+        "variant_0_head" "4"
+    }
+	"models/infected/common_male_baggagehandler_01.mdl"
+    {
+        "leftarm_bodygroup" "1"
+        "rightarm_bodygroup" "1"
+        "head_bodygroup" "0"
+
+        "variant_0_leftarm" "3"
+        "variant_0_rightarm" "2"
+        "variant_0_head" "4"
+    }
+	"models/infected/common_worker_male01.mdl"
+    {
+        "leftarm_bodygroup" "1"
+        "rightarm_bodygroup" "1"
+        "head_bodygroup" "0"
+
+        "variant_0_head" "4"
+		"variant_0_leftarm" "4"
+        "variant_0_rightarm" "3"
+    }
+	"models/infected/common_military_male01.mdl"
+    {
+        "leftarm_bodygroup" "1"
+        "rightarm_bodygroup" "1"
+        "head_bodygroup" "0"
+
+        "variant_0_head" "4"
+		"variant_0_leftarm" "4"
+        "variant_0_rightarm" "3"
+    }
+    "models/infected/common_male01.mdl"
+    {
+        "leftarm_bodygroup" "1"
+        "rightarm_bodygroup" "1"
+        "head_bodygroup" "0"
+
+        "variant_0_head" "5"
+		"variant_0_leftarm" "4"
+        "variant_0_rightarm" "3"
+		"variant_1_head" "5"
+		"variant_1_leftarm" "7"
+        "variant_1_rightarm" "6"
+    }
+	"models/infected/common_male_rural01.mdl"
+    {
+        "leftarm_bodygroup" "1"
+        "rightarm_bodygroup" "1"
+        "head_bodygroup" "0"
+
+        "variant_0_head" "5"
+		"variant_0_leftarm" "4"
+        "variant_0_rightarm" "3"
+		"variant_1_head" "5"
+		"variant_1_leftarm" "7"
+        "variant_1_rightarm" "6"
+    }
+	"models/infected/common_male_suit.mdl"
+    {
+        "leftarm_bodygroup" "1"
+        "rightarm_bodygroup" "1"
+        "head_bodygroup" "0"
+
+        "variant_0_head" "4"
+		"variant_0_leftarm" "4"
+        "variant_0_rightarm" "3"
+		"variant_1_head" "4"
+		"variant_1_leftarm" "7"
+        "variant_1_rightarm" "6"
+    }
+	"models/infected/common_patient_male01.mdl"
+    {
+        "leftarm_bodygroup" "1"
+        "rightarm_bodygroup" "1"
+        "head_bodygroup" "0"
+
+        "variant_0_head" "4"
+		"variant_0_leftarm" "3"
+        "variant_0_rightarm" "2"
+    }
+	"models/infected/common_surgeon_male01.mdl"
+    {
+        "leftarm_bodygroup" "1"
+        "rightarm_bodygroup" "1"
+        "head_bodygroup" "0"
+
+        "variant_0_head" "5"
+		"variant_0_leftarm" "3"
+        "variant_0_rightarm" "2"
+    }
+	"models/infected/common_tsaagent_male01.mdl"
+    {
+        "leftarm_bodygroup" "1"
+        "rightarm_bodygroup" "1"
+        "head_bodygroup" "0"
+
+        "variant_0_head" "5"
+		"variant_0_leftarm" "3"
+        "variant_0_rightarm" "2"
+    }
+	// WOMEN
+    "models/infected/common_female01.mdl"
+    {
+        "leftarm_bodygroup" "1"
+        "rightarm_bodygroup" "1"
+        "head_bodygroup" "0"
+
+        "variant_0_head" "3"
+		"variant_0_leftarm" "4"
+        "variant_0_rightarm" "3"
+		"variant_1_head" "3"
+		"variant_1_leftarm" "7"
+        "variant_1_rightarm" "6"
+    }
+	"models/infected/common_female_rural01.mdl"
+    {
+        "leftarm_bodygroup" "1"
+        "rightarm_bodygroup" "1"
+        "head_bodygroup" "0"
+
+        "variant_0_head" "5"
+		"variant_0_leftarm" "4"
+        "variant_0_rightarm" "3"
+    }
+	"models/infected/common_female_nurse01.mdl"
+    {
+        "leftarm_bodygroup" "1"
+        "rightarm_bodygroup" "1"
+        "head_bodygroup" "0"
+
+        "variant_0_head" "3"
+		"variant_0_leftarm" "3"
+        "variant_0_rightarm" "2"
+    }
+}

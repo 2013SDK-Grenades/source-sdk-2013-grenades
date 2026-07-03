@@ -1,0 +1,43 @@
+// FC VEHICLES
+
+// GENERIC HORNS
+
+"Vehicles.GenericHorn"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_140dB"
+	"pitch"		"95,110"
+	"rndwave"
+	{
+		"wave"	"vehicles/horn/generic_horn1.wav"
+		"wave"	"vehicles/horn/generic_horn2.wav"
+		"wave"	"vehicles/horn/generic_horn3.wav"
+	}
+}
+
+"Vehicles.BoatHorn"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_140dB"
+	"pitch"		"80,110"
+	"rndwave"
+	{
+		"wave"	"vehicles/horn/boat_horn1.wav"
+		"wave"	"vehicles/horn/boat_horn2.wav"
+		"wave"	"vehicles/horn/boat_horn3.wav"
+	}
+}
+
+"Vehicles.APCHorn"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_120dB"
+	"pitch"		"90,100"
+	"rndwave"
+	{
+		"wave"	"vehicles/horn/apc_horn1.wav"
+	}
+}

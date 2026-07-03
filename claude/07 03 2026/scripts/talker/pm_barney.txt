@@ -1,0 +1,165 @@
+criterion "IsPMBarney" "IsPMBarney" "1" "required" weight 100
+
+Response PlayerBattleCryPMBarney
+{
+	speak "Trainyard.ba_thatbeer02"
+	speak "npc_barney.ba_bringiton"
+}
+Rule PlayerBattleCryPMBarney
+{
+	criteria ConceptPlayerBattleCry IsPMBarney
+	Response PlayerBattleCryPMBarney
+}
+Response PlayerMedicPMBarney
+{
+	speak "npc_barney.ba_wounded02"
+	speak "npc_barney.ba_wounded03"
+}
+Rule PlayerMedicPMBarney
+{
+	criteria ConceptPlayerMedic IsPMBarney
+	Response PlayerMedicPMBarney
+}
+
+Response PlayerYesPMBarney
+{
+
+}
+Rule PlayerYesPMBarney
+{
+	criteria ConceptPlayerYes IsPMBarney
+	Response PlayerYesPMBarney
+}
+
+Response PlayerThanksPMBarney
+{
+	speak "k_lab.ba_geethanks"
+	speak "k_lab2.ba_goodnews_c"
+}
+Rule PlayerThanksPMBarney
+{
+	criteria ConceptPlayerThanks IsPMBarney
+	Response PlayerThanksPMBarney
+}
+Response PlayerIncomingPMBarney
+{
+	speak "k_lab2.ba_incoming"
+	speak "npc_barney.ba_getdown"
+	speak "npc_barney.ba_heretheycome01"
+	speak "npc_barney.ba_heretheycome02"
+}
+Rule PlayerIncomingPMBarney
+{
+	criteria ConceptPlayerIncoming IsPMBarney
+	Response PlayerIncomingPMBarney
+}
+
+Response PlayerJeersPMBarney
+{
+	speak "ep_01.ba_areyoucrazy"
+	speak "k_lab.ba_whatthehell"
+	speak "npc_barney.ba_danger02"
+	speak "rubble.ba_damnitall"
+}
+Rule PlayerJeersPMBarney
+{
+	criteria ConceptPlayerJeers IsPMBarney
+	Response PlayerJeersPMBarney
+}
+Response PlayerPositivePMBarney
+{
+	speak "ep_01.ba_hellyeah"
+	speak "ep_01.ba_woo"
+	speak "ep_01.ba_yeah01"
+	speak "npc_barney.ba_laugh01"
+	speak "npc_barney.ba_laugh02"
+	speak "npc_barney.ba_laugh03"
+	speak "npc_barney.ba_laugh04"
+}
+Rule PlayerPositivePMBarney
+{
+	criteria ConceptPlayerPositive IsPMBarney
+	Response PlayerPositivePMBarney
+}
+Response PlayerCheersPMBarney
+{
+	speak "ep_01.ba_ohyeah01"
+	speak "k_lab2.ba_goodnews"
+}
+Rule PlayerCheersPMBarney
+{
+	criteria ConceptPlayerCheers IsPMBarney
+	Response PlayerCheersPMBarney
+}
+
+Response PlayerNegativePMBarney
+{
+	speak "npc_barney.ba_damnit"
+}
+Rule PlayerNegativePMBarney
+{
+	criteria ConceptPlayerNegative IsPMBarney
+	Response PlayerNegativePMBarney
+}
+Response PlayerGoPMBarney
+{
+	speak "ep_01.ba_pressure"
+	speak "ep_01.ba_youguyscoming"
+	speak "npc_barney.ba_followme02"
+	speak "npc_barney.ba_followme05"
+	speak "npc_barney.ba_hurryup"
+	speak "rubble.ba_nag_wall05"
+}
+Rule PlayerGoPMBarney
+{
+	criteria ConceptPlayerGo IsPMBarney
+	Response PlayerGoPMBarney
+}
+Response PlayerSentryAheadPMBarney
+{
+	speak "npc_barney.ba_turret"
+}
+Rule PlayerSentryAheadPMBarney
+{
+	criteria ConceptPlayerSentryAhead IsPMBarney
+	Response PlayerSentryAheadPMBarney
+}
+Response PlayerHelpPMBarney
+{
+	speak "rubble.ba_helpmeout"
+}
+Rule PlayerHelpPMBarney
+{
+	criteria ConceptPlayerHelp IsPMBarney
+	Response PlayerHelpPMBarney
+}
+
+//
+// -- Hurt sounds
+//
+
+Response PlayerPainPMBarney
+{
+	speak "npc_barney.ba_pain01"
+	speak "npc_barney.ba_pain02"
+	speak "npc_barney.ba_pain03"
+	speak "npc_barney.ba_pain04"
+}
+Rule PlayerPainPMBarney
+{
+	criteria ConceptPain IsPMBarney IsNotDominating
+	Response PlayerPainPMBarney
+}
+
+
+Response PlayerAttackerPainPMBarney
+{
+	speak "npc_barney.ba_pain10"
+	speak "npc_barney.ba_pain09"
+	speak "npc_barney.ba_pain08"
+}
+Rule PlayerAttackerPainPMBarney
+{
+	criteria ConceptAttackerPain IsPMBarney
+	Response PlayerAttackerPainPMBarney
+}

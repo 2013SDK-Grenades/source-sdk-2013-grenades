@@ -1,0 +1,823 @@
+// ------------------------------------------------------------------------------------ //
+// CSGO AWP
+// ------------------------------------------------------------------------------------ //
+"Weapon_AWPFC.Single"
+{
+	"channel"	"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_94dB"
+	"volume"	"1.0"
+	"wave"		")weapons/csgo_awp_shoot.wav"
+}
+
+"Weapon_AWPFC.SingleCrit"
+{
+	"channel"	"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_94dB"
+	"volume"	"1.0"
+	"wave"		")weapons/csgo_awp_shoot_crit.wav"
+}
+
+// ------------------------------------------------------------------------------------ //
+// John Knife - fyzure
+// ------------------------------------------------------------------------------------ //
+
+"Weapon_CarverFC.Deploy"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"CompatibilityAttenuation"	"1.0"
+	"pitch"			"95,105"
+
+	"wave"			"weapons/carver/carver_draw.wav"
+}
+
+
+"Weapon_CarverFC.Slash"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"CompatibilityAttenuation"	"1.0"
+	"pitch"			"95,105"
+
+	"rndwave"
+	{
+		"wave" "weapons/carver/carver_swing1.wav"
+		"wave" "weapons/carver/carver_swing2.wav"
+                "wave" "weapons/carver/carver_swing3.wav"
+                "wave" "weapons/carver/carver_swing4.wav"
+	}
+}
+
+// ------------------------------------------------------------------------------------ //
+// All-Class Crowbar - fyzure
+// ------------------------------------------------------------------------------------ //
+
+"Weapon_FC_Crowbar.Swing"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1"
+	"CompatibilityAttenuation"	"1.0"
+	"pitch"			"95,105"
+
+	"wave"			"weapons/crowbar_allclass/cbar_miss1.mp3"
+}
+
+"Weapon_FC_Crowbar.SwingCrit"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1"
+	"CompatibilityAttenuation"	"1.0"
+	"pitch"			"95,105"
+
+	"wave"			"weapons/crowbar_allclass/cbar_miss1_crit.mp3"
+}
+
+
+"Weapon_FC_Crowbar.HitFlesh"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1"
+	"CompatibilityAttenuation"	"1.0"
+
+	"rndwave"
+	{
+		"wave" "weapons/crowbar_allclass/cbar_hitbod1.mp3"
+		"wave" "weapons/crowbar_allclass/cbar_hitbod2.mp3"
+        "wave" "weapons/crowbar_allclass/cbar_hitbod3.mp3"
+	}
+}
+
+"Weapon_FC_Crowbar.HitWorld"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1"
+	"CompatibilityAttenuation"	"1.0"
+
+	"rndwave"
+	{
+		"wave" "weapons/crowbar_allclass/cbar_hit1.mp3"
+		"wave" "weapons/crowbar_allclass/cbar_hit2.mp3"
+	}
+}
+
+// ------------------------------------------------------------------------------------ //
+// L4D Foley (for general weapon usage) - fyzure
+// ------------------------------------------------------------------------------------ //
+"GenericFC.Deploy01" //generic rifle, smg or shotgun
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"CompatibilityAttenuation"	"1.0"
+	"pitch"			"95,105"
+
+	          "wave"		"weapons/l4d_foley/deploy.wav"
+}
+
+"GenericFC.Deploy02" //generic sniper
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"CompatibilityAttenuation"	"1.0"
+	"pitch"			"95,105"
+
+	          "wave"		"weapons/l4d_foley/deploy02.wav"
+}
+
+"GenericFC.Deploy03" //generic pistol
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"CompatibilityAttenuation"	"1.0"
+	"pitch"			"95,105"
+
+	          "wave"		"weapons/l4d_foley/deploy03.wav"
+}
+
+"GenericFC.Deploy04" //generic item
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"CompatibilityAttenuation"	"1.0"
+	"pitch"			"95,105"
+
+	          "wave"		"weapons/l4d_foley/deploy04.wav"
+}
+
+"GenericFC.HelpingHand"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"CompatibilityAttenuation"	"1.0"
+	"pitch"			"95,105"
+
+	"rndwave"
+	{
+		"wave" "weapons/l4d_foley/helpinghandextend.wav"
+		"wave" "weapons/l4d_foley/helpinghandretract.wav"
+	}
+}
+
+"GenericFC.WeaponSwing"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"CompatibilityAttenuation"	"1.0"
+	"pitch"			"95,105"
+
+	"rndwave"
+	{
+		"wave" "weapons/l4d_foley/swish_weaponswing_swipe3.wav"
+		"wave" "weapons/l4d_foley/swish_weaponswing_swipe4.wav"
+                "wave" "weapons/l4d_foley/swish_weaponswing_swipe5.wav"
+                "wave" "weapons/l4d_foley/swish_weaponswing_swipe6.wav"
+	}
+}
+
+"GenericFC.GrenadePinPull"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"CompatibilityAttenuation"	"1.0"
+	"pitch"			"95,105"
+
+        "wave" "weapons/grenade_pin.wav"
+}
+// ------------------------------------------------------------------------------------ //
+// MEDIGUN
+// ------------------------------------------------------------------------------------ //
+"WeaponMedigun.HealingHealer"
+{
+	"channel"	"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_74dB"
+	"volume"	"1"
+	"wave"		")weapons/medigun_heal.wav"
+}
+
+"WeaponMedigun.HealingTarget"
+{
+	"channel"	"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_74dB"
+	"volume"	".5"
+	"wave"		")weapons/medigun_heal.wav"
+}
+
+"WeaponMedigun.HealingWorld"
+{
+	"channel"	"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_64dB"
+	"volume"	".75"
+	"wave"		")weapons/medigun_heal.wav"
+}
+
+"WeaponMedigun.HealingDisrupt"
+{
+	"channel"	"CHAN_STATIC"
+	"soundlevel"	"SNDLVL_74dB"
+	"volume"	"1"
+	"wave"		")weapons/medigun_heal_disrupt.wav"
+}
+
+"WeaponMedigun.HealingDetachHealer"
+{
+	"channel"	"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_74dB"
+	"volume"	".75"
+	"wave"		")weapons/medigun_heal_detach.wav"
+}
+
+"WeaponMedigun.HealingDetachTarget"
+{
+	"channel"	"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_74dB"
+	"volume"	"1"
+	"wave"		")weapons/medigun_heal_detach.wav"
+}
+
+"WeaponMedigun.HealingDetachWorld"
+{
+	"channel"	"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_64dB"
+	"volume"	".75"
+	"wave"		")weapons/medigun_heal_detach.wav"
+}
+
+"WeaponMedigun.Charged"
+{
+	"channel"		"CHAN_STATIC"
+	"soundlevel"	"SNDLVL_74dB"
+	"volume"		"1"
+	"wave"		"weapons/medigun_charged.wav"
+}
+
+"WeaponMedigun.NoTarget"
+{
+	"channel"	"CHAN_STATIC"
+	"soundlevel"	"SNDLVL_74Db"
+	"volume"	"1.0"
+	"wave"		")weapons/medigun_no_target.wav"
+}
+
+"Weapon_MedikitJohn.HitFlesh"
+{
+	"channel"	"CHAN_STATIC"
+	"soundlevel"	"SNDLVL_NORM"
+	"volume"	"1.0"
+	"rndwave"
+	{
+		"wave"		")items/medshot4.wav"
+	}
+}
+
+"Weapon_MedikitJohn.HitWorld"
+{
+	"channel"	"CHAN_STATIC"
+	"soundlevel"	"SNDLVL_NORM"
+	"volume"	"1.0"
+	"rndwave"
+	{
+		"wave"		")items/medshotno1.wav"
+	}
+}
+
+"Weapon_Medigun.Draw"
+{
+	"channel"	"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_74dB"
+	"volume"	".5"
+	"wave"		"weapons/draw_secondary.wav"
+}
+// ------------------------------------------------------------------------------------ //
+// Engineer Bouncepad
+// ------------------------------------------------------------------------------------ //
+"Bouncepad.Jump"
+{
+	"channel"	"CHAN_STATIC"
+	"soundlevel"	"SNDLVL_95dB"
+	"volume"	"1.0"
+	"pitch"		"PITCH_NORM"
+	"wave"		")misc/jumppad.wav"
+}
+
+"Bouncepad.Land"
+{
+	"channel"		"CHAN_STATIC"
+	"soundlevel"	"SNDLVL_105dB"
+	"volume"		"1"
+	"pitch"			"PITCH_NORM"
+	"wave"			")weapons/rocket_pack_land.wav"
+}
+
+// ------------------------------------------------------------------------------------ //
+// TFPISTOL
+// ------------------------------------------------------------------------------------ //
+"Weapon_TFPistol.Single"
+{
+	"channel"	"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_94dB"
+	"volume"	"1.0"
+	"wave"		")weapons/pistoltf_shoot.wav"
+}
+
+"Weapon_TFPistol.SingleCrit"
+{
+	"channel"	"CHAN_WEAPON"
+	"soundlevel"	"SNDLVL_94dB"
+	"volume"	"1.0"
+	"wave"		")weapons/pistol_shoot_crit.wav"
+}
+
+"Weapon_TFPistol.ClipEmpty"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"0.7"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"		"weapons/pistol/pistol_empty.wav"
+}
+
+"Weapon_TFPistol.Draw"
+{
+	"channel"	"CHAN_AUTO"
+	"soundlevel"	"SNDLVL_74dB"
+	"volume"	".5"
+	"wave"		"weapons/draw_secondary.wav"
+}
+
+"Weapon_TFPistol.Draw2"
+{
+	"channel"	"CHAN_STATIC"
+	"soundlevel"	"SNDLVL_74dB"
+	"volume"	"1"
+	"wave"		"weapons/draw_pistol_engineer.wav"
+}
+
+"Weapon_TFPistol.ClipIn"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"0.35"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"		"weapons/pistol_clipin.wav"
+}
+
+"Weapon_TFPistol.ReloadScout"
+{
+	"channel"	"CHAN_STATIC"
+	"soundlevel"	"SNDLVL_74dB"
+	"volume"	".5"
+	"wave"		"weapons/pistol_reload_scout.wav"
+}
+
+"Weapon_TFPistol.WorldReload"
+{
+	"channel"		"CHAN_STATIC"
+	"soundlevel"	"SNDLVL_74dB"
+	"volume"		".5"
+	"wave"		"weapons/pistol_worldreload.wav"
+}
+
+"Weapon_TFPistol.WorldReloadEngineer"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.35"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"		"weapons/pistol_clipin.wav"
+}
+
+// CS BOMB AND DEFUSE 
+"c4.disarmstart"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1"
+	"CompatibilityAttenuation"	"1.0"
+
+	"wave"			"weapons/c4/c4_disarm.wav"
+}
+
+"c4.disarmfinish"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1"
+	"CompatibilityAttenuation"	"1.0"
+
+	"wave"			"weapons/c4/c4_disarm.wav"
+}
+
+"c4.explode"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1"
+	"soundlevel"	"SNDLVL_GUNFIRE"
+
+	"wave"			")weapons/c4/c4_explode1.wav"
+}
+
+
+"c4.click"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1"
+	"CompatibilityAttenuation"	"1.0"
+	
+
+	"wave"			"weapons/c4/c4_click.wav"
+}
+
+
+"c4.plant"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1"
+	"CompatibilityAttenuation"	"1.0"
+
+	"wave"			"weapons/c4/c4_plant.wav"
+}
+
+"C4.PlantSound"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"VOL_NORM"
+	"CompatibilityAttenuation"	"1.0"
+
+	"wave"	"weapons/c4/c4_beep1.wav"
+}
+
+"defuser.equip"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1"
+	"CompatibilityAttenuation"	"1.0"
+
+	"wave"			"items/defuser_equip.wav"
+}
+"Event.BombPlanted"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"1.0"
+	"soundlevel"	"SNDLVL_GUNFIRE"
+	"wave"		"radio/bombpl.wav"
+}
+
+"Event.BombDefused"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"1.0"
+	"soundlevel"	"SNDLVL_GUNFIRE"
+	"wave"		"radio/bombdef.wav"
+}
+
+"Event.HostageTouched"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"1.0"
+	"soundlevel"	"SNDLVL_GUNFIRE"
+	"wave"		"radio/hostagecompromised.wav"
+}
+
+"Event.CTWin"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"1.0"
+	"soundlevel"	"SNDLVL_GUNFIRE"
+	"wave"		"radio/ctwin.wav"
+}
+
+"Event.TERWin"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"1.0"
+	"soundlevel"	"SNDLVL_GUNFIRE"
+	"wave"		"radio/terwin.wav"
+}
+
+"Event.RoundDraw"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"1.0"
+	"soundlevel"	"SNDLVL_GUNFIRE"
+	"wave"		"radio/rounddraw.wav"
+}
+
+"Event.HostageRescued"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"1.0"
+	"soundlevel"	"SNDLVL_GUNFIRE"
+	"wave"		"radio/rescued.wav"
+}
+
+"Event.HostageKilled"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"1.0"
+	"soundlevel"	"SNDLVL_GUNFIRE"
+	"wave"		"radio/hosdown.wav"
+}
+"BaseCombatWeapon.WeaponDrop"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"0.8"
+	"CompatibilityAttenuation"	"1.0"
+	"pitch"	  "95,110"
+	"rndwave"
+	{
+		"wave"	"physics/metal/weapon_impact_hard1.wav"
+		"wave"	"physics/metal/weapon_impact_hard2.wav"
+		"wave"	"physics/metal/weapon_impact_hard3.wav"
+	}
+}
+
+"BaseCombatWeapon.WeaponMaterialize"
+{
+	"channel"	"CHAN_WEAPON"
+	"volume"	"1"
+	"CompatibilityAttenuation"	"1.0"
+	"pitch"	"150"
+
+	"wave"	"items/suitchargeok1.wav"
+}
+// Combine Sniper
+"Weapon_Combine_Sniper.FireBullet"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.95"
+	"pitch"		"97,104"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"rndwave"
+	{
+		"wave"	"^npc/sniper/echo1.wav"
+	}
+} 
+
+"Molotov.Throw"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1"
+	"soundlevel"	"SNDLVL_75dB"
+	"pitch"			"95, 105"
+
+	"wave"	"weapons/molotov/fire_ignite_2.wav"
+}
+
+"Molotov.Loop"
+{
+	"channel"	"CHAN_BODY"
+	"volume"	"VOL_NORM"
+	"soundlevel" "SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+
+	"wave"		"weapons/molotov/fire_loop_1.wav"
+}
+
+"Molotov.IdleLoop"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"1"
+	"soundlevel" 	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+
+	"wave"		")weapons/molotov/fire_idle_loop_1.wav"
+}
+
+"Inferno.Start"
+{
+	"channel"	"CHAN_WEAPON"
+	"volume"	"1"
+	"soundlevel" 	"SNDLVL_95dB"
+	"pitch"		"PITCH_NORM"
+
+	"rndwave"
+	{
+		// "wave"		")weapons/molotov/molotov_detonate_1.wav"
+		// "wave"		")weapons/molotov/molotov_detonate_2.wav"
+		"wave"		")weapons/molotov/molotov_detonate_3.wav"
+		// "wave"		")weapons/molotov/molotov_detonate_4.wav"
+
+	}
+}
+
+"Inferno.Loop"
+{
+	"channel"	"CHAN_BODY"
+	"volume"	"VOL_NORM"
+	"soundlevel" "SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+
+	"wave"		"weapons/molotov/fire_loop_1.wav"
+}
+
+"Inferno.Fire.Ignite"
+{
+	"channel"	"CHAN_BODY"
+	"volume"	"VOL_NORM"
+	"soundlevel" "SNDLVL_85dB"
+	"pitch"		"PITCH_NORM"
+
+	"rndwave"
+	{
+		"wave"		"weapons/molotov/fire_ignite_1.wav"
+//		"wave"		"weapons/molotov/fire_ignite_3.wav"
+		"wave"		"weapons/molotov/fire_ignite_4.wav"
+		"wave"		"weapons/molotov/fire_ignite_5.wav"
+	}
+}
+
+"Molotov.HelpingHandExtend"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		".5"
+	"pitch"			"PITCH_NORM"
+
+	"wave"			"weapons/molotov/molotov_helpinghandextend.wav"
+}
+
+"Molotov.HelpingHandRetract"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		".2"
+	"pitch"			"PITCH_NORM"
+
+	"wave"			"weapons/molotov/molotov_helpinghandretract.wav"
+}
+
+"Molotov.ItemPickupExtend"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		".5"
+	"pitch"			"PITCH_NORM"
+
+	"wave"			"weapons/molotov/molotov_helpinghandextend.wav"
+}
+
+"Molotov.ItemPickupRetract"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		".2"
+	"pitch"			"PITCH_NORM"
+
+	"wave"			"weapons/molotov/molotov_helpinghandretract.wav"
+}
+"HL2_Weapon_RPG.SingleCrit"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"0.55"
+	"soundlevel"	"SNDLVL_GUNFIRE"
+
+	"wave"		"weapons/rpg/rocketfire1crit.wav"
+}
+
+// weapon_hornetgun
+"Weapon_Hornetgun.Single"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"soundlevel"		"SNDLVL_90db"
+
+	"rndwave"
+	{
+		"wave"			"agrunt/ag_fire1.wav"
+		"wave"			"agrunt/ag_fire2.wav"
+		"wave"			"agrunt/ag_fire3.wav"
+	}
+}
+
+"Weapon_Cohort.Spin"	
+{
+	"channel"	"CHAN_STATIC"
+	"soundlevel"	"SNDLVL_NORM"
+	"volume"	"1.0"
+	"wave"		")weapons/cohort/cohort_spin.wav"
+}
+
+// ------------------------------------------------------------------------------------ //
+// FC - JOHN SMG1
+// ------------------------------------------------------------------------------------ //
+"Weapon_SMG1.GrenadeFlyby"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1"
+	"pitch"			"PITCH_NORM"
+
+	"rndwave"
+	{
+		"wave"			"weapons/smg1/smg_grenade_flyby1.wav"
+		"wave"			"weapons/smg1/smg_grenade_flyby2.wav"
+		"wave"			"weapons/smg1/smg_grenade_flyby3.wav"
+		"wave"			"weapons/smg1/smg_grenade_flyby4.wav"
+	}
+}
+
+// ------------------------------------------------------------------------------------ //
+// FC - JOHN M249
+// ------------------------------------------------------------------------------------ //
+
+"Weapon_M249.Single"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"pitch"		"PITCH_NORM"
+
+	"wave"		")weapons/m249/m249-1.wav"
+}
+
+"Weapon_M249.SingleCrit"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"pitch"		"PITCH_NORM"
+
+	"wave"		")weapons/m249/m249-1.wav"
+}
+
+"Weapon_M249.Coverup"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"pitch"		"PITCH_NORM"
+
+	"wave"			"weapons/m249/m249_coverup.wav"
+}
+
+"Weapon_M249.Boxout"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"pitch"		"PITCH_NORM"
+
+	"wave"			"weapons/m249/m249_boxout.wav"
+}
+
+"Weapon_M249.Boxin"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"pitch"		"PITCH_NORM"
+
+	"wave"			"weapons/m249/m249_boxin.wav"
+}
+
+"Weapon_M249.Chain"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"pitch"		"PITCH_NORM"
+
+	"wave"			"weapons/m249/m249_chain.wav"
+}
+
+"Weapon_M249.Coverdown"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"pitch"		"PITCH_NORM"
+
+	"wave"			"weapons/m249/m249_coverdown.wav"
+}
+
+// ------------------------------------------------------------------------------------ //
+// FC - JOHN MELEES
+// ------------------------------------------------------------------------------------ //
+
+"Weapon_Shovel.Swing"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"pitch"		"PITCH_NORM"
+
+	"wave"		")weapons/l4d2/melee/melee_swing_miss1.wav"
+	"wave"		")weapons/l4d2/melee/melee_swing_miss2.wav"
+}
+
+"Weapon_Shovel.Hit_Flesh"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"pitch"		"PITCH_NORM"
+
+	"wave"		")weapons/shovel/shovel_hit_flesh.wav"
+}
+
+"Weapon_Shovel.Hit_World"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"pitch"		"PITCH_NORM"
+
+	"wave"		")weapons/shovel/shovel_hit_world.wav"
+}
+
+// ------------------------------------------------------------------------------------ //
+// FC - WRENCH
+// ------------------------------------------------------------------------------------ //
+
+"Weapon_Wrench.HealArmor"
+{
+    "channel"    "CHAN_AUTO"
+    "volume"    "0.75"
+    "soundlevel"    "SNDLVL_74dB"
+    "pitch"        "PITCH_NORM"
+    "wave"        "items/armor_repaired.wav"
+}

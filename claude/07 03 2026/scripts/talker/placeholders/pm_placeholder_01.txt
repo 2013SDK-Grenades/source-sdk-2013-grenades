@@ -1,0 +1,423 @@
+criterion "IsPMPlaceholder01" "IsPMPlaceholder01" "1" "required" weight 100
+Criterion "PMPlaceholder01NotAssistSpeech" "PMPlaceholder01AssistSpeech" "!=1" "required" weight 0
+
+// voicemenu 0 0 (MEDIC!)
+Response PlayerMedicPMPlaceholder01
+{
+	speak "pms.placeholder01.medic01" 
+	speak "pms.placeholder01.medic02" 
+	speak "pms.placeholder01.medic03" 
+}
+Rule PlayerMedicPMPlaceholder01
+{
+	criteria ConceptPlayerMedic IsPMPlaceholder01
+	Response PlayerMedicPMPlaceholder01
+}
+
+// voicemenu 0 1 (Thanks)
+Response PlayerThanksPMPlaceholder01
+{
+	speak "pms.placeholder01.thanks01" 
+	speak "pms.placeholder01.thanks02" 
+	speak "pms.placeholder01.thanks03" 
+}
+Rule PlayerThanksPMPlaceholder01
+{
+	criteria ConceptPlayerThanks IsPMPlaceholder01
+	Response PlayerThanksPMPlaceholder01
+}
+Response KilledPlayerAssistPMPlaceholder01
+{
+	speak "pms.placeholder01.thanksassist01" 
+	speak "pms.placeholder01.thanksassist02" 
+	speak "pms.placeholder01.thanksassist03" 
+}
+Rule KilledPlayerAssistPMPlaceholder01
+{
+	criteria ConceptPlayerThanks IsPMPlaceholder01 IsARecentKill KilledPlayerDelay PMPlaceholder01NotAssistSpeech
+	ApplyContext "PMPlaceholder01AssistSpeech:1:20"
+	Response KilledPlayerAssistPMPlaceholder01
+}
+// voicemenu 0 2 (Go! Go! Go!)
+Response PlayerGoPMPlaceholder01
+{
+	speak "pms.placeholder01.go01" 
+	speak "pms.placeholder01.go02" 
+	speak "pms.placeholder01.go03" 
+}
+Rule PlayerGoPMPlaceholder01
+{
+	criteria ConceptPlayerGo IsPMPlaceholder01
+	Response PlayerGoPMPlaceholder01
+}
+// voicemenu 0 3 (Move Up!)
+Response PlayerMoveUpPMPlaceholder01
+{
+	speak "pms.placeholder01.moveup01" 
+	speak "pms.placeholder01.moveup02" 
+	speak "pms.placeholder01.moveup03" 
+}
+Rule PlayerMoveUpPMPlaceholder01
+{
+	criteria ConceptPlayerMoveUp  IsPMPlaceholder01
+	Response PlayerMoveUpPMPlaceholder01
+}
+// voicemenu 0 4 (Go Left)
+Response PlayerHeadLeftPMPlaceholder01
+{
+	speak "pms.placeholder01.headleft01" 
+	speak "pms.placeholder01.headleft02" 
+	speak "pms.placeholder01.headleft03" 
+}
+Rule PlayerHeadLeftPMPlaceholder01
+{
+	criteria ConceptPlayerHeadLeft  IsPMPlaceholder01
+	Response PlayerHeadLeftPMPlaceholder01
+}
+// voicemenu 0 5 (Go Right)
+Response PlayerHeadRightPMPlaceholder01
+{
+	speak "pms.placeholder01.headright01" 
+	speak "pms.placeholder01.headright02" 
+	speak "pms.placeholder01.headright03" 
+}
+Rule PlayerHeadRightPMPlaceholder01
+{
+	criteria ConceptPlayerHeadRight  IsPMPlaceholder01
+	Response PlayerHeadRightPMPlaceholder01
+}
+// voicemenu 0 6 (Yes)
+Response PlayerYesPMPlaceholder01
+{
+	speak "pms.placeholder01.yes01" 
+	speak "pms.placeholder01.yes02" 
+	speak "pms.placeholder01.yes03" 
+}
+Rule PlayerYesPMPlaceholder01
+{
+	criteria ConceptPlayerYes IsPMPlaceholder01
+	Response PlayerYesPMPlaceholder01
+}
+// voicemenu 0 7 (No)
+Response PlayerNoPMPlaceholder01
+{
+	speak "pms.placeholder01.no01" 
+	speak "pms.placeholder01.no02" 
+	speak "pms.placeholder01.no03" 
+}
+Rule PlayerNoPMPlaceholder01
+{
+	criteria ConceptPlayerNo IsPMPlaceholder01
+	Response PlayerYesPMPlaceholder01
+}
+// voicemenu 0 8 (Pass to me!)
+Response PlayerAskForBallPMPlaceholder01
+{
+}
+Rule PlayerAskForBallPMPlaceholder01
+{
+	criteria ConceptPlayerAskForBall IsPMPlaceholder01
+	Response PlayerAskForBallPMPlaceholder01
+}
+// voicemenu 1 0 (Incoming!)
+Response PlayerIncomingPMPlaceholder01
+{
+	speak "pms.placeholder01.incoming01" 
+	speak "pms.placeholder01.incoming02" 
+	speak "pms.placeholder01.incoming03" 
+}
+Rule PlayerIncomingPMPlaceholder01
+{
+	criteria ConceptPlayerIncoming IsPMPlaceholder01
+	Response PlayerIncomingPMPlaceholder01
+}
+// voicemenu 1 1 (Spy!)
+Response PlayerCloakedSpyDemomanPMPlaceholder01
+{
+	speak "pms.placeholder01.cloakedspyidentifyscout" 
+}
+Rule PlayerCloakedSpyDemomanPMPlaceholder01
+{
+	criteria ConceptPlayerCloakedSpy IsPMPlaceholder01 IsOnDemoman
+	Response PlayerCloakedSpyDemomanPMPlaceholder01
+}
+
+Response PlayerCloakedSpyEngineerPMPlaceholder01
+{
+	speak "pms.placeholder01.cloakedspyidentifyengineer" 
+}
+Rule PlayerCloakedSpyEngineerPMPlaceholder01
+{
+	criteria ConceptPlayerCloakedSpy IsPMPlaceholder01 IsOnEngineer
+	Response PlayerCloakedSpyEngineerPMPlaceholder01
+}
+
+Response PlayerCloakedSpyHeavyPlaceholder01
+{
+	speak "pms.placeholder01.cloakedspyidentifyheavy" 
+}
+Rule PlayerCloakedSpyPMPlaceholder01PMPlaceholder01
+{
+	criteria ConceptPlayerCloakedSpy IsPMPlaceholder01 IsOnHeavy
+	Response PlayerCloakedSpyPMPlaceholder01PMPlaceholder01
+}
+
+Response PlayerCloakedSpyMedicPMPlaceholder01
+{
+	speak "pms.placeholder01.cloakedspyidentifymedic" 
+}
+Rule PlayerCloakedSpyMedicPMPlaceholder01
+{
+	criteria ConceptPlayerCloakedSpy IsPMPlaceholder01 IsOnMedic
+	Response PlayerCloakedSpyMedicPMPlaceholder01
+}
+
+Response PlayerCloakedSpyPyroPMPlaceholder01
+{
+	speak "pms.placeholder01.cloakedspyidentifypyro" 
+}
+Rule PlayerCloakedSpyPyroPMPlaceholder01
+{
+	criteria ConceptPlayerCloakedSpy IsPMPlaceholder01 IsOnPyro
+	Response PlayerCloakedSpyPyroPMPlaceholder01
+}
+
+Response PlayerCloakedSpyScoutPMPlaceholder01
+{
+	speak "pms.placeholder01.cloakedspyidentifyscout" 
+}
+Rule PlayerCloakedSpyScoutPMPlaceholder01
+{
+	criteria ConceptPlayerCloakedSpy IsPMPlaceholder01 IsOnScout
+	Response PlayerCloakedSpyScoutPMPlaceholder01
+}
+
+Response PlayerCloakedSpySniperPMPlaceholder01
+{
+	speak "pms.placeholder01.cloakedspyidentifysniper" 
+}
+Rule PlayerCloakedSpySniperPMPlaceholder01
+{
+	criteria ConceptPlayerCloakedSpy IsPMPlaceholder01 IsOnSniper
+	Response PlayerCloakedSpySniperPMPlaceholder01
+}
+
+Response PlayerCloakedSpySoldierPMPlaceholder01
+{
+	speak "pms.placeholder01.cloakedspyidentifysoldier" 
+}
+Rule PlayerCloakedSpySoldierPMPlaceholder01
+{
+	criteria ConceptPlayerCloakedSpy IsPMPlaceholder01 IsOnSoldier
+	Response PlayerCloakedSpySoldierPMPlaceholder01
+}
+
+Response PlayerCloakedSpySpyPMPlaceholder01
+{
+	speak "pms.placeholder01.cloakedspyidentifyspy" 
+}
+Rule PlayerCloakedSpySpyPMPlaceholder01
+{
+	criteria ConceptPlayerCloakedSpy IsPMPlaceholder01 IsOnSpy
+	Response PlayerCloakedSpySpyPMPlaceholder01
+}
+Response PlayerCloakedSpyPMPlaceholder01
+{
+	speak "pms.placeholder01.cloakedspy01" 
+	speak "pms.placeholder01.cloakedspy02" 
+	speak "pms.placeholder01.cloakedspy03" 
+}
+Rule PlayerCloakedSpyPMPlaceholder01
+{
+	criteria ConceptPlayerCloakedSpy IsPMPlaceholder01
+	Response PlayerCloakedSpyPMPlaceholder01
+}
+// voicemenu 1 2 (Sentry Ahead)
+Response PlayerSentryAheadPMPlaceholder01
+{
+	speak "pms.placeholder01.sentryahead01" 
+	speak "pms.placeholder01.sentryahead02" 
+	speak "pms.placeholder01.sentryahead03" 
+}
+Rule PlayerSentryAheadPMPlaceholder01
+{
+	criteria ConceptPlayerSentryAhead IsPMPlaceholder01
+	Response PlayerSentryAheadPMPlaceholder01
+}
+// voicemenu 1 3 (Teleporter Here)
+Response PlayerTeleporterHereHeavy
+{
+	speak "pms.placeholder01.teleporterhere01" 
+}
+Rule PlayerTeleporterHerePMPlaceholder01
+{
+	criteria ConceptPlayerTeleporterHere IsPMPlaceholder01
+	Response PlayerTeleporterHerePMPlaceholder01
+}
+// voicemenu 1 4 (Pootis)
+Response PlayerDispenserHerePMPlaceholder01
+{
+	speak "pms.placeholder01.dispenserhere01" 
+}
+Rule PlayerDispenserHerePMPlaceholder01
+{
+	criteria ConceptPlayerDispenserHere IsPMPlaceholder01
+	Response PlayerDispenserHerePMPlaceholder01
+}
+// voicemenu 1 5 (Sentry Here)
+Response PlayerSentryHerePMPlaceholder01
+{
+	speak "pms.placeholder01.sentryhere01" 
+}
+
+Rule PlayerSentryHerePMPlaceholder01
+{
+	criteria ConceptPlayerSentryHere IsPMPlaceholder01
+	Response PlayerSentryHerePMPlaceholder01
+}
+
+// voicemenu 1 6 (Activate Charge)
+Response PlayerActivateChargePMPlaceholder01
+{
+	speak "pms.placeholder01.activatecharge01" 
+	speak "pms.placeholder01.activatecharge02" 
+	speak "pms.placeholder01.activatecharge03" 
+}
+Rule PlayerActivateChargePMPlaceholder01
+{
+	criteria ConceptPlayerActivateCharge IsPMPlaceholder01
+	Response PlayerActivateChargePMPlaceholder01
+}
+// voicemenu 2 0 (Help!)
+Response PlayerHelpPMPlaceholder01
+{
+	speak "pms.placeholder01.help01"
+	speak "pms.placeholder01.help02"
+	speak "pms.placeholder01.help03"
+
+}
+Rule PlayerHelpPMPlaceholder01
+{
+	criteria ConceptPlayerHelp IsPMPlaceholder01
+	Response PlayerHelpPMPlaceholder01
+}
+// voicemenu 2 1 (Battle Cry)
+Response PlayerBattleCryPMPlaceholder01
+{
+	speak "pms.placeholder01.battlecry01"
+	speak "pms.placeholder01.battlecry02"
+	speak "pms.placeholder01.battlecry03"
+}
+Rule PlayerBattleCryPMPlaceholder01
+{
+	criteria ConceptPlayerBattleCry IsPMPlaceholder01
+	Response PlayerBattleCryPMPlaceholder01
+}
+// voicemenu 2 2 (Cheers)
+Response PlayerCheersPMPlaceholder01
+{
+	speak "pms.placeholder01.cheers01"
+	speak "pms.placeholder01.cheers02"
+	speak "pms.placeholder01.cheers03"
+}
+Rule PlayerCheersPMPlaceholder01
+{
+	criteria ConceptPlayerCheers IsPMPlaceholder01
+	Response PlayerCheersPMPlaceholder01
+}
+Response PlayerJeersPMPlaceholder01
+{
+	speak "pms.placeholder01.jeers01"
+	speak "pms.placeholder01.jeers02"
+	speak "pms.placeholder01.jeers03"
+}
+Rule PlayerJeersPMPlaceholder01
+{
+	criteria ConceptPlayerJeers IsPMPlaceholder01
+	Response PlayerJeersPMPlaceholder01
+}
+Response PlayerPositivePMPlaceholder01
+{
+	speak "pms.placeholder01.positive01"
+	speak "pms.placeholder01.positive02"
+	speak "pms.placeholder01.positive03"
+}
+Rule PlayerPositivePMPlaceholder01
+{
+	criteria ConceptPlayerPositive IsPMPlaceholder01
+	Response PlayerPositivePMPlaceholder01
+}
+Response PlayerNegativePMPlaceholder01
+{
+	speak "pms.placeholder01.negative01"
+	speak "pms.placeholder01.negative02"
+	speak "pms.placeholder01.negative03"
+}
+Rule PlayerNegativePMPlaceholder01
+{
+	criteria ConceptPlayerNegative IsPMPlaceholder01
+	Response PlayerNegativePMPlaceholder01
+}
+
+Response PlayerNiceShotPMPlaceholder01
+{
+	speak "pms.placeholder01.niceshot01"
+	speak "pms.placeholder01.niceshot02"
+	speak "pms.placeholder01.niceshot03"
+}
+Rule PlayerNiceShotPMPlaceholder01
+{
+	criteria ConceptPlayerNiceShot IsPMPlaceholder01
+	Response PlayerNiceShotPMPlaceholder01
+}
+Response PlayerGoodJobPMPlaceholder01
+{
+	speak "pms.placeholder01.goodjob01"
+	speak "pms.placeholder01.goodjob02"
+	speak "pms.placeholder01.goodjob03"
+}
+Rule PlayerGoodJobPMPlaceholder01
+{
+	criteria ConceptPlayerGoodJob IsPMPlaceholder01
+	Response PlayerGoodJobPMPlaceholder01
+}
+Response MvMSniperCalloutPMPlaceholder01
+{
+	speak "pms.placeholder01.sniper01" 
+}
+Rule MvMSniperCalloutPMPlaceholder01
+{
+	criteria ConceptMvMSniperCallout 50PercentChance IsMvMDefender IsPMPlaceholder01
+	Response MvMSniperCalloutPMPlaceholder01
+}
+Response PMPlaceholder01JarateHit
+{
+	speak "pms.placeholder01.jaratehit01"     
+	speak "pms.placeholder01.jaratehit02"     
+	speak "pms.placeholder01.jaratehit03"     
+}
+Rule PMPlaceholder01JarateHit
+{
+	criteria ConceptJarateHit IsPMPlaceholder01 50PercentChance
+	Response PMPlaceholder01JarateHit
+}
+//Bullet pain (?)
+Response PlayerPainPMPlaceholder01
+{
+	speak "pms.placeholder01.painsharp"
+}
+Rule PlayerPainPMPlaceholder01
+{
+	criteria ConceptPain IsPMPlaceholder01 IsNotDominating
+	Response PlayerPainPMPlaceholder01
+}
+//Explosion pain (?)
+Response PlayerAttackerPainPMPlaceholder01
+{
+	speak "pms.placeholder01.painsevere"
+}
+Rule PlayerAttackerPainPMPlaceholder01
+{
+	criteria ConceptAttackerPain IsPMPlaceholder01 IsNotDominating
+	Response PlayerAttackerPainPMPlaceholder01
+}

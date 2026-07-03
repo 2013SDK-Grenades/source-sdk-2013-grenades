@@ -1,0 +1,5 @@
+maporder_nomercy
+{
+	fc_l4d_garage01_alleys "1"
+	fc_l4d_garage02_lots 	"2"
+}

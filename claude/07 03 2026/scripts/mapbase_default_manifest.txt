@@ -1,0 +1,20 @@
+// This is a generic manifest file that is mounted by all maps that don't already have their own.
+// This was created so mappers can create files of generic names without having to create their own manifest file.
+// There is no penalty for having a file missing. You could use this as a template for your own manifest file, too.
+// 
+// Remember: Maps with their own default manifest file (%mapname%_manifest.txt) will *not* load this file.
+// 
+// Tokens:
+// %mapname% - The map's filename
+// %language% - UI language
+// 
+"GenericManifest"
+{
+	"NoErrors" "1" // Don't complain if these files don't exist.
+
+	//"soundscripts" "maps/%mapname%_level_sounds.txt" // This is automatically loaded by other systems, only here as an example
+	"actbusy" "maps/%mapname%_actbusy.txt"
+	"talker" "maps/%mapname%_talker.txt"
+	//"sentences" "maps/%mapname%_sentences.txt" // Not supported
+	"localization" "maps/%mapname%_%language%.txt"
+}

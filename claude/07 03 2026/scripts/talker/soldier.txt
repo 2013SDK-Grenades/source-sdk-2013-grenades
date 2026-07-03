@@ -1843,3 +1843,15 @@ Rule PlayerMatchWinCompSoldier
 //--------------------------------------------------------------------------------------------------------------
 // End Competitive Mode VO
 //--------------------------------------------------------------------------------------------------------------
+
+// CUSTOM VOICELINES
+
+Response PlayerSniperCalloutSoldier
+{
+	scene "scenes/Player/Soldier/low/4258.vcd" 
+}
+Rule PlayerSniperCalloutSoldier
+{
+	criteria ConceptPlayerSniperCallout IsSoldier
+	Response PlayerSniperCalloutSoldier
+}

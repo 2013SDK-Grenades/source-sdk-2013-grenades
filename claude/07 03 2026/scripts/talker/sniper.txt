@@ -2118,3 +2118,15 @@ Rule PlayerMatchWinCompSniper
 //--------------------------------------------------------------------------------------------------------------
 // End Competitive Mode VO
 //--------------------------------------------------------------------------------------------------------------
+
+// CUSTOM VOICELINES
+
+Response PlayerSniperCalloutSniper
+{
+	speak "vo/sniper_calloutsniper.mp3"
+}
+Rule PlayerSniperCalloutSniper
+{
+	criteria ConceptPlayerSniperCallout IsSniper
+	Response PlayerSniperCalloutSniper
+}	

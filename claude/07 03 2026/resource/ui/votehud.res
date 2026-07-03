@@ -393,7 +393,20 @@
 			"box_inset"		"1"
 			"yes_texture"	"vgui/hud/vote_yes"
 			"no_texture"	"vgui/hud/vote_no"			
-		}			
+		}	
+
+		"TimeRemainingProgressBar"
+		{
+			"ControlName"	"CircularProgressBar"
+			"fieldName"		"TimeRemainingProgressBar"
+			"xpos"			"125"
+			"ypos"			"5"
+			"wide"			"20"
+			"tall"			"o1"
+			"proportionaltoparent"	"1"
+			"fg_image"	"progress_bar"
+			"bg_image"	"progress_bar_pointer_right"
+		}		
 	}
 	
 	// This is sent to the vote caller when they're not able to start the vote

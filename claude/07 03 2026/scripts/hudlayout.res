@@ -1520,5 +1520,18 @@
 		"mouseinputenabled"		"0"
 		"alpha"					"100"
 	}
+
+	// HL2
+	HudCredits
+	{
+		"fieldName" "HudCredits"
+		"TextFont" "Default"
+		"visible" "1"
+		"xpos" "0"
+		"ypos" "0"
+		"wide" "640"
+		"tall" "480"
+		"TextColor" "255 255 255 192"
+	}
 }
 

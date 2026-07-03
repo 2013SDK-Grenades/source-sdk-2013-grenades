@@ -473,6 +473,119 @@
 			"cap"		"1"			// 
 			"cost"		"400"
 		}
+		"58"
+		{
+			"attribute"	"mult projectile count"
+			"icon"		"achievements/tf_demoman_achieve_progress3"
+			"increment"	"1"			// 
+			"cap"		"2"			// 
+			"cost"		"400"
+		}
+		"59"
+		{
+			"attribute"	"maxammo fc grenades1 increased"
+			"icon"		"achievements/tf_demoman_achieve_progress3"
+			"increment"	"0.5"				//
+			"cap"		"3"				//
+			"cost"		"250"
+		}
+		"60"
+		{
+			"attribute"	"grenade no bounce"
+			"icon"		"achievements/tf_demoman_achieve_progress3"
+			"increment"	"1"				//
+			"cap"		"1"				//
+			"cost"		"150"
+		}
+		// JOHN SPRINT UPGRADES
+		"61"
+		{
+			"attribute"	"max sprint mult bonus"
+            "icon"		"achievements/tf_spy_backstab_disguised_spy"
+			"increment"	"0.30"
+			"cap"		"1.90"
+			"cost"		"400"
+		}
+		"62"
+		{
+			"attribute"	"mult sprint regen rate bonus"
+            "icon"		"achievements/tf_spy_backstab_disguised_spy"
+			"increment"	"0.15"
+			"cap"		"1.45"
+			"cost"		"300"
+		}
+		"63"
+		{
+			"attribute"	"mult sprint drain rate bonus"
+            "icon"		"achievements/tf_spy_backstab_disguised_spy"
+			"increment"	"-0.15"
+			"cap"		"0.70"
+			"cost"		"350"
+		}
+		"65"
+		{
+			"attribute"	"mult sprint speed bonus"
+            "icon"		"achievements/tf_spy_backstab_disguised_spy"
+			"increment"	"0.10"
+			"cap"		"1.30"
+			"cost"		"400"
+		}
+		"66"
+		{
+			"attribute"	"instant sprint"
+            "icon"		"achievements/tf_spy_backstab_disguised_spy"
+			"increment"	"1"
+			"cap"		"1"
+			"cost"		"500"
+		}
+		"67"
+		{
+			"attribute"	"mult bullets per shot secondary positive"
+            "icon"		"achievements/tf_spy_backstab_disguised_spy"
+			"increment"	"0.20"
+			"cap"		"1.60"
+			"cost"		"400"
+		}
+		"68"
+		{
+			"attribute"	"mult postfiredelay secondary positive"
+            "icon"		"achievements/tf_spy_backstab_disguised_spy"
+			"increment"	"-0.1"
+			"cap"		"0.6"
+			"cost"		"350"
+		}
+		"69"
+		{
+			"attribute"	"Blast radius increased"
+            "icon"		"achievements/tf_spy_backstab_disguised_spy"
+			"increment"	"0.25"
+			"cap"		"1.75"
+			"cost"		"350"
+		}
+		"70"
+		{
+			"attribute"	"maxammo primary increased post override"	// attrib to hook
+			"icon"		"achievements/tf_heavy_assist_grind"
+			"increment"	"0.5"				// percent
+			"cap"		"2.5"				// percent
+			"cost"		"250"				// first tier points/credits cost
+		}
+		"71"
+		{
+			"attribute"	"maxammo secondary increased post override"	// attrib to hook
+			"icon"		"achievements/tf_heavy_assist_grind"
+			"increment"	"0.5"				// percent
+			"cap"		"2.5"				// percent
+			"cost"		"250"				// first tier points/credits cost
+		}
+		"72"
+		{
+			"attribute"	"max decapitations increased"	// attrib to hook
+			"icon"		"achievements/tf_heavy_assist_grind"
+			"increment"	"2"				// percent
+			"cap"		"8"				// percent
+			"cost"		"350"				// first tier points/credits cost
+		}
 	}
 	
 	// PLAYER UPGRADES
@@ -542,6 +655,15 @@
 			"increment"	"0.2"
 			"cap"		"1.6"
 			"cost"		"100"
+		}
+		"12"
+		{
+			// Currency Collection Radius - Normal
+			"attribute"	"increased currency collection radius"
+			"icon"		"achievements/tf_scout_double_jumps"
+			"increment"	"0.3"
+			"cap"		"2.5"
+			"cost"		"250"
 		}
 	}
 }

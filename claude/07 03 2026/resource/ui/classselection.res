@@ -29,11 +29,12 @@
 		"enabled"		"0"
 		"tabPosition"	"0"
 	}
-	
-	"random"
+
+
+	"john"
 	{
 		"ControlName"		"CExImageButton"
-		"fieldName"			"random"
+		"fieldName"			"john"
 		"xpos"				"c250"
 		"xpos_lodef"				"c217"
 		"xpos_hidef"				"c238"
@@ -50,7 +51,70 @@
 		"tabPosition"		"0"
 		"labelText"			""
 		"textAlignment"		"south-west"
-		"Command"			"select 12"
+		"Command"			"select 10"
+		"Default"			"1"
+		"font"				"MenuKeys"
+		"scaleImage"		"1"
+		
+		"image_default"		"class_sel_sm_john_inactive"
+		"image_armed"		"class_sel_sm_john_inactive"
+		
+		"fgcolor"			"TanDark"
+		"defaultFgColor_override" "TanDark"
+		"armedFgColor_override" "TanDark"
+		"depressedFgColor_override" "TanDark"
+		
+		"sound_depressed"	"UI/buttonclick.wav"
+		"sound_released"	"UI/buttonclickrelease.wav"
+		"sound_armed"		"UI/buttonrollover.wav"
+		
+		"paintbackground"	"0"
+		
+		"image_drawcolor"		"255 255 255 180"
+		"image_armedcolor"		"255 255 255 255"
+		"image_selectedcolor"	"255 255 255 255"
+		
+		"stayselectedonclick"	"1"
+		"selectonhover"			"1"
+		"keyboardinputenabled"	"0"
+		
+		"SubImage"
+		{
+			"ControlName"	"ImagePanel"
+			"fieldName"		"SubImage"
+			"xpos"			"0"
+			"ypos"			"0"
+			"zpos"			"7"
+			"wide"			"50"
+			"tall"			"100"
+			"visible"		"1"
+			"enabled"		"1"
+			"image"			"class_sel_sm_random_inactive"
+			"scaleImage"	"1"
+		}				
+	}
+
+	"random"
+	{
+		"ControlName"		"CExImageButton"
+		"fieldName"			"random"
+		"xpos"				"c300"
+		"xpos_lodef"				"c290"
+		"xpos_hidef"				"c265"
+		"ypos"				"-5"
+		"ypos_lodef"				"9"
+		"ypos_hidef"				"0"
+		"zpos"				"6"
+		"wide"				"50"
+		"tall"				"100"
+		"autoResize"		"0"
+		"pinCorner"			"2"
+		"visible"			"1"
+		"enabled"			"1"
+		"tabPosition"		"0"
+		"labelText"			""
+		"textAlignment"		"south-west"
+		"Command"			"select 13"
 		"Default"			"1"
 		"font"				"MenuKeys"
 		"scaleImage"		"1"

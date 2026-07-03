@@ -1862,3 +1862,15 @@ Rule PlayerMatchWinCompEngineer
 //--------------------------------------------------------------------------------------------------------------
 // End Competitive Mode VO
 //--------------------------------------------------------------------------------------------------------------
+
+// CUSTOM VOICELINES
+
+Response PlayerSniperCalloutEngineer
+{
+	scene "scenes/Player/Engineer/low/4120.vcd" 
+}
+Rule PlayerSniperCalloutEngineer
+{
+	criteria ConceptPlayerSniperCallout IsEngineer
+	Response PlayerSniperCalloutEngineer
+}

@@ -52,10 +52,14 @@
 		"teambg_2_lodef"	"../hud/color_panel_red"
 		"teambg_3"		"../hud/color_panel_blu"
 		"teambg_3_lodef"	"../hud/color_panel_blu"
-		
+		"teambg_4"		"../hud/color_panel_grn"
+		"teambg_4_lodef"	"../hud/color_panel_grn"
+		"teambg_5"		"../hud/color_panel_ylw"
+		"teambg_5_lodef"	"../hud/color_panel_ylw"
+
 		"src_corner_height"		"23"				// pixels inside the image
 		"src_corner_width"		"23"
-			
+
 		"draw_corner_width"		"5"				// screen size of the corners ( and sides ), proportional
 		"draw_corner_height" 	"5"	
 	}

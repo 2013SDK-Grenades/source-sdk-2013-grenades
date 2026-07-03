@@ -1,0 +1,77 @@
+// CO-OP PING SOUNDS
+"Player.Coop_Ping"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.4"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NONE"
+
+	"wave"	"npc/roller/mine/rmine_chirp_quest1.wav"
+}
+
+"Player.NVGOn"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.8"
+	"soundlevel"    "SNDLVL_75dB"
+	"pitch"	"PITCH_NORM"
+
+	"wave" "items/nvg_on.wav"
+}
+
+"Player.NVGOff"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"0.8"
+	"soundlevel"  "SNDLVL_75dB"
+	"pitch"	"PITCH_NORM"
+
+	"wave" "items/nvg_off.wav"
+}
+
+// EZ2 Kick Sounds
+"EZ2Player.KickHit"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.95"
+	"pitch"			"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"rndwave"
+	{
+		"wave"	"player/kick/kick_hit1.wav"
+		"wave"	"player/kick/kick_hit2.wav"
+	}
+
+}
+
+"EZ2Player.KickSwing"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.75"
+	"pitch"			"85, 115"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"rndwave"
+	{
+		"wave"	"player/kick/kick_ready.wav"
+	}
+}
+
+"EZ2Player.KickMiss"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.95"
+	"pitch"			"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"rndwave"
+	{
+		"wave"	"player/kick/kick_miss1.wav"
+		"wave"	"player/kick/kick_miss2.wav"
+	}
+}

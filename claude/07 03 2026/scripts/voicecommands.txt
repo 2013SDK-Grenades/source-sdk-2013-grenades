@@ -97,12 +97,11 @@
 		}
 		"item_9"
 		{
-			"concept"				"TLK_PLAYER_ASK_FOR_BALL"
-			"distance_check_subtitle"		"0"
-			"show_subtitle"				"1"
-			"subtitle"				"#Voice_Menu_AskForBall"
-			"menu_label"				"#Voice_Menu_AskForBall"
-			"activity"				"ACT_MP_GESTURE_VC_FINGERPOINT"	
+			"concept"        		"TLK_PING_OBJECT"
+			"command"        		"fc_ping"
+			"menu_label"			"#Voice_Menu_Ping"		
+			"show_subtitle"			"1"
+			"subtitle"				"#Voice_Menu_Ping"	
 		}
 	}
 
@@ -245,6 +244,15 @@
 			"concept"				"TLK_PLAYER_GOODJOB"		
 			"menu_label"				"#Voice_Menu_GoodJob"
 			"activity"				"ACT_MP_GESTURE_VC_THUMBSUP"
+		}	
+		"item_9"
+		{
+			"concept"				"TLK_PLAYER_SNIPERAHEAD"	
+			"show_subtitle"				"1"
+			"distance_check_subtitle"		"1"
+			"subtitle"				"#Voice_Menu_Sniper"
+			"menu_label"				"#Voice_Menu_Sniper"
+			"activity"				"ACT_MP_GESTURE_VC_FINGERPOINT"
 		}
 	}
 }

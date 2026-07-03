@@ -1,0 +1,57 @@
+"WeaponSpawnerItems"
+{
+	"weapon_pumpshotgun_spawn"
+	{
+		"itemid" "3215"
+		"cost"   "0"
+	}
+
+	"weapon_autoshotgun_spawn"
+	{
+		"itemid" "3216"
+	}
+
+	"weapon_hunting_rifle_spawn"
+	{
+		"itemid" "3217"
+	}
+
+	"weapon_pistol_spawn"
+	{
+		"itemid" "3218"
+	}
+
+	"weapon_rifle_spawn"
+	{
+		"itemid" "3219"
+	}
+
+	"weapon_smg_spawn"
+	{
+		"itemid" "3220"
+	}
+
+	"weapon_molotov_spawn"
+	{
+		"itemid" "3221"
+	}
+
+	"weapon_pipe_bomb_spawn"
+	{
+		"itemid" "3222"
+	}
+	"weapon_shotgun_chrome_spawn"
+	{
+		"itemid" "3215"
+	}
+
+	"weapon_smg_silenced_spawn"
+	{
+		"itemid" "3220"
+	}
+
+	"weapon_melee_spawn"
+	{
+		"itemid" "3236"
+	}
+}
