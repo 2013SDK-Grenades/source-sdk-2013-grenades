@@ -3160,8 +3160,11 @@ void CTFPlayer::PlayerRunCommand( CUserCmd *ucmd, IMoveHelper *moveHelper )
 	// PF2C port: sync client's grenade throw-mode preference from USERINFO each command frame.
 	if ( pf_grenades.GetBool() )
 	{
-		bool bPressThrow = ( Q_atoi( engine->GetClientConVarValue( entindex(), "pf_grenade_press_throw" ) ) != 0 );
-		SetGrenadePressThrow( bPressThrow );
+		if ( !IsBot() )
+		{
+			bool bPressThrow = ( Q_atoi( engine->GetClientConVarValue( entindex(), "pf_grenade_press_throw" ) ) != 0 );
+			SetGrenadePressThrow( bPressThrow );
+		}
 	}
 
 	if ( !sv_runcmds.GetInt() )
