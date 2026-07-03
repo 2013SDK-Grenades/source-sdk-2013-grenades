@@ -18,7 +18,7 @@
 // CTF GrenadePack defines.
 //
 
-#define TF_GRENADEPACK_MODEL			"item_grenadepack.mdl"
+#define TF_GRENADEPACK_MODEL			"models/items/item_grenadepack.mdl"
 #define TF_GRENADEPACK_PICKUP_SOUND		"GrenadePack.Touch"
 #define TF_GRENADEPACK_GRENADES1		4
 #define TF_GRENADEPACK_GRENADES2		4
