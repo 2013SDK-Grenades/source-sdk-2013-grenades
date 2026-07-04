@@ -1,8 +1,0 @@
-maporder_nomercy
-{
-	fc_l4d_hospital01_apartment "1"
-	fc_l4d_hospital02_subway 	"2"
-	fc_l4d_hospital03_sewers 	"3"
-	fc_l4d_hospital04_interior 	"4"
-	fc_l4d_hospital05_rooftop 	"5"
-}

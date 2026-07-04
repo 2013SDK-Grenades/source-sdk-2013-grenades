@@ -1,7 +1,0 @@
-"MapbaseRPC"
-{
-	discord_appid "1171812771843801161"
-	
-	discord_largeimage "fc_large_new"
-	discord_largeimage_text "Fortress Connected"
-}
