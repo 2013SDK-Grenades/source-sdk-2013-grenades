@@ -226,6 +226,8 @@ void CTFWeaponBaseGrenade::Throw()
 	if ( !bExplodingInHand )
 	{
 		EmitGrenade( vecSrc, vecAngles, vecThrow, AngularImpulse( 600, random->RandomInt( -1200, 1200 ), 0 ), pPlayer, flTime );
+		// FF Grenade Port: consume one grenade ammo when the projectile is created.
+		pPlayer->RemoveAmmo( 1, GetPrimaryAmmoType() );
 	}
 	else
 	{

@@ -4347,10 +4347,17 @@ void CTFPlayer::HandleGrenadeInput( void )
 
 				if ( pGrenade && !( m_Shared.m_flNextThrowTime > gpGlobals->curtime ) )
 				{
-					// FF Grenade Port: after FinishThrowGrenade() -> HolsterOffHandWeapon() ->
-					// Holster(), the grenade entity has EF_NODRAW set. The off-hand pump only
-					// runs when IsWeaponVisible() is true, so we must clear EF_NODRAW before
-					// re-assigning it as the off-hand weapon, otherwise repeat throws never fire.
+					// FF Grenade Port: check ammo before priming — no ammo, play deny sound.
+					if ( GetAmmoCount( pGrenade->GetPrimaryAmmoType() ) <= 0 )
+					{
+						if ( m_flNextDenySound < gpGlobals->curtime )
+						{
+							CSingleUserRecipientFilter filter( this );
+							EmitSound( filter, entindex(), "Player.DenyWeaponSelection" );
+							m_flNextDenySound = gpGlobals->curtime + 0.5f;
+						}
+						break;
+					}
 					pGrenade->RemoveEffects( EF_NODRAW );
 					SetOffHandWeapon( pGrenade );
 				}

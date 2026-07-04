@@ -1,8 +1,4 @@
 "VertexLitGeneric"
 {
-	"$basetexture" "models\grenades\frag\fraggrenade"
-//ELMO
-	"$selfillum" "1"
-	"$selfillumtint" "[1.5 1.5 1.5]"
-//ELMO
+	"$basetexture" "models/grenades/frag/fraggrenade"
 }

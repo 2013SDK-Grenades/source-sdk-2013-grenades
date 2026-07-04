@@ -1,8 +1,4 @@
 "VertexLitGeneric"
 {
-	"$baseTexture"		"models\grenades\nailgren\nailgren"
-//ELMO
-	"$selfillum" "1"
-	"$selfillumtint" "[1.5 1.5 1.5]"
-//ELMO
+	"$baseTexture"		"models/grenades/nailgren/nailgren"
 }
