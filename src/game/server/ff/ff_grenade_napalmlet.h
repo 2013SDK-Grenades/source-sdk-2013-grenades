@@ -11,7 +11,7 @@
 #include "ff_utils.h"
 #include "EntityFlame.h"
 
-#define NAPALMLET_MODEL "models/gibs/AGIBS.mdl"
+#define NAPALMLET_MODEL "models/gibs/gib1.mdl"
 
 #ifdef CLIENT_DLL
 	#define CFFGrenadeNapalmlet C_FFGrenadeNapalmlet
