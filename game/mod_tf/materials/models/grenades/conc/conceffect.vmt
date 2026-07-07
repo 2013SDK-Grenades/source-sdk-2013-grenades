@@ -1,0 +1,12 @@
+// FF Grenade Port: sphere skin for conceffect.mdl (slowfield bubble, conc effect).
+// conceffect.vmt was in FF's shipped VPK but not in the public SDK repos.
+// Using a translucent additive sphere as a stand-in until the original is sourced.
+"UnlitGeneric"
+{
+	"$basetexture"		"vgui/white_additive"
+	"$translucent"		"1"
+	"$alpha"			"0.15"
+	"$color2"			"[0.4 0.6 1]"
+	"$additive"			"1"
+	"$nocull"			"1"
+}
