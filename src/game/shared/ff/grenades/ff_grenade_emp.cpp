@@ -26,6 +26,7 @@
 	#include "baseentity.h"
 	#include "beam_flags.h"
 	#include "te_effect_dispatch.h"
+	#include "tf_obj.h"
 #endif
 
 extern short g_sModelIndexFireball;
@@ -114,6 +115,19 @@ PRECACHE_WEAPON_REGISTER( ff_grenade_emp );
 			// CFFProjectileBase case below, since CFFGrenadeBase derives from CFFProjectileBase.
 			if ( dynamic_cast<CFFGrenadeBase*>( pEntity ) != NULL )
 				continue;
+
+			// TF2 buildings (sentries, dispensers, teleporters) aren't part of FF's original
+			// TakeEmp() switch -- FF had no equivalent entity. Added for FC: EMP shock-damages
+			// nearby buildings instead of leaving them untouched.
+			CBaseObject *pObj = dynamic_cast<CBaseObject *>( pEntity );
+			if ( pObj )
+			{
+				CTakeDamageInfo info( this, GetOwnerEntity(), 50.0f, DMG_SHOCK );
+				pObj->TakeDamage( info );
+
+				g_pEffects->Sparks( pObj->GetAbsOrigin(), 10, 5, &vecUp );
+				continue;
+			}
 
 			// Generic FF projectiles (e.g. the nail grenade's CFFProjectileNail nails):
 			// self-destruct, exploding for damage. Matches FF's own
