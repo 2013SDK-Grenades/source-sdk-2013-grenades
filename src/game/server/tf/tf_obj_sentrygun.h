@@ -59,6 +59,13 @@ public:
 	virtual void	Killed( const CTakeDamageInfo &info );
 	virtual void	SetModel( const char *pModel );
 
+	// FF Grenade Port: read-only ammo accessors. FF's CFFSentryGun::TakeEmp() formula
+	// (SG_EMPDMG_BASE + shells*SG_EMPDMG_SHELLS_MULTI + rockets*SG_EMPDMG_ROCKETS_MULTI,
+	// see ff_buildable_sentrygun.cpp) needs these from ff_grenade_emp.cpp, but
+	// m_iAmmoShells/m_iAmmoRockets below are private. No behavior change.
+	int			GetAmmoShells( void ) const { return m_iAmmoShells; }
+	int			GetAmmoRockets( void ) const { return m_iAmmoRockets; }
+
 	virtual bool	StartBuilding( CBaseEntity *pBuilder );
 	virtual void	SetStartBuildingModel( void );
 	virtual void	StartPlacement( CTFPlayer *pPlayer );

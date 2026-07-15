@@ -27,6 +27,7 @@
 	#include "beam_flags.h"
 	#include "te_effect_dispatch.h"
 	#include "tf_obj.h"
+	#include "tf_obj_sentrygun.h"
 #endif
 
 extern short g_sModelIndexFireball;
@@ -116,16 +117,77 @@ PRECACHE_WEAPON_REGISTER( ff_grenade_emp );
 			if ( dynamic_cast<CFFGrenadeBase*>( pEntity ) != NULL )
 				continue;
 
-			// TF2 buildings (sentries, dispensers, teleporters) aren't part of FF's original
-			// TakeEmp() switch -- FF had no equivalent entity. Added for FC: EMP shock-damages
-			// nearby buildings instead of leaving them untouched.
-			CBaseObject *pObj = dynamic_cast<CBaseObject *>( pEntity );
-			if ( pObj )
+			// FF Grenade Port: verified against ff-src. Only CFFSentryGun overrides
+			// TakeEmp() among buildables -- CFFDetpack::TakeEmp() is dead code (returns 0)
+			// and dispensers have no override at all (inherit CBaseObject's TakeEmp() default,
+			// also 0). So in real FF, EMP affects sentries only; dispensers/teleporters are
+			// untouched. Damage matches FF's SG_EMPDMG_BASE/SHELLS_MULTI/ROCKETS_MULTI
+			// formula (ff_buildable_sentrygun.cpp): 100 + shells*0.5 + rockets*0.9.
+			CObjectSentrygun *pSentry = dynamic_cast<CObjectSentrygun *>( pEntity );
+			if ( pSentry )
 			{
-				CTakeDamageInfo info( this, GetOwnerEntity(), 50.0f, DMG_SHOCK );
-				pObj->TakeDamage( info );
+				int explode = (int)( 100.0f + pSentry->GetAmmoShells() * 0.5f + pSentry->GetAmmoRockets() * 0.9f );
 
-				g_pEffects->Sparks( pObj->GetAbsOrigin(), 10, 5, &vecUp );
+				// FF Grenade Port: this replicates the "default:" case from FF's original
+				// TakeEmp() switch verbatim (ff_grenade_emp.cpp) -- the same fireball/scorch/
+				// radius-damage/sound/screenshake sequence FF applies to every valid EMP
+				// target (players, sentries, generic projectiles alike), not just a quiet
+				// TakeDamage call. Mirrors the already-working pattern in
+				// CFFGrenadeBase::Explode() (ff_grenade_base.cpp) for the trace/fireball part.
+				trace_t tr;
+				Vector vecTargetOrigin = pSentry->GetAbsOrigin();
+				UTIL_TraceLine( vecTargetOrigin + Vector( 0, 0, 2.0f ), vecTargetOrigin - Vector( 0, 0, FF_DECALTRACE_TRACE_DIST ), MASK_SHOT_HULL, pSentry, COLLISION_GROUP_NONE, &tr );
+
+				int contents = UTIL_PointContents( vecTargetOrigin );
+
+				if ( tr.fraction != 1.0f )
+				{
+					Vector vecNormal = tr.plane.normal;
+					surfacedata_t *pdata = physprops->GetSurfaceData( tr.surface.surfaceProps );
+					CPASFilter filter( vecTargetOrigin );
+
+					te->Explosion( filter, -1.0,
+						&vecTargetOrigin,
+						!( contents & MASK_WATER ) ? g_sModelIndexFireball : g_sModelIndexWExplosion,
+						m_DmgRadius * .03,
+						25,
+						TE_EXPLFLAG_NONE,
+						m_DmgRadius,
+						explode,
+						&vecNormal,
+						( char )pdata->game.material );
+
+					UTIL_DecalTrace( &tr, "Scorch" );
+				}
+				else
+				{
+					Vector vecUpNormal( 0, 0, 1 );
+					CPASFilter filter( vecTargetOrigin );
+
+					te->Explosion( filter, -1.0,
+						&vecTargetOrigin,
+						!( contents & MASK_WATER ) ? g_sModelIndexFireball : g_sModelIndexWExplosion,
+						m_DmgRadius * .03,
+						25,
+						TE_EXPLFLAG_NONE,
+						m_DmgRadius,
+						explode,
+						&vecUpNormal );
+
+					FF_DecalTrace( pSentry, FF_DECALTRACE_TRACE_DIST, "Scorch" );
+				}
+
+				CTakeDamageInfo info( this, GetOwnerEntity(), GetBlastForce(), vecTargetOrigin, explode, DMG_SHOCK, 0, &vecTargetOrigin );
+				RadiusDamage( info, vecTargetOrigin, m_DmgRadius, CLASS_NONE, NULL );
+
+				EmitSound( "BaseGrenade.Explode" );
+				UTIL_ScreenShake( vecTargetOrigin, (float)explode, 150.0, 1.0, radius, SHAKE_START );
+
+				continue;
+			}
+			else if ( dynamic_cast<CBaseObject *>( pEntity ) != NULL )
+			{
+				// Dispensers, teleporters: no TakeEmp() override in FF, confirmed immune.
 				continue;
 			}
 

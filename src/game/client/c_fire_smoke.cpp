@@ -15,6 +15,7 @@
 #include "iefx.h"
 #include "dlight.h"
 #include "tier0/icommandline.h"
+#include "iinput.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -333,7 +334,14 @@ void C_EntityFlame::CreateEffect( void )
 	}
 
 #ifdef TF_CLIENT_DLL
-	m_hEffect = ParticleProp()->Create( "burningplayer_red", PATTACH_ABSORIGIN_FOLLOW );
+	// FF Grenade Port: FF's authoritative source (ff_src/mp/src/game/client/c_fire_smoke.cpp)
+	// is NOT built with TF_CLIENT_DLL defined, so real FF actually takes this file's #else
+	// branch ("burning_character_b"), not "burningplayer_red" -- which is TF2's own signature
+	// flamethrower/afterburn particle. Since we build on the TF2 SDK branch, TF_CLIENT_DLL
+	// IS defined for us, so without this change we'd always render TF2's particle instead of
+	// FF's, regardless of what napalmlet.cpp asks for. This is what was making napalm fire
+	// look like standard TF2 burn instead of FF's fire.
+	m_hEffect = ParticleProp()->Create( "burning_character_b", PATTACH_ABSORIGIN_FOLLOW );
 #else
 	m_hEffect = ParticleProp()->Create( "burning_character", PATTACH_ABSORIGIN_FOLLOW );
 #endif
@@ -342,6 +350,11 @@ void C_EntityFlame::CreateEffect( void )
 	{
 		C_BaseEntity *pEntity = m_hEntAttached;
 		m_hOldAttached = m_hEntAttached;
+
+		// FF Grenade Port: don't attach to local player in first person (ported from ff-src;
+		// avoids the fire sprite rendering awkwardly right in front of the camera).
+		if ( pEntity == CBasePlayer::GetLocalPlayer() && !::input->CAM_IsThirdPerson() )
+			return;
 
 		ParticleProp()->AddControlPoint( m_hEffect, 1, pEntity, PATTACH_ABSORIGIN_FOLLOW );
 		m_hEffect->SetControlPoint( 0, GetAbsOrigin() );
