@@ -12,6 +12,7 @@
 #include "in_buttons.h"	
 #include "tf_weaponbase_grenadeproj.h"
 #include "eventlist.h"
+#include "ff_grenade_base.h"
 
 // Client specific.
 #ifdef CLIENT_DLL
@@ -225,7 +226,23 @@ void CTFWeaponBaseGrenade::Throw()
 	// Create the projectile and send in the time remaining.
 	if ( !bExplodingInHand )
 	{
-		EmitGrenade( vecSrc, vecAngles, vecThrow, AngularImpulse( 600, random->RandomInt( -1200, 1200 ), 0 ), pPlayer, flTime );
+		CBaseGrenade *pGrenade = EmitGrenade( vecSrc, vecAngles, vecThrow, AngularImpulse( 600, random->RandomInt( -1200, 1200 ), 0 ), pPlayer, flTime );
+
+		// FF Grenade Port: matches ff_player.cpp's `if (fTimer > 0) pGrenade->m_fIsHandheld = false;`
+		// exactly (fTimer > 0 there == !bExplodingInHand here, both mean "released before the fuse
+		// ran out", i.e. a normal throw). This was the actual bug behind "self damage doesn't scale
+		// with range" -- FF's CFFGrenadeBase::Explode() gives the thrower flat, distance-independent
+		// self-damage ONLY when m_fIsHandheld is still true (meant for the rare "held it until it
+		// went off in your hand" case). Every throw in this port left m_fIsHandheld at its Spawn()
+		// default of true for its entire lifetime, so every throw -- not just point-blank ones --
+		// used the flat path instead of the properly distance-scaled FF_RadiusDamage path everyone
+		// else in the blast already goes through.
+		CFFGrenadeBase *pFFGrenade = dynamic_cast<CFFGrenadeBase *>( pGrenade );
+		if ( pFFGrenade )
+		{
+			pFFGrenade->m_fIsHandheld = false;
+		}
+
 		// FF Grenade Port: consume one grenade ammo when the projectile is created.
 		pPlayer->RemoveAmmo( 1, GetPrimaryAmmoType() );
 	}
@@ -233,6 +250,8 @@ void CTFWeaponBaseGrenade::Throw()
 	{
 		// We're holding onto an exploding grenade
 		// FF Grenade Port: CTFWeaponBaseGrenadeProj* -> CBaseGrenade*, matching the EmitGrenade() signature change.
+		// m_fIsHandheld intentionally left at its Spawn() default of true here -- this IS the "held
+		// it until it went off in your hand" case, so the flat self-damage in Explode() is correct.
 		CBaseGrenade *pGrenade = EmitGrenade( vecSrc, vecAngles, vecThrow, AngularImpulse( 600, random->RandomInt( -1200, 1200 ), 0 ), pPlayer, 0.0 );
 		if ( pGrenade )
 		{
