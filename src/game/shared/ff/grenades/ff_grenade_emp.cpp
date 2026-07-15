@@ -178,7 +178,7 @@ PRECACHE_WEAPON_REGISTER( ff_grenade_emp );
 				}
 
 				CTakeDamageInfo info( this, GetOwnerEntity(), GetBlastForce(), vecTargetOrigin, explode, DMG_SHOCK, 0, &vecTargetOrigin );
-				RadiusDamage( info, vecTargetOrigin, m_DmgRadius, CLASS_NONE, NULL );
+				FF_RadiusDamage( info, vecTargetOrigin, m_DmgRadius, CLASS_NONE, NULL );
 
 				EmitSound( "BaseGrenade.Explode" );
 				UTIL_ScreenShake( vecTargetOrigin, (float)explode, 150.0, 1.0, radius, SHAKE_START );
@@ -250,7 +250,7 @@ PRECACHE_WEAPON_REGISTER( ff_grenade_emp );
 			}
 
 			CTakeDamageInfo info( this, GetOwnerEntity(), GetBlastForce(), pEntity->GetAbsOrigin(), explode, DMG_SHOCK, 0, &vecOrigin );
-			RadiusDamage( info, pEntity->GetAbsOrigin(), m_DmgRadius, CLASS_NONE, NULL );
+			FF_RadiusDamage( info, pEntity->GetAbsOrigin(), m_DmgRadius, CLASS_NONE, NULL );
 				
 			EmitSound( "BaseGrenade.Explode" );
 

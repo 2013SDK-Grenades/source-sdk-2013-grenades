@@ -147,21 +147,10 @@ LINK_ENTITY_TO_CLASS(grenade_ff_base, CFFGrenadeBase);
 #ifdef GAME_DLL
 	void CFFGrenadeBase::CreateTrail()
 	{
-		// FF Grenade Port: diagnostic only, remove once trails are confirmed working in-game.
-		// This function is verified byte-identical to ff-src's CreateTrail(); if trails still
-		// aren't visible, these prints will tell us whether the problem is upstream (this
-		// never gets called) or downstream (SpriteTrailCreate/asset/networking).
-		Msg( "[FF Grenade Port] CreateTrail() called on %s (entindex %d)\n", GetClassname(), entindex() );
-
 		m_pTrail = CSpriteTrail::SpriteTrailCreate("sprites/ff_trail.vmt", GetLocalOrigin(), false);
 
 		if (!m_pTrail)
-		{
-			Warning( "[FF Grenade Port] CreateTrail(): SpriteTrailCreate FAILED on %s\n", GetClassname() );
 			return;
-		}
-
-		Msg( "[FF Grenade Port] CreateTrail() succeeded on %s, trail entindex %d\n", GetClassname(), m_pTrail->entindex() );
 
 		color32 col = GetColour();
 
@@ -546,7 +535,7 @@ LINK_ENTITY_TO_CLASS(grenade_ff_base, CFFGrenadeBase);
 			Vector vecReported = pTrace->endpos;
 			CTakeDamageInfo info( this, pThrower, GetBlastForce(), GetAbsOrigin(), m_flDamage, bitsDamageType, m_iKillType, &vecReported );
 
-			RadiusDamage( info, GetAbsOrigin(), m_DmgRadius, CLASS_NONE, m_fIsHandheld ? pThrower : NULL );
+			FF_RadiusDamage( info, GetAbsOrigin(), m_DmgRadius, CLASS_NONE, m_fIsHandheld ? pThrower : NULL );
 
 			if (m_fIsHandheld)
 			{

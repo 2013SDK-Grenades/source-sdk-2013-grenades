@@ -162,7 +162,7 @@ void CFFGrenadeNapalm::UpdateOnRemove( void )
 			// Use the grenade's position as the reported position
 			Vector vecReported = pTrace->endpos;
 			CTakeDamageInfo info( this, pThrower, GetBlastForce()/4, GetAbsOrigin(), 0.0f/*m_flDamage*/, bitsDamageType, 0, &vecReported );
-			RadiusDamage( info, GetAbsOrigin(), m_DmgRadius, CLASS_NONE, NULL );
+			FF_RadiusDamage( info, GetAbsOrigin(), m_DmgRadius, CLASS_NONE, NULL );
 
 		CBaseEntity *pOwner = GetOwnerEntity();
 

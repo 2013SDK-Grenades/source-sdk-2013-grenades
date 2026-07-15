@@ -10,6 +10,7 @@
 
 #ifdef GAME_DLL
 	#include "tf_player.h"
+	#include "tf_obj.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -178,5 +179,120 @@ bool FF_IsAirshot( CBaseEntity *pEntity, float flThresholdMultiplier/*=1.0f*/ )
 		return true;
 	else
 		return false;
+}
+#endif
+
+#ifdef GAME_DLL
+//-----------------------------------------------------------------------------
+// Purpose: callback for the FL_GRENADE trace filter used by FF_RadiusDamage --
+// stops grenades from blocking each other's line-of-sight to a target when
+// several land near each other. See ff_utils.h for full scope notes.
+//-----------------------------------------------------------------------------
+static bool FF_ShouldHitEntity_IgnoreGrenades( IHandleEntity *pHandleEntity, int contentsMask )
+{
+	CBaseEntity *pEntity = EntityFromEntityHandle( pHandleEntity );
+	if ( pEntity && ( pEntity->GetFlags() & FL_GRENADE ) )
+		return false;
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: self-damage multiplier, adapted from FF's CFFGameRules::GetAdjustedDamage
+// (ff_gamerules.cpp). Verbatim core rule ("In TFC players only do 2/3 damage to
+// themselves"); the Engineer-takes-half-from-own-building clause is omitted since
+// it only triggers when the inflictor is a buildable, which a thrown hand grenade
+// never is. bIsInflictorABuildable uses TF2's CBaseObject as the CFFBuildableObject
+// equivalent (kept for correctness/symmetry with the original condition, even
+// though it's a no-op for every current grenade type).
+//-----------------------------------------------------------------------------
+static float FF_GetAdjustedDamage( float flDamage, CBaseEntity *pVictim, const CTakeDamageInfo &info )
+{
+	CBaseEntity *pInflictor = info.GetInflictor();
+	bool bIsInflictorABuildable = pInflictor && dynamic_cast<CBaseObject *>( pInflictor ) != NULL;
+
+	if ( pVictim == info.GetAttacker() && !bIsInflictorABuildable )
+		return flDamage * 0.66666f;
+
+	return flDamage;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: FF's real grenade damage-falloff algorithm, ported for our grenades.
+// See ff_utils.h for the full list of what's verbatim vs. deliberately omitted.
+//-----------------------------------------------------------------------------
+void FF_RadiusDamage( const CTakeDamageInfo &info, const Vector &vecSrcIn, float flRadius, int iClassIgnore, CBaseEntity *pEntityIgnore )
+{
+	const float falloff = 0.5f; // FF Grenade Port: "TFC style falloff", ff_gamerules.cpp
+
+	Vector vecSrc = vecSrcIn;
+	CBaseEntity *pEntity = NULL;
+
+	for ( CEntitySphereQuery sphere( vecSrc, flRadius ); ( pEntity = sphere.GetCurrentEntity() ) != NULL; sphere.NextEntity() )
+	{
+		if ( pEntity == pEntityIgnore )
+			continue;
+
+		if ( pEntity->m_takedamage == DAMAGE_NO )
+			continue;
+
+		Vector vecSpot = pEntity->BodyTarget( vecSrc, true );
+
+		Vector vecDisplacement = vecSpot - vecSrc;
+		float flDistance = vecDisplacement.Length();
+		Vector vecDirection = flDistance > 0.0f ? vecDisplacement / flDistance : Vector( 0, 0, 1 );
+
+		trace_t tr;
+
+		if ( info.GetInflictor() && ( info.GetInflictor()->GetFlags() & FL_GRENADE ) )
+		{
+			CTraceFilterSimple traceFilter( pEntityIgnore, COLLISION_GROUP_NONE, FF_ShouldHitEntity_IgnoreGrenades );
+			UTIL_TraceLine( vecSrc, vecSpot, MASK_SHOT, &traceFilter, &tr );
+		}
+		else
+		{
+			UTIL_TraceLine( vecSrc, vecSpot, MASK_SHOT, info.GetInflictor(), COLLISION_GROUP_NONE, &tr );
+		}
+
+		// Could not see this entity, so don't hurt it
+		if ( tr.fraction != 1.0f && tr.m_pEnt != pEntity )
+			continue;
+
+		float flBaseDamage = info.GetDamage();
+
+		// FF Grenade Port: the actual fix -- linear falloff with a hard zero cutoff,
+		// instead of TF2's RemapValClamped (which floors at roughly half of base
+		// damage no matter how far inside the radius you are).
+		float flAdjustedDamage = flBaseDamage - ( flDistance * falloff );
+		if ( flAdjustedDamage <= 0 )
+			continue;
+
+		flAdjustedDamage = FF_GetAdjustedDamage( flAdjustedDamage, pEntity, info );
+
+		CTakeDamageInfo adjustedInfo = info;
+		adjustedInfo.SetDamage( flAdjustedDamage );
+
+		if ( tr.startsolid )
+		{
+			tr.endpos = vecSrc;
+			tr.fraction = 0.0f;
+		}
+
+		// FF Grenade Port: only compute force if the caller didn't already provide
+		// one -- matches FF's own conditional, and our existing grenade call sites
+		// already set force via the CTakeDamageInfo constructor before calling this.
+		if ( adjustedInfo.GetDamagePosition() == vec3_origin || adjustedInfo.GetDamageForce() == vec3_origin )
+		{
+			if ( adjustedInfo.GetReportedPosition() != vec3_origin )
+			{
+				vecDirection = vecSpot - adjustedInfo.GetReportedPosition();
+				vecDirection.NormalizeInPlace();
+			}
+
+			adjustedInfo.SetDamageForce( vecDirection * ( flAdjustedDamage * 8.0f ) );
+			adjustedInfo.SetDamagePosition( vecSrc );
+		}
+
+		pEntity->TakeDamage( adjustedInfo );
+	}
 }
 #endif
