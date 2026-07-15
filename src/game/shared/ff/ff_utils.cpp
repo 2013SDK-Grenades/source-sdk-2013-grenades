@@ -205,7 +205,7 @@ static bool FF_ShouldHitEntity_IgnoreGrenades( IHandleEntity *pHandleEntity, int
 // equivalent (kept for correctness/symmetry with the original condition, even
 // though it's a no-op for every current grenade type).
 //-----------------------------------------------------------------------------
-static float FF_GetAdjustedDamage( float flDamage, CBaseEntity *pVictim, const CTakeDamageInfo &info )
+float FF_GetAdjustedDamage( float flDamage, CBaseEntity *pVictim, const CTakeDamageInfo &info )
 {
 	CBaseEntity *pInflictor = info.GetInflictor();
 	bool bIsInflictorABuildable = pInflictor && dynamic_cast<CBaseObject *>( pInflictor ) != NULL;

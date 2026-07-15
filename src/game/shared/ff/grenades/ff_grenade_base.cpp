@@ -554,12 +554,27 @@ LINK_ENTITY_TO_CLASS(grenade_ff_base, CFFGrenadeBase);
 
 				// FF Grenade Port: was FFGameRules()->GetAdjustedPushForce()/GetAdjustedDamage().
 				// CFFGameRules isn't being ported -- it's a large class (similar in scope to
-				// ff_player.cpp), and these two functions specifically pull in FF's class-slot
-				// system (GetClassSlot()==CLASS_HWGUY/CLASS_ENGINEER) and FF's buildable casting
-				// (FF_ToBuildableObject), neither of which exist in this port. Using full,
-				// unadjusted force/damage instead -- no TFC-style 2/3-self-damage reduction, no
-				// class-based modifiers, no buildable-explosion special case.
+				// ff_player.cpp), and GetAdjustedPushForce() specifically pulls in FF's class-slot
+				// system (GetClassSlot()==CLASS_HWGUY/CLASS_ENGINEER), which doesn't exist in this
+				// port. Push force stays unadjusted (no class-based knockback modifiers) --
+				// that's a knockback-feel question, not the damage bug.
+				//
+				// Damage DOES now go through FF_GetAdjustedDamage (ff_utils.cpp), the same 2/3
+				// self-damage multiplier FF_RadiusDamage already uses for everyone else. This was
+				// the actual bug behind "instant death from any distance": this block runs
+				// unconditionally whenever m_fIsHandheld is true (every grenade throw) and is
+				// completely separate from FF_RadiusDamage's sphere query -- the thrower is
+				// explicitly excluded from that query via pEntityIgnore (see the FF_RadiusDamage
+				// call above), specifically so their damage is handled here instead. Before this
+				// fix, "here" meant full, unreduced base damage (145 for frag) applied flatly
+				// every single time, regardless of distance -- more than a Sniper's entire 125 HP,
+				// unconditionally. The distance-based falloff fix from the previous session never
+				// had any effect on this because it only touches FF_RadiusDamage's sphere-query
+				// loop, which the thrower was never part of.
+				float flAdjustedDamage = FF_GetAdjustedDamage( infoSelfDamage.GetDamage(), pThrower, infoSelfDamage );
+
 				infoSelfDamage.SetDamageForce(vecPushDir * flPushForce);
+				infoSelfDamage.SetDamage( flAdjustedDamage );
 				pThrower->TakeDamage(infoSelfDamage);
 			}
 

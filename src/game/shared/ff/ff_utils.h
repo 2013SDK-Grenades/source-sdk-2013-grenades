@@ -60,4 +60,13 @@ bool FF_IsAirshot( CBaseEntity *pEntity, float flThresholdMultiplier = 1.0f );
 //    blood-decal pass on top of it.
 void FF_RadiusDamage( const CTakeDamageInfo &info, const Vector &vecSrcIn, float flRadius, int iClassIgnore, CBaseEntity *pEntityIgnore );
 
+// FF Grenade Port: added 2026-07-15. Exposed publicly (not just used inside
+// FF_RadiusDamage) because CFFGrenadeBase::Explode()'s handheld-thrower self-damage
+// block needs it directly too -- that block deliberately bypasses FF_RadiusDamage's
+// sphere query entirely (the thrower is passed as pEntityIgnore, see ff_grenade_base.cpp),
+// so it needs its own call to the same self-damage multiplier. See ff_grenade_base.cpp
+// for the bug this fixes: that block was applying full, unreduced base damage with no
+// falloff and no self-damage reduction at all, unconditionally, regardless of distance.
+float FF_GetAdjustedDamage( float flDamage, CBaseEntity *pVictim, const CTakeDamageInfo &info );
+
 #endif // FF_UTILS_H
