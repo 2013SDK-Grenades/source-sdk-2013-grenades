@@ -4359,6 +4359,23 @@ void CTFPlayer::HandleGrenadeInput( void )
 						break;
 					}
 					pGrenade->RemoveEffects( EF_NODRAW );
+
+					// FF Grenade Port: Throw() adds EF_NODRAW to viewmodel index 1 when a
+					// grenade explodes in-hand (see tf_weaponbase_grenade.cpp) and never clears
+					// it -- nothing else holsters this weapon in that case to trigger the normal
+					// restore. Left alone, that viewmodel's EF_NODRAW makes IsWeaponVisible()
+					// return false permanently, which stops the off-hand weapon from ever being
+					// pumped again (see the m_hOffHandWeapon->IsWeaponVisible() check in
+					// CTFPlayer::ItemPostFrame(), tf_player_shared.cpp) -- so Throw() never fires
+					// for any future grenade and m_bPrimed gets stuck true, blocking every
+					// grenade slot via IsPrimed(). Clearing it here, before re-arming, same as
+					// the weapon's own EF_NODRAW right above.
+					CBaseViewModel *pGrenadeViewModel = GetViewModel( 1 );
+					if ( pGrenadeViewModel )
+					{
+						pGrenadeViewModel->RemoveEffects( EF_NODRAW );
+					}
+
 					SetOffHandWeapon( pGrenade );
 				}
 				else if ( m_flNextDenySound < gpGlobals->curtime )
