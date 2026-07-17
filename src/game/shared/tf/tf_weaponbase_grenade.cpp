@@ -138,6 +138,12 @@ void CTFWeaponBaseGrenade::Prime()
 	m_flThrowTime = gpGlobals->curtime + weaponInfo.m_flPrimerTime;
 	m_bPrimed = true;
 
+	// FF Grenade Port: cooking-tick sound. Scheduled 1 second out rather than
+	// immediately, since CFFPlayer already plays "Grenade.Prime" once right as
+	// priming starts (ff_player_shared.cpp) -- this avoids two sounds firing on
+	// top of each other on the first frame.
+	m_flNextTickSound = gpGlobals->curtime + 1.0f;
+
 #ifndef CLIENT_DLL
 	if ( GetWeaponID() != TF_WEAPON_GRENADE_SMOKE_BOMB )
 	{
@@ -301,6 +307,20 @@ void CTFWeaponBaseGrenade::ItemPostFrame()
 			Throw();
 			return;
 		}
+
+		// FF Grenade Port: cooking-tick sound, deliberately independent of any HUD
+		// system -- lives entirely on the grenade itself, so it works regardless of
+		// whether/when the HUD timer bars get ported. GAME_DLL-only since
+		// ItemPostFrame() is a shared/predicted function; without this guard the
+		// sound would fire from both the client's predicted copy and the server's
+		// authoritative one and double up.
+#ifdef GAME_DLL
+		if ( gpGlobals->curtime >= m_flNextTickSound )
+		{
+			EmitSound( "Grenade.Prime" );
+			m_flNextTickSound = gpGlobals->curtime + 1.0f;
+		}
+#endif
 
 		if ( !m_bThrow && !( pPlayer->m_nButtons & IN_GRENADE1 || pPlayer->m_nButtons & IN_GRENADE2 ) )
 		{

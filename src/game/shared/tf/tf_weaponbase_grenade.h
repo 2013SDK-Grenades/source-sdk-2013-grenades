@@ -83,6 +83,12 @@ protected:
 	CNetworkVar( float, m_flThrowTime );	// the time at which the grenade will be thrown.  If this value is 0 then the time hasn't been set yet.
 	CNetworkVar( bool, m_bThrow );			// True when the player is throwing the grenade
 
+	// FF Grenade Port: cooking-tick sound cadence. Server-only bookkeeping (the sound
+	// itself is emitted GAME_DLL-only in ItemPostFrame(), so this doesn't need to be
+	// networked). Deliberately separate from any HUD system -- lives entirely on the
+	// grenade, per Dan's request.
+	float	m_flNextTickSound;
+
 private:
 
 	CTFWeaponBaseGrenade( const CTFWeaponBaseGrenade & ) {}
