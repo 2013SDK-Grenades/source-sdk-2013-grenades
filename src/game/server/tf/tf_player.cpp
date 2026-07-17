@@ -3003,6 +3003,12 @@ void CTFPlayer::PrecacheTFPlayer()
 
 	PrecacheScriptSound( "Player.FallDamageDealt" );
 
+	// FF Grenade Port: was in CFFPlayer::Precache() (ff_player.cpp) in FF's real
+	// source, dropped during the port since we don't use CFFPlayer. Without this,
+	// every EmitSound("Grenade.Prime") call -- the original one-shot priming sound
+	// AND the cooking-tick sound -- silently fails ("not precached").
+	PrecacheScriptSound( "Grenade.Prime" );
+
 
 	// Precache particle systems
 	PrecacheParticleSystem( "crit_text" );
