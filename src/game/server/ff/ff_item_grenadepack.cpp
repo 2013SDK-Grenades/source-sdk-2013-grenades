@@ -88,9 +88,14 @@ void CFFItemGrenadepack::Spawn( void )
 	// FF Grenade Port: matches ff_item_backpack.cpp's collision setup exactly --
 	// see "Bug #0000131" comment there re: not fully solid so it doesn't stop
 	// rockets, but still traceable (sniper dot, etc.) via the trigger bounds.
+	// COLLISION_GROUP_NONE here, not FF's COLLISION_GROUP_TRIGGERONLY -- that's
+	// an FF-specific addition to Collision_Group_t that doesn't exist in stock
+	// SDK2013's enum (public/const.h). SOLID_NONE + FSOLID_TRIGGER already give
+	// "no physical collision, still trigger-touchable"; NONE is the safe,
+	// always-valid default for the group itself.
 	SetSolid( SOLID_NONE );
 	AddSolidFlags( FSOLID_NOT_STANDABLE | FSOLID_TRIGGER );
-	SetCollisionGroup( COLLISION_GROUP_TRIGGERONLY );
+	SetCollisionGroup( COLLISION_GROUP_NONE );
 
 	SetMoveType( MOVETYPE_NONE );
 
@@ -142,7 +147,7 @@ void CFFItemGrenadepack::MaterializeThink( void )
 	RemoveEffects( EF_NODRAW );
 	SetSolid( SOLID_NONE );
 	AddSolidFlags( FSOLID_NOT_STANDABLE | FSOLID_TRIGGER );
-	SetCollisionGroup( COLLISION_GROUP_TRIGGERONLY );
+	SetCollisionGroup( COLLISION_GROUP_NONE );	// see Spawn() for why NONE, not FF's TRIGGERONLY
 
 	SetTouch( &CFFItemGrenadepack::RestockTouch );
 	SetThink( NULL );
