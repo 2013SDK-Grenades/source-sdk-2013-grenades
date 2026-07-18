@@ -224,3 +224,26 @@
 		"pitch"	"PITCH_NORM"
 		"wave"	"grenades/gas/gas_explode.wav"
 	}
+
+//----------------
+// FF Grenade Port: item_grenadepack (resupply pack pickup). Both entries and
+// wave files are real FF assets (ff-game/scripts/game_sounds_ff_items.txt,
+// game_sounds_items.txt), not placeholders -- just grouped here since this
+// is the confirmed-working sound script file, rather than adding and
+// registering a whole separate file for two entries.
+//----------------
+	"Backpack.touch"
+	{
+		"channel"	"CHAN_STATIC"
+		"volume"	"1.0"
+		"soundlevel"	"SNDLVL_NORM"
+		"wave"	"player/Objects/ammo1.wav"
+	}
+	"Item.Materialize"
+	{
+		"channel"	"CHAN_WEAPON"
+		"volume"	"1"
+		"soundlevel"	"SNDLVL_75dB"
+		"pitch"	"150"
+		"wave"	"player/suitchargeok1.wav"
+	}
