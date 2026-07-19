@@ -41,6 +41,7 @@ public:
 
 	void RestockTouch( CBaseEntity *pOther );
 	void MaterializeThink( void );
+	void SpinThink( void );
 
 private:
 	bool	m_bRespawning;		// true while hidden, waiting for the respawn timer

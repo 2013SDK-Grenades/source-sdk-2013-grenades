@@ -53,6 +53,9 @@
 #define GRENADEPACK_MATERIALIZE_SOUND	"Item.Materialize"
 #define GRENADEPACK_RESPAWN_TIME	15.0f		// ff_dustbowl.lua: respawntime = 15
 #define GRENADEPACK_PICKUP_BOX_BLOAT	24			// matches ff_item_backpack.cpp
+#define GRENADEPACK_SPIN_CONTEXT	"GrenadepackSpinThink"
+#define GRENADEPACK_SPIN_INTERVAL	0.05f		// 20 updates/sec, smooth without being wasteful
+#define GRENADEPACK_SPIN_DEGREES	3.0f		// degrees of yaw per update -> full turn in 5s
 
 #define GRENADEPACK_GREN1			2			// ff_dustbowl.lua: gren1 = 2
 #define GRENADEPACK_GREN2			2			// ff_dustbowl.lua: gren2 = 2
@@ -63,6 +66,7 @@
 BEGIN_DATADESC( CFFItemGrenadepack )
 	DEFINE_ENTITYFUNC( RestockTouch ),
 	DEFINE_THINKFUNC( MaterializeThink ),
+	DEFINE_THINKFUNC( SpinThink ),
 END_DATADESC();
 
 LINK_ENTITY_TO_CLASS( item_grenadepack, CFFItemGrenadepack );
@@ -105,6 +109,15 @@ void CFFItemGrenadepack::Spawn( void )
 
 	SetTouch( &CFFItemGrenadepack::RestockTouch );
 
+	// FF Grenade Port: spin added per Dan's request, not something confirmed from
+	// FF's real data -- the Lua source has no rotation/spin field at all, so this
+	// is a deliberate FC-specific visual choice (matching TF2's own ammo/health
+	// pickups), not a restoration of FF behavior. Named context so it runs
+	// independently of MaterializeThink()'s respawn-timer think below -- default
+	// SetThink()/SetNextThink() only support one active think at a time; this
+	// needs two running simultaneously.
+	SetContextThink( &CFFItemGrenadepack::SpinThink, gpGlobals->curtime, GRENADEPACK_SPIN_CONTEXT );
+
 	m_bRespawning = false;
 }
 
@@ -140,6 +153,15 @@ void CFFItemGrenadepack::RestockTouch( CBaseEntity *pOther )
 
 	SetThink( &CFFItemGrenadepack::MaterializeThink );
 	SetNextThink( m_flNextRespawnTime );
+}
+
+void CFFItemGrenadepack::SpinThink( void )
+{
+	QAngle angles = GetLocalAngles();
+	angles.y += GRENADEPACK_SPIN_DEGREES;
+	SetLocalAngles( angles );
+
+	SetContextThink( &CFFItemGrenadepack::SpinThink, gpGlobals->curtime + GRENADEPACK_SPIN_INTERVAL, GRENADEPACK_SPIN_CONTEXT );
 }
 
 void CFFItemGrenadepack::MaterializeThink( void )
