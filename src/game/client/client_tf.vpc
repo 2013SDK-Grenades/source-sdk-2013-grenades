@@ -647,6 +647,8 @@ $Project "Client (TF)"
 				$File	"$SRCDIR\game\client\ff\fx\ff_fx_gascloud_emitter.cpp"
 				$File	"$SRCDIR\game\client\ff\fx\ff_fx_flarecloud_emitter.h"
 				$File	"$SRCDIR\game\client\ff\fx\ff_fx_flarecloud_emitter.cpp"
+				$File	"$SRCDIR\game\client\ff\fx\ff_fx_napalm_emitter.h"
+				$File	"$SRCDIR\game\client\ff\fx\ff_fx_napalm_emitter.cpp"
 
 				// FF Grenade Port: the 11 per-grenade CTFWeaponBaseGrenade subclasses
 				// (game/shared/tf/) -- 8 adapted from dormant stock TF2 weapon stubs, 3 new.

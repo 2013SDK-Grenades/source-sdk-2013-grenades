@@ -174,6 +174,19 @@ void CFFGrenadeNapalm::UpdateOnRemove( void )
 
 		EmitSound("Napalm.Explode");
 
+		// FF Grenade Port: was orphaned in ff-src's own current state -- the
+		// CNapalmEmitter/NapalmBurst system exists and is complete
+		// (ff_fx_napalm_emitter.cpp) but nothing dispatched it anymore. Added back
+		// here, matching how CFFGrenadeConcussion::Explode() already dispatches its
+		// own effect in this exact port.
+#ifdef GAME_DLL
+		{
+			CEffectData data;
+			data.m_vOrigin = vecAbsOrigin;
+			DispatchEffect( "NapalmBurst", data );
+		}
+#endif
+
 		for ( int i = 0; i < 9; i++ )
 		{
 			Vector vecSrc = GetAbsOrigin();
