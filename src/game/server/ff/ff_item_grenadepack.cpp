@@ -55,7 +55,7 @@
 #define GRENADEPACK_PICKUP_BOX_BLOAT	24			// matches ff_item_backpack.cpp
 #define GRENADEPACK_SPIN_CONTEXT	"GrenadepackSpinThink"
 #define GRENADEPACK_SPIN_INTERVAL	0.05f		// 20 updates/sec, smooth without being wasteful
-#define GRENADEPACK_SPIN_DEGREES	3.0f		// degrees of yaw per update -> full turn in 5s
+#define GRENADEPACK_SPIN_DEGREES	6.0f		// degrees of yaw per update -> full turn in 3s
 
 #define GRENADEPACK_GREN1			2			// ff_dustbowl.lua: gren1 = 2
 #define GRENADEPACK_GREN2			2			// ff_dustbowl.lua: gren2 = 2

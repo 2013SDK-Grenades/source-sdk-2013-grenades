@@ -10,6 +10,7 @@
 // the earlier ff_grenade_laser.cpp/ff_grenade_nail.cpp buildables rewrite.
 #include "tf_player.h"
 #include "baseobject_shared.h"
+#include "te_effect_dispatch.h"
 
 //ConVar ffdev_nap_bonusdamage_burn1("ffdev_nap_bonusdamage_burn1", "0", FCVAR_REPLICATED | FCVAR_CHEAT);
 #define NAP_BONUSDAMAGE_BURN1 0 //ffdev_nap_bonusdamage_burn1.GetInt()
@@ -82,6 +83,22 @@ void CFFGrenadeNapalmlet::Spawn( void )
 		AddFlag( FL_ONFIRE );
 		SetEffectEntity( m_pFlame );
 		m_pFlame->SetSize( FFDEV_NAP_FLAMESIZE );
+	}
+
+	// FF Grenade Port: CEntityFlame above still drives FL_ONFIRE/gameplay
+	// semantics (kept as-is, untouched). But its actual client-side VISUAL
+	// (c_fire_smoke.cpp) can't be made to show real FF's napalm flame look --
+	// that whole code path is inherited stock SDK2013CE content, not real FF's
+	// (see the napalm particle investigation for the full history), and doesn't
+	// have a valid particle name to point at. This dispatches a real,
+	// FF-sourced flame sprite (napalm_flame2, the same one the ground-fire
+	// burst uses) attached directly to THIS gib instead, so the fire actually
+	// stays on the skull as it tumbles -- see ff_fx_napalm_emitter.cpp
+	// (NapalmletFlameCallback) for the client side.
+	{
+		CEffectData data;
+		data.m_nEntIndex = entindex();
+		DispatchEffect( "NapalmletFlame", data );
 	}
 }
 

@@ -32,6 +32,7 @@
 #include "particles_simple.h"
 #include "particle_util.h"
 #include "c_te_effect_dispatch.h"
+#include "cliententitylist.h"
 #include "ff_fx_napalm_emitter.h"
 
 //========================================================================
@@ -143,6 +144,7 @@ NapalmParticle*	CNapalmEmitter::AddNapalmParticle( const Vector &vOrigin )
 		pRet->m_uchColor[1] = 160;
 		pRet->m_uchColor[2] = 0;
 		pRet->m_bStartFire = true;
+		pRet->m_bIsAttachedFlame = false;
 	}
 
 	return pRet;
@@ -198,6 +200,24 @@ void CNapalmEmitter::SimulateParticles( CParticleSimulateIterator *pIterator )
 		if ( pParticle->m_flLifetime >= pParticle->m_flDieTime )
 		{
 			pIterator->RemoveParticle( pParticle );
+		}
+		else if ( pParticle->m_bIsAttachedFlame )
+		{
+			// FF Grenade Port: gib-attached flame -- track the entity's current
+			// position every frame instead of the normal ember simulation below
+			// (this particle is already a flame, not falling debris). No fixed
+			// lifetime for these; removed the instant the entity they're
+			// following is gone, whatever that entity's own lifetime turns out
+			// to be (m_flDieTime is set very high as a safety net only).
+			CBaseEntity *pFollowEntity = pParticle->m_hFollowEntity.Get();
+			if ( pFollowEntity )
+			{
+				pParticle->m_Pos = pFollowEntity->GetAbsOrigin();
+			}
+			else
+			{
+				pIterator->RemoveParticle( pParticle );
+			}
 		}
 		else
 		{
@@ -351,6 +371,44 @@ void CNapalmEmitter::StartFire(const Vector &pos)
 		pFireParticle->m_uchColor[2] = random->RandomInt(160, 255);
 		pFireParticle->m_uchColor[3] = random->RandomInt(230, 250);
 		pFireParticle->m_bStartFire = false;
+		pFireParticle->m_bIsAttachedFlame = false;
+		pFireParticle->m_flScale = nap_burst_flame_scale.GetFloat() * random->RandomFloat(0.7f, 1.3f);
+	}
+}
+
+//========================================================================
+// StartAttachedFire
+// ------------------
+// Purpose: same visual as StartFire, but tracks pFollowEntity's position
+// every frame (see SimulateParticles) instead of sitting still. Used for
+// napalmlet gibs -- see ff_grenade_napalmlet.cpp for the dispatch side.
+//========================================================================
+void CNapalmEmitter::StartAttachedFire( CBaseEntity *pFollowEntity )
+{
+	if ( !pFollowEntity )
+		return;
+
+	Vector pos = pFollowEntity->GetAbsOrigin();
+	NapalmParticle *pFireParticle = (NapalmParticle*)AddParticle( sizeof( NapalmParticle ), m_hFlameMaterial, pos );
+	if ( pFireParticle )
+	{
+		pFireParticle->m_iType = eNapalmFlame;
+		pFireParticle->m_Pos = pos;
+		pFireParticle->m_vVelocity.Init();
+		pFireParticle->m_flLifetime = 0;
+		// FF Grenade Port: not tied to nap_burst_flame_time like a ground fire --
+		// this should burn as long as the gib exists. Set generously high; actual
+		// removal happens the instant m_hFollowEntity goes invalid (see
+		// SimulateParticles), this is just a safety net against a particle
+		// leaking forever if that somehow doesn't happen.
+		pFireParticle->m_flDieTime = 60.0f;
+		pFireParticle->m_uchColor[0] = 255;
+		pFireParticle->m_uchColor[1] = 
+		pFireParticle->m_uchColor[2] = random->RandomInt(160, 255);
+		pFireParticle->m_uchColor[3] = random->RandomInt(230, 250);
+		pFireParticle->m_bStartFire = false;
+		pFireParticle->m_bIsAttachedFlame = true;
+		pFireParticle->m_hFollowEntity = pFollowEntity;
 		pFireParticle->m_flScale = nap_burst_flame_scale.GetFloat() * random->RandomFloat(0.7f, 1.3f);
 	}
 }
@@ -410,3 +468,29 @@ void NapalmBurstCallback(const CEffectData &data)
 }
 
 DECLARE_CLIENT_EFFECT( "NapalmBurst", NapalmBurstCallback )
+
+//========================================================================
+// NapalmletFlameCallback
+// -----------------------
+// Purpose: dispatched once per napalmlet gib at spawn (ff_grenade_napalmlet.cpp,
+// GAME_DLL side) so its fire visually stays on the gib as it tumbles, instead
+// of the burst embers' independent ballistic paths. Looks up the specific
+// entity via data.entindex() -- works without napalmlet needing any custom
+// client-side class, since every networked entity (even with just the
+// generic engine-provided client proxy) is reachable this way.
+//========================================================================
+void NapalmletFlameCallback(const CEffectData &data)
+{
+	C_BaseEntity *pEntity = ClientEntityList().GetEnt( data.entindex() );
+	if ( !pEntity )
+		return;
+
+	CSmartPtr<CNapalmEmitter> pEmitter = CNapalmEmitter::Create("NapalmletFlame");
+	if ( pEmitter == NULL )
+		return;
+
+	pEmitter->SetSortOrigin( pEntity->GetAbsOrigin() );
+	pEmitter->StartAttachedFire( pEntity );
+}
+
+DECLARE_CLIENT_EFFECT( "NapalmletFlame", NapalmletFlameCallback )

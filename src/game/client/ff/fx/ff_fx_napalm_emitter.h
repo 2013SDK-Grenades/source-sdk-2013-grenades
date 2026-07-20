@@ -33,6 +33,17 @@ public:
 	bool			m_bStartFire;
 	bool			m_bReverseSize;
 	float			m_flScale;
+
+	// FF Grenade Port: added for gib-attached flames (napalmlet). When valid,
+	// SimulateParticles() repositions this particle to the entity's current
+	// position every frame instead of doing ballistic/ground-collision
+	// simulation, and removes the particle the instant the entity is gone --
+	// no fixed timer needed, the flame's lifetime is tied to the gib's actual
+	// lifetime. Not in FF's real source (that used CEntityFlame for this,
+	// which we can't get a working visual out of -- see ff_grenade_napalmlet.cpp
+	// for the full explanation of why this exists instead).
+	EHANDLE			m_hFollowEntity;
+	bool			m_bIsAttachedFlame;
 };
 
 class CNapalmEmitter : public CParticleEffect
@@ -52,6 +63,10 @@ public:
 	inline	float	GetGravityMagnitude(void) { return m_flGravityMagnitude; }
 	
 	void StartFire(const Vector &pos);
+
+	// FF Grenade Port: creates a flame that follows pFollowEntity every frame
+	// instead of sitting at a fixed position -- see NapalmParticle::m_hFollowEntity.
+	void StartAttachedFire( CBaseEntity *pFollowEntity );
 
 protected:
 	CNapalmEmitter( const char *pDebugName );
