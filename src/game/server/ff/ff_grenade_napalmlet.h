@@ -28,7 +28,7 @@ public:
 	DECLARE_CLASS( CFFGrenadeNapalmlet, CBaseAnimating );
 	void Precache();
 
-	CFFGrenadeNapalmlet( void ){m_flBurnTime = gpGlobals->curtime + 5.0f;}
+	CFFGrenadeNapalmlet( void ){m_flBurnTime = gpGlobals->curtime + 5.0f; m_bDispatchedFlameEffect = false;}
 	void UpdateOnRemove( void );
 
 	void Spawn();
@@ -41,6 +41,10 @@ private:
 	float m_flBurnTime;
 	CEntityFlame *m_pFlame;
 	int CalculateBonusBurnDamage(int burnLevel);
+
+	// FF Grenade Port: dispatched on the first FlameThink() rather than in
+	// Spawn() -- see the dispatch site in FlameThink() for why.
+	bool m_bDispatchedFlameEffect;
 };
 
 #endif

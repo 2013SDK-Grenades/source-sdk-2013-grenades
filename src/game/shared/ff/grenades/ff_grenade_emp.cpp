@@ -28,6 +28,8 @@
 	#include "te_effect_dispatch.h"
 	#include "tf_obj.h"
 	#include "tf_obj_sentrygun.h"
+	#include "tf_player.h"
+	#include "tf_shareddefs.h"
 #endif
 
 extern short g_sModelIndexFireball;
@@ -188,6 +190,69 @@ PRECACHE_WEAPON_REGISTER( ff_grenade_emp );
 			else if ( dynamic_cast<CBaseObject *>( pEntity ) != NULL )
 			{
 				// Dispensers, teleporters: no TakeEmp() override in FF, confirmed immune.
+				continue;
+			}
+
+			// FF Grenade Port: this case didn't exist before -- confirmed root cause of
+			// "EMP does no damage to enemies." The original TakeEmp()->explicit-type-check
+			// rewrite (done in an earlier session, see the comment above the pipebomb
+			// check) covered pipebombs, thrown grenades, buildables, and generic FF
+			// projectiles, but never added a player case at all. Every enemy player fell
+			// through every check above, failed the CFFProjectileBase check below too
+			// (players obviously aren't FF projectiles), and hit `continue` -- skipped
+			// entirely, zero effect, every time.
+			//
+			// FF's real CFFPlayer::TakeEmp() (ff_player.cpp) cooks off 25% of the
+			// player's shells/rockets/cells ammo and deals damage scaled by how much was
+			// lost (different multiplier per ammo type, cells capped at 150, Engineer
+			// immune to cell damage, HWGuy takes reduced shell damage). TF2's ammo model
+			// doesn't have separate shells/rockets/cells pools to translate those
+			// multipliers onto -- just PRIMARY/SECONDARY -- so this is an adaptation of
+			// FF's real design (cook off a chunk of ammo, deal damage scaled by how much),
+			// not a faithful reproduction of its exact per-type numbers. The one number
+			// that IS real: the 25% reduction rate.
+			CTFPlayer *pTFTarget = ToTFPlayer( pEntity );
+			if ( pTFTarget && pTFTarget->IsAlive() )
+			{
+				int primaryLost = pTFTarget->GetAmmoCount( TF_AMMO_PRIMARY ) / 4;
+				int secondaryLost = pTFTarget->GetAmmoCount( TF_AMMO_SECONDARY ) / 4;
+
+				if ( primaryLost > 0 )
+					pTFTarget->RemoveAmmo( primaryLost, TF_AMMO_PRIMARY );
+				if ( secondaryLost > 0 )
+					pTFTarget->RemoveAmmo( secondaryLost, TF_AMMO_SECONDARY );
+
+				int explode = (int)( ( primaryLost + secondaryLost ) * 0.8f );
+
+				if ( explode > 0 )
+				{
+					Vector vecTargetOrigin = pTFTarget->GetAbsOrigin();
+					trace_t tr;
+					UTIL_TraceLine( vecTargetOrigin + Vector( 0, 0, 2.0f ), vecTargetOrigin - Vector( 0, 0, FF_DECALTRACE_TRACE_DIST ), MASK_SHOT_HULL, pTFTarget, COLLISION_GROUP_NONE, &tr );
+
+					int contents = UTIL_PointContents( vecTargetOrigin );
+					Vector vecUpNormal( 0, 0, 1 );
+					CPASFilter filter( vecTargetOrigin );
+
+					te->Explosion( filter, -1.0,
+						&vecTargetOrigin,
+						!( contents & MASK_WATER ) ? g_sModelIndexFireball : g_sModelIndexWExplosion,
+						m_DmgRadius * .03,
+						25,
+						TE_EXPLFLAG_NONE,
+						m_DmgRadius,
+						explode,
+						&vecUpNormal );
+
+					FF_DecalTrace( pTFTarget, FF_DECALTRACE_TRACE_DIST, "Scorch" );
+
+					CTakeDamageInfo info( this, GetOwnerEntity(), GetBlastForce(), vecTargetOrigin, explode, DMG_SHOCK, 0, &vecTargetOrigin );
+					FF_RadiusDamage( info, vecTargetOrigin, m_DmgRadius, CLASS_NONE, NULL );
+
+					EmitSound( "BaseGrenade.Explode" );
+					UTIL_ScreenShake( vecTargetOrigin, (float)explode, 150.0, 1.0, radius, SHAKE_START );
+				}
+
 				continue;
 			}
 

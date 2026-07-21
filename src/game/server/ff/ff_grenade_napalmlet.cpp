@@ -84,22 +84,6 @@ void CFFGrenadeNapalmlet::Spawn( void )
 		SetEffectEntity( m_pFlame );
 		m_pFlame->SetSize( FFDEV_NAP_FLAMESIZE );
 	}
-
-	// FF Grenade Port: CEntityFlame above still drives FL_ONFIRE/gameplay
-	// semantics (kept as-is, untouched). But its actual client-side VISUAL
-	// (c_fire_smoke.cpp) can't be made to show real FF's napalm flame look --
-	// that whole code path is inherited stock SDK2013CE content, not real FF's
-	// (see the napalm particle investigation for the full history), and doesn't
-	// have a valid particle name to point at. This dispatches a real,
-	// FF-sourced flame sprite (napalm_flame2, the same one the ground-fire
-	// burst uses) attached directly to THIS gib instead, so the fire actually
-	// stays on the skull as it tumbles -- see ff_fx_napalm_emitter.cpp
-	// (NapalmletFlameCallback) for the client side.
-	{
-		CEffectData data;
-		data.m_nEntIndex = entindex();
-		DispatchEffect( "NapalmletFlame", data );
-	}
 }
 
 
@@ -212,6 +196,25 @@ void CFFGrenadeNapalmlet::ResolveFlyCollisionCustom( trace_t &trace, Vector &vec
 //-----------------------------------------------------------------------------
 void CFFGrenadeNapalmlet::FlameThink()
 {
+	// FF Grenade Port: dispatched here instead of Spawn(). Spawn() runs at the
+	// exact instant the entity is created server-side -- dispatching the
+	// attached-flame effect that same instant risked it reaching clients
+	// before their own copy of this entity existed yet (NapalmletFlameCallback
+	// looks the entity up by entindex via ClientEntityList().GetEnt(), which
+	// silently returns NULL/no-ops if that entity isn't there yet -- no error,
+	// just nothing happens, which is exactly what "fire never appears" looks
+	// like). FlameThink() firing means at least one full server tick has
+	// already passed, giving the network far more room for the entity to have
+	// actually arrived first.
+	if ( !m_bDispatchedFlameEffect )
+	{
+		m_bDispatchedFlameEffect = true;
+
+		CEffectData data;
+		data.m_nEntIndex = entindex();
+		DispatchEffect( "NapalmletFlame", data );
+	}
+
 	// Remove if we've reached the end of our fuse
 	if( gpGlobals->curtime > m_flBurnTime )
 	{

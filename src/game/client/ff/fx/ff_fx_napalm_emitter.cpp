@@ -483,7 +483,15 @@ void NapalmletFlameCallback(const CEffectData &data)
 {
 	C_BaseEntity *pEntity = ClientEntityList().GetEnt( data.entindex() );
 	if ( !pEntity )
+	{
+		// FF Grenade Port: diagnostic only, remove once confirmed working. If
+		// this fires, the entity genuinely wasn't there yet when the effect
+		// arrived (the race condition this was moved to guard against was the
+		// real cause) -- if it DOESN'T fire but the fire still isn't showing,
+		// the bug is somewhere else entirely and this rules the lookup out.
+		Warning( "[FF Grenade Port] NapalmletFlameCallback: no entity for entindex %d\n", data.entindex() );
 		return;
+	}
 
 	CSmartPtr<CNapalmEmitter> pEmitter = CNapalmEmitter::Create("NapalmletFlame");
 	if ( pEmitter == NULL )
