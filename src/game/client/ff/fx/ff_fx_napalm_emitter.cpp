@@ -145,6 +145,7 @@ NapalmParticle*	CNapalmEmitter::AddNapalmParticle( const Vector &vOrigin )
 		pRet->m_uchColor[2] = 0;
 		pRet->m_bStartFire = true;
 		pRet->m_bIsAttachedFlame = false;
+		pRet->m_bLoggedTracking = false;
 	}
 
 	return pRet;
@@ -213,6 +214,17 @@ void CNapalmEmitter::SimulateParticles( CParticleSimulateIterator *pIterator )
 			if ( pFollowEntity )
 			{
 				pParticle->m_Pos = pFollowEntity->GetAbsOrigin();
+
+				// FF Grenade Port: diagnostic only, remove once confirmed working.
+				// One line, once, ~1 second after creation -- confirms the follow
+				// branch is actually being reached and actually repositioning the
+				// particle to match the entity's real, current, moving position.
+				if ( !pParticle->m_bLoggedTracking && pParticle->m_flLifetime > 1.0f )
+				{
+					pParticle->m_bLoggedTracking = true;
+					Msg( "[FF Grenade Port] attached flame tracking entity, particle now at (%.0f, %.0f, %.0f)\n",
+						pParticle->m_Pos.x, pParticle->m_Pos.y, pParticle->m_Pos.z );
+				}
 			}
 			else
 			{
@@ -372,6 +384,7 @@ void CNapalmEmitter::StartFire(const Vector &pos)
 		pFireParticle->m_uchColor[3] = random->RandomInt(230, 250);
 		pFireParticle->m_bStartFire = false;
 		pFireParticle->m_bIsAttachedFlame = false;
+		pFireParticle->m_bLoggedTracking = false;
 		pFireParticle->m_flScale = nap_burst_flame_scale.GetFloat() * random->RandomFloat(0.7f, 1.3f);
 	}
 }
@@ -386,7 +399,7 @@ void CNapalmEmitter::StartFire(const Vector &pos)
 void CNapalmEmitter::StartAttachedFire( CBaseEntity *pFollowEntity )
 {
 	if ( !pFollowEntity )
-		return;
+		return NULL;
 
 	Vector pos = pFollowEntity->GetAbsOrigin();
 	NapalmParticle *pFireParticle = (NapalmParticle*)AddParticle( sizeof( NapalmParticle ), m_hFlameMaterial, pos );
@@ -408,9 +421,12 @@ void CNapalmEmitter::StartAttachedFire( CBaseEntity *pFollowEntity )
 		pFireParticle->m_uchColor[3] = random->RandomInt(230, 250);
 		pFireParticle->m_bStartFire = false;
 		pFireParticle->m_bIsAttachedFlame = true;
+		pFireParticle->m_bLoggedTracking = false;
 		pFireParticle->m_hFollowEntity = pFollowEntity;
 		pFireParticle->m_flScale = nap_burst_flame_scale.GetFloat() * random->RandomFloat(0.7f, 1.3f);
 	}
+
+	return pFireParticle;
 }
 
 //========================================================================
@@ -497,8 +513,16 @@ void NapalmletFlameCallback(const CEffectData &data)
 	if ( pEmitter == NULL )
 		return;
 
-	pEmitter->SetSortOrigin( pEntity->GetAbsOrigin() );
-	pEmitter->StartAttachedFire( pEntity );
+	Vector vecInitial = pEntity->GetAbsOrigin();
+	pEmitter->SetSortOrigin( vecInitial );
+	NapalmParticle *pParticle = pEmitter->StartAttachedFire( pEntity );
+
+	// FF Grenade Port: diagnostic only, remove once confirmed working. Confirms
+	// the entity WAS found and a particle WAS created (narrows things down if
+	// the previous no-entity warning also never fires but the fire still isn't
+	// attached -- would mean creation succeeds but SOMETHING ELSE is wrong).
+	Msg( "[FF Grenade Port] NapalmletFlameCallback: attached flame created on entindex %d at (%.0f, %.0f, %.0f)\n",
+		data.entindex(), vecInitial.x, vecInitial.y, vecInitial.z );
 }
 
 DECLARE_CLIENT_EFFECT( "NapalmletFlame", NapalmletFlameCallback )

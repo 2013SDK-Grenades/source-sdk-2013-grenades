@@ -44,6 +44,7 @@ public:
 	// for the full explanation of why this exists instead).
 	EHANDLE			m_hFollowEntity;
 	bool			m_bIsAttachedFlame;
+	bool			m_bLoggedTracking;	// FF Grenade Port: diagnostic only, remove once confirmed working
 };
 
 class CNapalmEmitter : public CParticleEffect
@@ -66,7 +67,9 @@ public:
 
 	// FF Grenade Port: creates a flame that follows pFollowEntity every frame
 	// instead of sitting at a fixed position -- see NapalmParticle::m_hFollowEntity.
-	void StartAttachedFire( CBaseEntity *pFollowEntity );
+	// Returns the particle for diagnostic purposes only (caller doesn't need to
+	// hold onto it -- SimulateParticles owns its lifecycle from here).
+	NapalmParticle* StartAttachedFire( CBaseEntity *pFollowEntity );
 
 protected:
 	CNapalmEmitter( const char *pDebugName );

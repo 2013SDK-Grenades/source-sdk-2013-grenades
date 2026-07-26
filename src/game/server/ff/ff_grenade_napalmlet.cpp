@@ -213,6 +213,9 @@ void CFFGrenadeNapalmlet::FlameThink()
 		CEffectData data;
 		data.m_nEntIndex = entindex();
 		DispatchEffect( "NapalmletFlame", data );
+
+		// FF Grenade Port: diagnostic only, remove once confirmed working.
+		Msg( "[FF Grenade Port] napalmlet entindex %d dispatched NapalmletFlame\n", entindex() );
 	}
 
 	// Remove if we've reached the end of our fuse
