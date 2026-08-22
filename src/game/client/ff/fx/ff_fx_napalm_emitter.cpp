@@ -396,7 +396,7 @@ void CNapalmEmitter::StartFire(const Vector &pos)
 // every frame (see SimulateParticles) instead of sitting still. Used for
 // napalmlet gibs -- see ff_grenade_napalmlet.cpp for the dispatch side.
 //========================================================================
-void CNapalmEmitter::StartAttachedFire( CBaseEntity *pFollowEntity )
+NapalmParticle* CNapalmEmitter::StartAttachedFire( CBaseEntity *pFollowEntity )
 {
 	if ( !pFollowEntity )
 		return NULL;
